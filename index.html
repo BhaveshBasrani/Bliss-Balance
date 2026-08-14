@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>BLISS BALANCE.co | Official Store | Women's Sandals & Men's Orthopedic Slippers</title>
   <meta name="description" content="BLISS BALANCE.co - Official Brand Store. Doctor-recommended Women's Slippers & Sandals and Men's Orthopedic Slippers for heel pain relief & diabetic care.">
 
@@ -54,6 +54,11 @@
   <header class="navbar-comet" id="navbar">
     <div class="nav-container">
 
+      <!-- Mobile Hamburger Button -->
+      <button class="icon-btn mobile-menu-toggle" id="mobile-menu-btn" title="Toggle Navigation Menu" onclick="toggleMobileNav()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+
       <!-- Brand Logo -->
       <a href="#" class="brand-logo">
         <img src="assets/Logo.svg" alt="Bliss Balance Logo" class="nav-logo-svg">
@@ -62,7 +67,7 @@
         </div>
       </a>
 
-      <!-- Navigation Menu -->
+      <!-- Desktop Navigation Menu -->
       <nav class="nav-menu-wrap">
         <ul class="nav-menu">
           <li><a href="#" class="nav-link active">HOME</a></li>
@@ -92,6 +97,15 @@
     </div>
   </header>
 
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="mobile-nav-drawer">
+    <a href="#" class="mobile-nav-link active" onclick="toggleMobileNav()">HOME</a>
+    <a href="#featured" class="mobile-nav-link" onclick="toggleMobileNav()">ALL DEALS</a>
+    <a href="#womens-category" class="mobile-nav-link" onclick="toggleMobileNav()">WOMEN'S SLIPPERS & SANDALS</a>
+    <a href="#mens-category" class="mobile-nav-link" onclick="toggleMobileNav()">MEN'S ORTHOPEDIC SLIPPERS</a>
+    <a href="#featured" class="mobile-nav-link" onclick="toggleMobileNav()">BESTSELLERS</a>
+  </div>
+
 
   <!-- ====================================================
        4. HERO SECTION WITH ATTACHED COSMIC SPACE IMAGE
@@ -116,7 +130,7 @@
 
 
   <!-- ====================================================
-       5. 2-CATEGORY SPOTLIGHT SHOWCASE (AUTHENTIC PHOTOS)
+       5. 2-CATEGORY SPOTLIGHT SHOWCASE
        ==================================================== -->
   <section class="section-padding categories-2grid-section" id="categories">
     <div class="container">
@@ -213,7 +227,7 @@
             </div>
           </div>
 
-          <!-- Product 2: Platform Charm Clog (Real Image 27) -->
+          <!-- Product 2: Platform Charm Clog -->
           <div class="product-card">
             <span class="product-badge">NEW RELEASE</span>
             <div class="product-image-box">
@@ -244,7 +258,7 @@
             </div>
           </div>
 
-          <!-- Product 3: Dual-Strap Buckle Sandal (Real Image 29) -->
+          <!-- Product 3: Dual-Strap Buckle Sandal -->
           <div class="product-card">
             <span class="product-badge">HOT DEAL</span>
             <div class="product-image-box">
@@ -275,7 +289,7 @@
             </div>
           </div>
 
-          <!-- Product 4: T-Strap Toe-Ring Sandal (Real Image 28) -->
+          <!-- Product 4: T-Strap Toe-Ring Sandal -->
           <div class="product-card">
             <span class="product-badge">POPULAR</span>
             <div class="product-image-box">

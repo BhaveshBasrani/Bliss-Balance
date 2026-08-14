@@ -1,6 +1,6 @@
 /* ====================================================
    BLISS BALANCE.co - DYNAMIC CART ENGINE & APP LOGIC
-   100% REAL BLISS BALANCE PRODUCTS & AUTHENTIC PHOTOS
+   100% MOBILE OPTIMIZED & LAPTOP PARITY
    ==================================================== */
 
 // Product Master Data (100% Authentic Bliss Balance Amazon Listings)
@@ -108,8 +108,15 @@ function initIntroLoader() {
 
 
 /* ====================================================
-   2. CATEGORY FILTERING & CAROUSEL CONTROLS
+   2. MOBILE NAV TOGGLE & CATEGORY FILTERING
    ==================================================== */
+function toggleMobileNav() {
+  const drawer = document.getElementById('mobile-nav-drawer');
+  if (drawer) {
+    drawer.classList.toggle('open');
+  }
+}
+
 function initCarouselControls() {
   const prevBtn = document.getElementById('carousel-prev');
   const nextBtn = document.getElementById('carousel-next');
@@ -309,7 +316,7 @@ function updateCartUI() {
     const giftRow = document.createElement('div');
     giftRow.className = 'cart-item-row';
     giftRow.innerHTML = `
-      <div style="width: 84px; height: 84px; background: #141619; border-radius: 6px; border: 1px solid var(--clr-border); display: flex; align-items: center; justify-content: center;">
+      <div style="width: 76px; height: 76px; background: #141619; border-radius: 6px; border: 1px solid var(--clr-border); display: flex; align-items: center; justify-content: center;">
         ${giftSvgBox}
       </div>
       <div class="cart-item-details">
@@ -331,10 +338,10 @@ function updateCartUI() {
   }
 
   // 4-Grid Feature Badges Row
-  const truckSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
-  const refreshSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>`;
-  const packageSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`;
-  const userSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+  const truckSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`;
+  const refreshSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>`;
+  const packageSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`;
+  const userSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
 
   const featuresRow = document.createElement('div');
   featuresRow.className = 'cart-features-4grid';
