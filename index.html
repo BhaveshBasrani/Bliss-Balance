@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLISS BALANCE.co | Official Store | Women's Sandals & Men's Orthopedic Slippers</title>
+  <meta name="description" content="BLISS BALANCE.co - Official Brand Store. Doctor-recommended Women's Slippers & Sandals and Men's Orthopedic Slippers for heel pain relief & diabetic care.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/Logo.svg">
+
+  <!-- Google Fonts: Space Grotesk & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bliss-comet-theme">
+
+  <!-- ====================================================
+       1. PLAIN INTRO LOADER WITH MASSIVE LOGO FLICKER
+       ==================================================== -->
+  <div id="comet-intro-loader" class="intro-loader-screen">
+    <div class="loader-center-box">
+      <!-- MASSIVE CENTERED LOGO SVG WITH GLOWING FLICKER -->
+      <img src="assets/Logo.svg" alt="Bliss Balance Logo" class="flicker-logo-img">
+    </div>
+  </div>
+
+
+  <!-- ====================================================
+       2. ANNOUNCEMENT BAR
+       ==================================================== -->
+  <div class="announcement-bar">
+    <div class="announcement-track">
+      <span>FREE EXPRESS SHIPPING ON ORDERS OVER ₹799</span>
+      <span class="accent">•</span>
+      <span>RECOMMENDED BY ORTHOPEDIC DOCTORS ACROSS INDIA</span>
+      <span class="accent">•</span>
+      <span>WOMEN'S SLIPPERS & SANDALS & MEN'S ORTHOPEDIC SLIPPERS</span>
+      <span class="accent">•</span>
+      <span>COMPLIMENTARY 30-DAY EASY RETURNS & EXCHANGES</span>
+      <span class="accent">•</span>
+      <span>FREE EXPRESS SHIPPING ON ORDERS OVER ₹799</span>
+    </div>
+  </div>
+
+
+  <!-- ====================================================
+       3. OFFICIAL STORE NAVBAR
+       ==================================================== -->
+  <header class="navbar-comet" id="navbar">
+    <div class="nav-container">
+
+      <!-- Brand Logo -->
+      <a href="#" class="brand-logo">
+        <img src="assets/Logo.svg" alt="Bliss Balance Logo" class="nav-logo-svg">
+        <div class="brand-text-block">
+          <span class="brand-name">BLISS BALANCE<span class="brand-domain">.co</span></span>
+        </div>
+      </a>
+
+      <!-- Navigation Menu -->
+      <nav class="nav-menu-wrap">
+        <ul class="nav-menu">
+          <li><a href="#" class="nav-link active">HOME</a></li>
+          <li><a href="#featured" class="nav-link">ALL DEALS</a></li>
+          <li><a href="#womens-category" class="nav-link">WOMEN'S SLIPPERS & SANDALS</a></li>
+          <li><a href="#mens-category" class="nav-link">MEN'S ORTHOPEDIC SLIPPERS</a></li>
+          <li><a href="#featured" class="nav-link">BESTSELLERS</a></li>
+        </ul>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <button class="icon-btn" title="Search" onclick="openSearchModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+
+        <button class="icon-btn" title="Account" onclick="alert('BLISS BALANCE.co Customer Portal')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </button>
+
+        <button class="icon-btn" id="cart-icon-btn" title="Shopping Cart" onclick="openCart()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <span class="badge-count" id="cart-badge-count">1</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ====================================================
+       4. HERO SECTION WITH ATTACHED COSMIC SPACE IMAGE
+       ==================================================== -->
+  <section class="hero-section">
+    <div class="hero-bg-wrapper">
+      <img src="assets/images/hero_space_shoes.png" alt="Bliss Balance Space Shoes Hero">
+    </div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <span class="hero-tag">To Newer Heights</span>
+      <h1 class="hero-title">TO THE MOON</h1>
+      <p class="hero-subtitle">BLISS BALANCE.co — Doctor-recommended Orthotic Footwear for Men & Women. Engineered for heel pain relief, diabetic care, and unmatched daily comfort.</p>
+      
+      <div class="hero-actions">
+        <a href="#mens-category" class="btn btn-yellow">MEN'S ORTHOPEDIC &rarr;</a>
+        <a href="#womens-category" class="btn btn-outline">WOMEN'S COLLECTION</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       5. 2-CATEGORY SPOTLIGHT SHOWCASE (AUTHENTIC PHOTOS)
+       ==================================================== -->
+  <section class="section-padding categories-2grid-section" id="categories">
+    <div class="container">
+
+      <div class="section-header center">
+        <div class="section-title-wrap">
+          <span class="section-label">EXPLORE OUR OFFICIAL COLLECTIONS</span>
+          <h2 class="section-title">BLISS BALANCE CATEGORIES</h2>
+        </div>
+      </div>
+
+      <div class="categories-2grid">
+        
+        <!-- Category 1: WOMEN'S SLIPPERS & SANDALS -->
+        <div class="category-spotlight-card" id="womens-category" onclick="filterByCategory('WOMEN\'S SLIPPERS & SANDALS')">
+          <img src="assets/images/real_clogs_women.png" alt="Women's Slippers & Sandals">
+          <div class="category-spotlight-overlay"></div>
+          <div class="category-spotlight-content">
+            <span class="spotlight-tag">COLLECTION 01</span>
+            <h3 class="spotlight-title">WOMEN'S SLIPPERS & SANDALS</h3>
+            <p class="spotlight-desc">Soft MCR memory foam insoles, designer platform clogs, dual-strap buckle sandals, and T-strap toe-ring chappals.</p>
+            <span class="spotlight-btn">EXPLORE WOMEN'S RANGE &rarr;</span>
+          </div>
+        </div>
+
+        <!-- Category 2: MEN'S ORTHOPEDIC SLIPPERS -->
+        <div class="category-spotlight-card" id="mens-category" onclick="filterByCategory('MEN\'S ORTHOPEDIC SLIPPERS')">
+          <img src="assets/images/flagship_chappal_pair.png" alt="Men's Orthopedic Slippers">
+          <div class="category-spotlight-overlay"></div>
+          <div class="category-spotlight-content">
+            <span class="spotlight-tag">FLAGSHIP 02</span>
+            <h3 class="spotlight-title">MEN'S ORTHOPEDIC SLIPPERS</h3>
+            <p class="spotlight-desc">Doctor-recommended orthotic chappals with Alphabounce soles for diabetic care, heel spur, and back pain relief.</p>
+            <span class="spotlight-btn">EXPLORE MEN'S RANGE &rarr;</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       6. FEATURED AUTHENTIC PRODUCTS CAROUSEL
+       ==================================================== -->
+  <section class="section-padding" id="featured">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-label">100% AUTHENTIC BLISS BALANCE PRODUCTS</span>
+          <h2 class="section-title" id="featured-section-heading">BESTSELLERS & ALL DEALS</h2>
+        </div>
+
+        <div class="carousel-controls">
+          <button class="ctrl-btn" id="carousel-prev" title="Previous">&larr;</button>
+          <button class="ctrl-btn" id="carousel-next" title="Next">&rarr;</button>
+        </div>
+      </div>
+
+      <div class="carousel-viewport" id="carousel-viewport">
+        <div class="products-track">
+
+          <!-- Product 1: Doctor Memory Chappal (Men) -->
+          <div class="product-card">
+            <span class="product-badge">BEST SELLER</span>
+            <div class="product-image-box">
+              <img src="assets/images/flagship_chappal_pair.png" alt="Doctor Memory Chappal" id="img-prod-1">
+              <div class="quick-view-overlay">
+                <button class="btn-quick-view" onclick="openQuickView('prod-1')">QUICK VIEW</button>
+              </div>
+            </div>
+            <div class="product-info">
+              <div class="product-meta">
+                <span class="product-cat">MEN'S ORTHOPEDIC SLIPPERS</span>
+                <div class="product-rating">★ 4.9 (342)</div>
+              </div>
+              <h3 class="product-name">Doctor Memory Chappal</h3>
+              
+              <div class="product-swatches">
+                <span class="swatch active" style="background-color: #5C3A21;" onclick="switchCardImg('prod-1', 'assets/images/flagship_chappal_pair.png', this)" title="Rich Milled Brown"></span>
+                <span class="swatch" style="background-color: #141619;" onclick="switchCardImg('prod-1', 'assets/images/flagship_lifestyle_jeans.png', this)" title="Obsidian Black"></span>
+                <span class="swatch" style="background-color: #E50914;" onclick="switchCardImg('prod-1', 'assets/images/flagship_chappal_leather.png', this)" title="Crimson Red"></span>
+              </div>
+
+              <div class="product-bottom">
+                <div class="price-block">
+                  <span class="product-price">₹806</span>
+                  <span class="product-price-old">₹1,499</span>
+                </div>
+                <button class="btn-add-cart" onclick="addToCart('prod-1', 'UK 8')">ADD TO CART</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2: Platform Charm Clog (Real Image 27) -->
+          <div class="product-card">
+            <span class="product-badge">NEW RELEASE</span>
+            <div class="product-image-box">
+              <img src="assets/images/real_clogs_women.png" alt="Platform Charm Clog" id="img-prod-4">
+              <div class="quick-view-overlay">
+                <button class="btn-quick-view" onclick="openQuickView('prod-4')">QUICK VIEW</button>
+              </div>
+            </div>
+            <div class="product-info">
+              <div class="product-meta">
+                <span class="product-cat">WOMEN'S SLIPPERS & SANDALS</span>
+                <div class="product-rating">★ 4.9 (98)</div>
+              </div>
+              <h3 class="product-name">Platform Charm Clog</h3>
+              
+              <div class="product-swatches">
+                <span class="swatch active" style="background-color: #EADBC8;" onclick="switchCardImg('prod-4', 'assets/images/real_clogs_women.png', this)" title="Nude Beige"></span>
+                <span class="swatch" style="background-color: #141619;" onclick="switchCardImg('prod-4', 'assets/images/real_dualstrap_women.png', this)" title="Mocha"></span>
+              </div>
+
+              <div class="product-bottom">
+                <div class="price-block">
+                  <span class="product-price">₹799</span>
+                  <span class="product-price-old">₹1,499</span>
+                </div>
+                <button class="btn-add-cart" onclick="addToCart('prod-4', 'UK 6')">ADD TO CART</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3: Dual-Strap Buckle Sandal (Real Image 29) -->
+          <div class="product-card">
+            <span class="product-badge">HOT DEAL</span>
+            <div class="product-image-box">
+              <img src="assets/images/real_dualstrap_women.png" alt="Dual-Strap Buckle Sandal" id="img-prod-3">
+              <div class="quick-view-overlay">
+                <button class="btn-quick-view" onclick="openQuickView('prod-3')">QUICK VIEW</button>
+              </div>
+            </div>
+            <div class="product-info">
+              <div class="product-meta">
+                <span class="product-cat">WOMEN'S SLIPPERS & SANDALS</span>
+                <div class="product-rating">★ 4.9 (215)</div>
+              </div>
+              <h3 class="product-name">Dual-Strap Buckle Sandal</h3>
+              
+              <div class="product-swatches">
+                <span class="swatch active" style="background-color: #5C3A21;" onclick="switchCardImg('prod-3', 'assets/images/real_dualstrap_women.png', this)" title="Tan Brown"></span>
+                <span class="swatch" style="background-color: #141619;" onclick="switchCardImg('prod-3', 'assets/images/real_tstrap_women.png', this)" title="Olive"></span>
+              </div>
+
+              <div class="product-bottom">
+                <div class="price-block">
+                  <span class="product-price">₹599</span>
+                  <span class="product-price-old">₹1,199</span>
+                </div>
+                <button class="btn-add-cart" onclick="addToCart('prod-3', 'UK 7')">ADD TO CART</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4: T-Strap Toe-Ring Sandal (Real Image 28) -->
+          <div class="product-card">
+            <span class="product-badge">POPULAR</span>
+            <div class="product-image-box">
+              <img src="assets/images/real_tstrap_women.png" alt="T-Strap Toe-Ring Sandal" id="img-prod-2">
+              <div class="quick-view-overlay">
+                <button class="btn-quick-view" onclick="openQuickView('prod-2')">QUICK VIEW</button>
+              </div>
+            </div>
+            <div class="product-info">
+              <div class="product-meta">
+                <span class="product-cat">WOMEN'S SLIPPERS & SANDALS</span>
+                <div class="product-rating">★ 4.8 (184)</div>
+              </div>
+              <h3 class="product-name">T-Strap Toe-Ring Sandal</h3>
+              
+              <div class="product-swatches">
+                <span class="swatch active" style="background-color: #4A5D4E;" onclick="switchCardImg('prod-2', 'assets/images/real_tstrap_women.png', this)" title="Olive Green"></span>
+                <span class="swatch" style="background-color: #5C3A21;" onclick="switchCardImg('prod-2', 'assets/images/real_dualstrap_women.png', this)" title="Brown"></span>
+              </div>
+
+              <div class="product-bottom">
+                <div class="price-block">
+                  <span class="product-price">₹499</span>
+                  <span class="product-price-old">₹999</span>
+                </div>
+                <button class="btn-add-cart" onclick="addToCart('prod-2', 'UK 6')">ADD TO CART</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       7. CAMPAIGN DROP BANNER
+       ==================================================== -->
+  <section class="banner-campaign-drop">
+    <div class="container campaign-content">
+      <div class="campaign-text">
+        <span class="campaign-tag">SOLD OUT</span>
+        <span>SORRY YOU MISSED <strong>DOCTOR ORTHOTIC - 01</strong> // RECORD 45-SECOND DROP</span>
+      </div>
+      <div class="campaign-timer" id="drop-timer">
+        <span>NEXT DROP IN: <strong>02:14:59</strong></span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       8. SECONDARY FEATURE BANNER
+       ==================================================== -->
+  <section class="highlight-banner" id="hybrid-banner">
+    <div class="banner-bg">
+      <img src="assets/images/secondary_banner_hybrid.png" alt="Doctor Orthotic Highlight Banner">
+    </div>
+    <div class="banner-overlay"></div>
+
+    <div class="banner-content">
+      <p class="banner-subtitle">Elevate your everyday comfort</p>
+      <h2 class="banner-title">DOCTOR ORTHOTIC SERIES</h2>
+      <p class="banner-desc">Engineered for seamless transitions between home relaxation and daily walking. Featuring soft MCP memory insoles paired with responsive Alphabounce outsoles.</p>
+      <div class="banner-actions">
+        <a href="#mens-category" class="btn btn-yellow">MEN'S ORTHOPEDIC &rarr;</a>
+        <a href="#womens-category" class="btn btn-yellow-outline">WOMEN'S SLIPPERS</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       9. ACTUAL VERBATIM AMAZON REVIEWS & PRESS
+       ==================================================== -->
+  <section class="section-padding social-proof-section" id="reviews">
+    <div class="container">
+
+      <div class="section-header center">
+        <div class="section-title-wrap">
+          <span class="section-label">VERIFIED BUYER REVIEWS FROM AMAZON</span>
+          <h2 class="section-title">WHAT OUR PATIENTS & BUYERS SAY</h2>
+        </div>
+      </div>
+
+      <div class="reviews-grid">
+        
+        <div class="review-card">
+          <div class="stars">★ ★ ★ ★ ★</div>
+          <p class="review-quote">"Best chappal for diabetic foot and heel pain relief"</p>
+          <p class="review-text">"I bought this for my father who has severe heel pain and diabetes. The MCR memory foam insole is extremely soft yet supportive. He can walk comfortably for hours now without any pain. Highly recommended!"</p>
+          <div class="reviewer-name">RAJESH SHARMA • VERIFIED PURCHASE</div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars">★ ★ ★ ★ ★</div>
+          <p class="review-quote">"Super comfortable for daily wear & back pain"</p>
+          <p class="review-text">"Very lightweight and soft footbed. The velcro strap fit is perfect for wide feet. I have lower back pain, and these slippers have reduced the shock while walking on hard floors."</p>
+          <div class="reviewer-name">ANIL K. KULKARNI • VERIFIED PURCHASE</div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars">★ ★ ★ ★ ★</div>
+          <p class="review-quote">"As an orthopedic surgeon, I approve this design"</p>
+          <p class="review-text">"The arch contouring and MCP density are scientifically calibrated. Ideal for patients suffering from calcaneal spurs, plantar fasciitis, and diabetic neuropathy."</p>
+          <div class="reviewer-name">DR. S. MUKHOPADHYAY • VERIFIED PURCHASE</div>
+        </div>
+
+      </div>
+
+      <!-- Press Mentions Strip -->
+      <div class="press-ticker">
+        <p class="press-title">AS APPRECIATED ON</p>
+        <div class="press-logos">
+          <span class="press-logo">GQ</span>
+          <span class="press-logo">VOGUE</span>
+          <span class="press-logo">HYPEBEAST</span>
+          <span class="press-logo">COMPLEX</span>
+          <span class="press-logo">FORBES</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       10. GIANT YELLOW SLOGAN MARQUEE
+       ==================================================== -->
+  <section class="slogan-marquee-banner">
+    <div class="slogan-wrapper">
+      <h2 class="slogan-text">
+        <span class="highlight-pink">GOOD SHOES</span> WILL TAKE YOU TO GOOD PLACES &bull; <span class="highlight-pink">GOOD SHOES</span> WILL TAKE YOU TO GOOD PLACES &bull;
+      </h2>
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       11. MAIN FOOTER
+       ==================================================== -->
+  <footer class="main-footer">
+    <div class="container footer-grid">
+
+      <div class="footer-col-brand">
+        <div class="footer-logo-row">
+          <img src="assets/Logo.svg" alt="BLISS BALANCE.co" class="footer-logo-svg">
+          <div class="brand-text-block">
+            <span class="brand-name">BLISS BALANCE<span class="brand-domain">.co</span></span>
+          </div>
+        </div>
+        <p class="footer-about-text">BLISS BALANCE.co is an orthopedic footwear studio manufacturing doctor-recommended slippers and sandals with Alphabounce soles and MCR polymer.</p>
+        
+        <div class="social-links">
+          <a href="#" class="social-icon">IG</a>
+          <a href="#" class="social-icon">IN</a>
+          <a href="#" class="social-icon">YT</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">GET IN TOUCH</h4>
+        <div class="contact-info">
+          <p>Email: support@blissbalance.co</p>
+          <p>Toll Free: 1800-555-BLISS</p>
+          <p>Industrial Area Phase 2, New Delhi 110020, India</p>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">STORE CATEGORIES</h4>
+        <ul class="footer-links">
+          <li><a href="#womens-category">Women's Slippers & Sandals</a></li>
+          <li><a href="#mens-category">Men's Orthopedic Slippers</a></li>
+          <li><a href="#featured">All Deals</a></li>
+          <li><a href="#featured">Bestsellers</a></li>
+          <li><a href="#">Size Guide</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">ABOUT US</h4>
+        <ul class="footer-links">
+          <li><a href="#">Our Story</a></li>
+          <li><a href="#">Ergonomic Science</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Press & Media</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 BLISS BALANCE.co. All rights reserved. Designed with precision & balance.</p>
+      <p>Terms of Service • Privacy Policy • Accessibility</p>
+    </div>
+  </footer>
+
+
+  <!-- ====================================================
+       12. COMET STYLE LUXURY CART DRAWER
+       ==================================================== -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeCart()"></div>
+
+  <div class="cart-drawer" id="cart-drawer">
+    
+    <!-- Cart Header -->
+    <div class="cart-header">
+      <h3 class="cart-title">CART<sup id="cart-sup-count">(1)</sup></h3>
+      <button class="close-btn" id="close-cart-btn" onclick="closeCart()">&times;</button>
+    </div>
+
+    <!-- Cart Body Container -->
+    <div class="cart-items-container" id="cart-items-container">
+      <!-- Dynamic via JS -->
+    </div>
+
+    <!-- Cart Footer -->
+    <div class="cart-footer">
+      <div class="checkout-notice-strip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Offers Available At Checkout</span>
+      </div>
+
+      <div class="cart-subtotal">
+        <span>SUBTOTAL</span>
+        <span id="cart-subtotal-val">₹806</span>
+      </div>
+
+      <button class="checkout-btn" onclick="alert('Redirecting to Secure Express Checkout!')">CHECKOUT &rarr;</button>
+    </div>
+
+  </div>
+
+
+  <!-- ====================================================
+       13. QUICK VIEW MODAL
+       ==================================================== -->
+  <div class="modal-overlay" id="quick-view-modal" onclick="handleModalOverlay(event)">
+    <div class="quick-view-card">
+      <button class="modal-close-btn" onclick="closeQuickView()">&times;</button>
+      <div class="modal-img-wrapper">
+        <img id="modal-img" src="assets/images/flagship_chappal_pair.png" alt="Product Image">
+      </div>
+      <div class="modal-content-wrapper">
+        <div>
+          <span class="modal-cat" id="modal-cat">MEN'S ORTHOPEDIC SLIPPERS</span>
+          <h2 class="modal-title" id="modal-title">Doctor Memory Chappal</h2>
+          <div class="modal-price" id="modal-price">₹806</div>
+          <p class="modal-desc" id="modal-desc">Bliss Balance Doctor Slipper for Men - Orthotic Memory Foam Soft Chappal for Men with Heel Pain Relief & Diabetic Care.</p>
+
+          <ul id="modal-bullets" style="font-size: 0.85rem; color: var(--clr-text-muted); margin-bottom: 20px; line-height: 1.5; padding-left: 18px;">
+            <li>MCP/MCR Memory Polymer Footbed for instant pressure relief.</li>
+            <li>Anti-skid Alphabounce sole for firm stability.</li>
+            <li>Adjustable Hook & Loop velcro strap for customized fit.</li>
+          </ul>
+
+          <div class="size-selector-wrap">
+            <div class="size-label">
+              <span>SELECT SIZE (UK/INDIA)</span>
+              <a href="#" onclick="alert('UK/IND Size Chart:\nUK 6 = 25.0 cm\nUK 7 = 25.8 cm\nUK 8 = 26.5 cm\nUK 9 = 27.3 cm\nUK 10 = 28.0 cm')">Size Guide</a>
+            </div>
+            <div class="size-grid">
+              <button class="size-btn" onclick="selectModalSize('6', this)">UK 6</button>
+              <button class="size-btn" onclick="selectModalSize('7', this)">UK 7</button>
+              <button class="size-btn active" onclick="selectModalSize('8', this)">UK 8</button>
+              <button class="size-btn" onclick="selectModalSize('9', this)">UK 9</button>
+              <button class="size-btn" onclick="selectModalSize('10', this)">UK 10</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-yellow" style="width: 100%; margin-top: 20px;" onclick="addModalItemToCart()">ADD TO CART</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================
+       14. SEARCH MODAL
+       ==================================================== -->
+  <div class="modal-overlay" id="search-modal" onclick="handleSearchOverlay(event)">
+    <div class="search-modal-card">
+      <div class="search-modal-header">
+        <h3>SEARCH PRODUCTS</h3>
+        <button class="modal-close-btn" onclick="closeSearchModal()">&times;</button>
+      </div>
+
+      <input type="text" id="search-input" class="search-input-field" placeholder="Search Women's Slippers & Sandals, Men's Orthopedic..." oninput="handleSearchInput(event)">
+
+      <div class="search-results-box" id="search-results-box">
+        <!-- JS Populated -->
+      </div>
+    </div>
+  </div>
+
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- JavaScript Engine -->
+  <script src="app.js"></script>
+</body>
+</html>
