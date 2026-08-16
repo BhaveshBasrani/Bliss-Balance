@@ -207,7 +207,8 @@ export default function AdminPage() {
   };
 
   const appScriptCode = `/**
- * BLISS BALANCE FOOTWEAR - SELF-HEALING ENGINE & BEAUTIFUL HTML EMAIL NOTIFIER
+ * BLISS BALANCE FOOTWEAR - SELF-HEALING GOOGLE SHEETS ENGINE
+ * Slogan: Feel The Bliss
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
@@ -217,10 +218,16 @@ function doGet(e) {
   var ss = getOrCreateSpreadsheet();
   ensureAndRepairSheetStructure(ss);
 
+  var action = e && e.parameter ? e.parameter.action : "";
+
+  if (action === "getProducts") return handleGetProducts(ss);
+  if (action === "getAnnouncements") return handleGetAnnouncements(ss);
+
   return ContentService.createTextOutput(JSON.stringify({
     status: "active",
     brand: "Bliss Balance",
-    tagline: "Feel The Bliss"
+    tagline: "Feel The Bliss",
+    products: getProductsFromSheet(ss)
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -233,72 +240,22 @@ function doPost(e) {
     ensureAndRepairSheetStructure(ss);
 
     if (!e || !e.postData || !e.postData.contents) {
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "ignored",
-        message: "Empty request body"
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: "ignored", message: "Empty body" })).setMimeType(ContentService.MimeType.JSON);
     }
 
     var postData = JSON.parse(e.postData.contents);
     var action = postData.action || "";
 
-    if (action === "ADD_SKU" || action === "UPDATE_SKU") {
-      return handleAddSku(ss, postData);
-    }
+    if (action === "ADD_SKU" || action === "UPDATE_SKU") return handleAddOrUpdateSku(ss, postData);
+    if (action === "DELETE_SKU") return handleDeleteSku(ss, postData);
+    if (action === "UPDATE_BANNER") return handleSaveSettings(ss, postData);
 
-    if (action === "DELETE_SKU") {
-      return handleDeleteSku(ss, postData);
-    }
-
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "success",
-      message: "Action processed successfully"
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Action processed" })).setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      message: err.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   } finally {
     lock.releaseLock();
-  }
-}
-
-function getOrCreateSpreadsheet() {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.getActive();
-    if (ss) return ss;
-  } catch (e) {}
-
-  try {
-    var files = DriveApp.getFilesByName("Bliss_Balance_Products_Database");
-    if (files.hasNext()) {
-      return SpreadsheetApp.open(files.next());
-    } else {
-      return SpreadsheetApp.create("Bliss_Balance_Products_Database");
-    }
-  } catch (e) {
-    return null;
-  }
-}
-
-function ensureAndRepairSheetStructure(ss) {
-  if (!ss) ss = getOrCreateSpreadsheet();
-  if (!ss) return;
-
-  var sheet = ss.getSheetByName("Products") || ss.insertSheet("Products");
-  var expectedHeaders = [
-    "Timestamp", "Action", "SKU ID", "Title", "Category",
-    "Gender", "Selling Price (INR)", "MRP (INR)", "Image URL"
-  ];
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(expectedHeaders);
-    var headerRange = sheet.getRange(1, 1, 1, expectedHeaders.length);
-    headerRange.setBackground("#E50914");
-    headerRange.setFontColor("#FFFFFF");
-    headerRange.setFontWeight("bold");
   }
 }`;
 
