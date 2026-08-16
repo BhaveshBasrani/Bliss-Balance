@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Menu, X, User as UserIcon, ChevronDown } from 'lucide-react';
+import { Search, Menu, X, User as UserIcon, ChevronDown, Heart, LogOut } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { CustomerAuthModal } from './CustomerAuthModal';
+import { WishlistModal } from './WishlistModal';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User, signOut } from 'firebase/auth';
 
 interface NavbarProps {
   onOpenSearch: () => void;
@@ -14,6 +17,45 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [wishlistModalOpen, setWishlistModalOpen] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Listen to Firebase Auth state
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    updateWishlistCount();
+    window.addEventListener('wishlist-updated', updateWishlistCount);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('wishlist-updated', updateWishlistCount);
+    };
+  }, []);
+
+  const updateWishlistCount = () => {
+    try {
+      const stored = localStorage.getItem('bliss_balance_wishlist');
+      if (stored) {
+        const ids: string[] = JSON.parse(stored);
+        setWishlistCount(ids.length);
+      } else {
+        setWishlistCount(0);
+      }
+    } catch (e) {
+      setWishlistCount(0);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUserDropdownOpen(false);
+    } catch (e) {}
+  };
 
   const navLinks = [
     { name: "MEN", href: "/men" },
@@ -70,6 +112,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 About Us
               </Link>
 
+              {/* Wishlist Button */}
+              <button
+                onClick={() => setWishlistModalOpen(true)}
+                className="relative p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all"
+                title="View Wishlist"
+              >
+                <Heart className="w-4 h-4" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Search Button */}
               <button
                 onClick={onOpenSearch}
                 className="p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all"
@@ -78,15 +135,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <Search className="w-4 h-4" />
               </button>
 
-              {/* User Account Dropdown */}
+              {/* User Account & PFP Avatar Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
-                  className="p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all flex items-center gap-0.5 sm:gap-1"
+                  className="p-1.5 sm:p-2 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all flex items-center gap-1.5"
                   title="Account Menu"
                 >
-                  <UserIcon className="w-4 h-4" />
+                  {currentUser && currentUser.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt={currentUser.displayName || 'Profile'}
+                      className="w-6 h-6 rounded-full object-cover border border-red-500"
+                    />
+                  ) : currentUser ? (
+                    <div className="w-6 h-6 rounded-full bg-red-600 text-white font-mono font-bold text-[10px] flex items-center justify-center uppercase">
+                      {currentUser.displayName ? currentUser.displayName[0] : (currentUser.email ? currentUser.email[0] : 'U')}
+                    </div>
+                  ) : (
+                    <UserIcon className="w-4 h-4" />
+                  )}
                   <ChevronDown className="w-3 h-3 text-neutral-400" />
                 </button>
 
@@ -96,32 +165,63 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                     onMouseLeave={() => setUserDropdownOpen(false)}
                     className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl p-5 space-y-4 animate-in fade-in duration-150 z-50 font-body text-xs"
                   >
-                    <div className="space-y-1">
-                      <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase">
-                        Welcome
-                      </h4>
-                      <p className="font-mono text-[11px] text-neutral-500">
-                        To access account and manage orders
-                      </p>
-                    </div>
+                    {currentUser ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-2 bg-neutral-50 dark:bg-neutral-950 rounded-xl border border-neutral-100 dark:border-neutral-800">
+                          {currentUser.photoURL ? (
+                            <img src={currentUser.photoURL} alt="User PFP" className="w-10 h-10 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-red-600 text-white font-mono font-bold text-sm flex items-center justify-center uppercase">
+                              {currentUser.displayName ? currentUser.displayName[0] : (currentUser.email ? currentUser.email[0] : 'U')}
+                            </div>
+                          )}
+                          <div className="space-y-0.5 overflow-hidden">
+                            <h4 className="font-heading text-sm font-bold text-neutral-950 dark:text-white uppercase truncate">
+                              {currentUser.displayName || 'Valued Patron'}
+                            </h4>
+                            <p className="font-mono text-[10px] text-neutral-500 truncate">
+                              {currentUser.email}
+                            </p>
+                          </div>
+                        </div>
 
-                    <button
-                      onClick={() => {
-                        setUserDropdownOpen(false);
-                        setAuthModalOpen(true);
-                      }}
-                      className="w-full py-3 rounded-xl bg-[#E50914] hover:bg-red-500 text-white font-mono font-extrabold text-xs uppercase tracking-widest shadow-md transition-all text-center"
-                    >
-                      LOGIN / SIGNUP
-                    </button>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-red-600 hover:text-white text-neutral-800 dark:text-neutral-200 font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                        >
+                          <LogOut className="w-4 h-4" /> LOGOUT SESSION
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase">
+                            Welcome
+                          </h4>
+                          <p className="font-mono text-[11px] text-neutral-500">
+                            To access account and manage orders
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            setAuthModalOpen(true);
+                          }}
+                          className="w-full py-3 rounded-xl bg-[#E50914] hover:bg-red-500 text-white font-mono font-extrabold text-xs uppercase tracking-widest shadow-md transition-all text-center"
+                        >
+                          LOGIN / SIGNUP
+                        </button>
+                      </div>
+                    )}
 
                     <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800 space-y-2 font-mono font-bold text-neutral-700 dark:text-neutral-300 text-xs">
                       <Link
-                        href="/account"
+                        href="/collections"
                         onClick={() => setUserDropdownOpen(false)}
                         className="block py-1 hover:text-red-600 transition-colors"
                       >
-                        Track your Order
+                        Explore Collections
                       </Link>
                       <Link
                         href="/faq"
@@ -180,6 +280,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
       <CustomerAuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
+      />
+
+      <WishlistModal
+        isOpen={wishlistModalOpen}
+        onClose={() => setWishlistModalOpen(false)}
       />
     </>
   );

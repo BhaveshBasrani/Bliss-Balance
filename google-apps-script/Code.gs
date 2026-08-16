@@ -7,6 +7,7 @@
  * - Products: Stores all active footwear products (SKU ID, JSON Payload, Title, Category, Price)
  * - Announcements: Stores ticker offers & messages
  * - Settings: Stores site configuration (Hero Image, Subheadline, Admin Email)
+ * - Reviews: Stores verified customer reviews (Review ID, Product ID, Author Name, Rating, Headline, Comment, Date)
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
@@ -30,7 +31,11 @@ function doGet(e) {
     return handleGetSettings(ss);
   }
 
-  // Default response returning status, products, announcements & settings
+  if (action === "getReviews" || action === "get_reviews") {
+    return handleGetReviews(ss);
+  }
+
+  // Default response returning status, products, announcements, settings & reviews
   var products = getProductsFromSheet(ss);
   var announcements = getAnnouncementsFromSheet(ss);
   var settings = getSettingsFromSheet(ss);
@@ -89,6 +94,10 @@ function doPost(e) {
 
     if (action === "save_announcements" || action === "updateAnnouncements") {
       return handleSaveAnnouncements(ss, postData);
+    }
+
+    if (action === "submitReview" || action === "save_review") {
+      return handleSubmitReview(ss, postData);
     }
 
     return ContentService.createTextOutput(JSON.stringify({
@@ -150,6 +159,14 @@ function ensureAndRepairSheetStructure(ss) {
     setSheet = ss.insertSheet("Settings");
     setSheet.appendRow(["Setting Key", "Setting Value", "Last Updated"]);
     formatHeaderRow(setSheet, 3);
+  }
+
+  // 4. Repair Reviews Tab (Brindavanam Engine)
+  var revSheet = ss.getSheetByName("Reviews");
+  if (!revSheet) {
+    revSheet = ss.insertSheet("Reviews");
+    revSheet.appendRow(["Review ID", "Product ID", "Author Name", "Rating", "Headline", "Comment Text", "Is Verified", "Created Date"]);
+    formatHeaderRow(revSheet, 8);
   }
 }
 
@@ -245,6 +262,59 @@ function getSettingsFromSheet(ss) {
     }
   }
   return settingsObj;
+}
+
+function handleGetReviews(ss) {
+  var revSheet = ss.getSheetByName("Reviews");
+  if (!revSheet) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", reviews: [] })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var data = revSheet.getDataRange().getValues();
+  var reviews = [];
+  for (var i = 1; i < data.length; i++) {
+    if (!data[i][0]) continue;
+    reviews.push({
+      id: data[i][0].toString(),
+      productId: data[i][1] ? data[i][1].toString() : "",
+      authorName: data[i][2] ? data[i][2].toString() : "Valued Patron",
+      rating: parseInt(data[i][3]) || 5,
+      headline: data[i][4] ? data[i][4].toString() : "",
+      comment: data[i][5] ? data[i][5].toString() : "",
+      verified: data[i][6] === true || data[i][6] === "TRUE" || data[i][6] === "true",
+      date: data[i][7] ? data[i][7].toString() : new Date().toLocaleDateString("en-IN")
+    });
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    reviews: reviews.reverse()
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleSubmitReview(ss, postData) {
+  var revSheet = ss.getSheetByName("Reviews");
+  if (!revSheet) revSheet = ss.insertSheet("Reviews");
+
+  var rev = postData.review || {};
+  var revId = rev.id || ("REV-" + Date.now());
+  var dateStr = rev.date || new Date().toLocaleDateString("en-IN");
+
+  revSheet.appendRow([
+    revId,
+    rev.productId || "",
+    rev.authorName || "Valued Patron",
+    rev.rating || 5,
+    rev.headline || "Excellent Footwear",
+    rev.comment || "",
+    true,
+    dateStr
+  ]);
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Thank you! Your review has been saved to Google Sheets!"
+  })).setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleAddOrUpdateSku(ss, postData) {

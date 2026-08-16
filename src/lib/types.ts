@@ -13,6 +13,12 @@ export type FootwearCategory =
 
 export type Gender = 'Men' | 'Women' | 'Unisex';
 
+export interface ColorVariant {
+  name: string;
+  hex: string;
+  imageUrl?: string;
+}
+
 export interface FootwearSKU {
   id: string;
   title: string;
@@ -21,11 +27,18 @@ export interface FootwearSKU {
   category: FootwearCategory;
   price: number;
   originalPrice?: number;
-  amazonUrl: string;
-  myntraUrl: string;
+  amazonUrl?: string;
+  myntraUrl?: string;
+  flipkartUrl?: string;
+  officialUrl?: string;
   imageUrl?: string;
-  imageDimensions: string; // e.g. "800 x 800 px (1:1)"
+  hoverImageUrl?: string;
+  imageDimensions: string;
   features: string[];
+  sizes?: string[];
+  colorVariants?: ColorVariant[];
+  rating?: number;
+  reviewCount?: number;
   isNewArrival?: boolean;
   isBestseller?: boolean;
   createdAt: string;
@@ -36,9 +49,21 @@ export interface CollectionItem {
   title: string;
   gender: Gender;
   description: string;
-  imageDimensions: string; // e.g. "600 x 800 px (3:4)"
+  imageDimensions: string;
   imageUrl?: string;
   slug: string;
+}
+
+export interface ProductReview {
+  id: string;
+  productId: string;
+  authorName: string;
+  location?: string;
+  rating: number;
+  headline: string;
+  comment: string;
+  verified: boolean;
+  date: string;
 }
 
 export interface SiteSettings {

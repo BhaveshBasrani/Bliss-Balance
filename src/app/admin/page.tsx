@@ -11,6 +11,7 @@ import {
   Shield,
   Plus,
   Trash2,
+  Edit,
   Save,
   CheckCircle,
   AlertCircle,
@@ -28,6 +29,7 @@ import {
   Terminal,
   Mail,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -42,6 +44,9 @@ export default function AdminPage() {
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
   const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs'>('skus');
 
+  // Editing Product Mode State
+  const [editingSkuId, setEditingSkuId] = useState<string | null>(null);
+
   // Status & Syncing State
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -50,7 +55,7 @@ export default function AdminPage() {
     { time: new Date().toLocaleTimeString(), msg: 'Admin Control Station Initialized', type: 'SYSTEM' },
   ]);
 
-  // Form State
+  // Form State for 2 Images (Primary + Hover), Sizes & Dynamic Platform Links
   const [newSku, setNewSku] = useState<Partial<FootwearSKU>>({
     title: '',
     subtitle: '',
@@ -60,12 +65,18 @@ export default function AdminPage() {
     originalPrice: 2199,
     amazonUrl: '',
     myntraUrl: '',
+    flipkartUrl: '',
+    officialUrl: '',
     imageUrl: '',
+    hoverImageUrl: '',
     imageDimensions: '800 x 800 px (1:1 Product Square)',
+    sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
     features: ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid Outsole'],
     isNewArrival: true,
     isBestseller: false,
   });
+
+  const availableSizeOptions = ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11', 'UK 12'];
 
   useEffect(() => {
     setSkus(getStoredSKUs());
@@ -105,54 +116,41 @@ export default function AdminPage() {
     setTimeout(() => setStatusMsg(null), 6000);
   };
 
-  const handleAddSku = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSku.title || !newSku.price) {
-      showStatus('error', 'Please specify product title and price.');
-      return;
+  const toggleSize = (size: string) => {
+    const current = newSku.sizes || [];
+    if (current.includes(size)) {
+      setNewSku({ ...newSku, sizes: current.filter(s => s !== size) });
+    } else {
+      setNewSku({ ...newSku, sizes: [...current, size] });
     }
+  };
 
-    setIsSyncing(true);
-    setSyncStepText('Syncing Product & Photo to Google Sheets...');
-
-    const createdSku: FootwearSKU = {
-      id: `sku-bb-${Date.now().toString().slice(-5)}`,
-      title: newSku.title,
-      subtitle: newSku.subtitle || 'Comfort-focused everyday footwear',
-      gender: (newSku.gender as Gender) || 'Men',
-      category: (newSku.category as FootwearCategory) || 'Slides',
-      price: Number(newSku.price),
-      originalPrice: newSku.originalPrice ? Number(newSku.originalPrice) : undefined,
-      amazonUrl: newSku.amazonUrl || '',
-      myntraUrl: newSku.myntraUrl || '',
-      imageUrl: newSku.imageUrl || '',
+  const handleEditClick = (sku: FootwearSKU) => {
+    setEditingSkuId(sku.id);
+    setNewSku({
+      title: sku.title,
+      subtitle: sku.subtitle,
+      gender: sku.gender,
+      category: sku.category,
+      price: sku.price,
+      originalPrice: sku.originalPrice,
+      amazonUrl: sku.amazonUrl || '',
+      myntraUrl: sku.myntraUrl || '',
+      flipkartUrl: sku.flipkartUrl || '',
+      officialUrl: sku.officialUrl || '',
+      imageUrl: sku.imageUrl || '',
+      hoverImageUrl: sku.hoverImageUrl || '',
       imageDimensions: '800 x 800 px (1:1 Product Square)',
-      features: newSku.features && newSku.features.length > 0 ? newSku.features : ['Cushioned Footwear', 'Lightweight Feel', 'Anti-Skid'],
-      isNewArrival: !!newSku.isNewArrival,
-      isBestseller: !!newSku.isBestseller,
-      createdAt: new Date().toISOString(),
-    };
-
-    const updatedSkus = [createdSku, ...skus];
-    setSkus(updatedSkus);
-    saveStoredSKUs(updatedSkus);
-
-    setSyncStepText('Generating reCAPTCHA v3 Security Token...');
-    const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'add_sku');
-
-    setSyncStepText('Writing Record to Google Sheets & Dispatching HTML Email...');
-    const syncRes = await syncWithAppsScript(settings.appScriptUrl, {
-      action: 'ADD_SKU',
-      skuData: createdSku,
-      recaptchaToken,
-      timestamp: new Date().toISOString(),
-      adminEmail: settings.adminEmail,
+      sizes: sku.sizes || ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+      features: sku.features || ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid Outsole'],
+      isNewArrival: !!sku.isNewArrival,
+      isBestseller: !!sku.isBestseller,
     });
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
 
-    setIsSyncing(false);
-    addLog(`Product "${createdSku.title}" created & synced to Google Sheets`, 'ACTION');
-    showStatus('success', `Product "${createdSku.title}" saved to Google Sheets! ${syncRes.message}`);
-
+  const handleCancelEdit = () => {
+    setEditingSkuId(null);
     setNewSku({
       title: '',
       subtitle: '',
@@ -162,12 +160,81 @@ export default function AdminPage() {
       originalPrice: 2199,
       amazonUrl: '',
       myntraUrl: '',
+      flipkartUrl: '',
+      officialUrl: '',
       imageUrl: '',
+      hoverImageUrl: '',
       imageDimensions: '800 x 800 px (1:1 Product Square)',
+      sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
       features: ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid Outsole'],
       isNewArrival: true,
       isBestseller: false,
     });
+  };
+
+  const handleSaveSku = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSku.title || !newSku.price) {
+      showStatus('error', 'Please specify product title and price.');
+      return;
+    }
+
+    setIsSyncing(true);
+    setSyncStepText(editingSkuId ? 'Updating Product in Google Sheets...' : 'Syncing New Product to Google Sheets...');
+
+    const targetId = editingSkuId || `sku-bb-${Date.now().toString().slice(-5)}`;
+
+    const savedSku: FootwearSKU = {
+      id: targetId,
+      title: newSku.title,
+      subtitle: newSku.subtitle || 'Comfort-focused everyday footwear',
+      gender: (newSku.gender as Gender) || 'Men',
+      category: (newSku.category as FootwearCategory) || 'Slides',
+      price: Number(newSku.price),
+      originalPrice: newSku.originalPrice ? Number(newSku.originalPrice) : undefined,
+      amazonUrl: newSku.amazonUrl || '',
+      myntraUrl: newSku.myntraUrl || '',
+      flipkartUrl: newSku.flipkartUrl || '',
+      officialUrl: newSku.officialUrl || '',
+      imageUrl: newSku.imageUrl || '',
+      hoverImageUrl: newSku.hoverImageUrl || '',
+      imageDimensions: '800 x 800 px (1:1 Product Square)',
+      sizes: newSku.sizes && newSku.sizes.length > 0 ? newSku.sizes : ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+      features: newSku.features && newSku.features.length > 0 ? newSku.features : ['Cushioned Footwear', 'Lightweight Feel', 'Anti-Skid'],
+      rating: 5.0,
+      reviewCount: 2,
+      isNewArrival: !!newSku.isNewArrival,
+      isBestseller: !!newSku.isBestseller,
+      createdAt: new Date().toISOString(),
+    };
+
+    let updatedSkus: FootwearSKU[];
+    if (editingSkuId) {
+      updatedSkus = skus.map(s => s.id === editingSkuId ? savedSku : s);
+    } else {
+      updatedSkus = [savedSku, ...skus];
+    }
+
+    setSkus(updatedSkus);
+    saveStoredSKUs(updatedSkus);
+
+    setSyncStepText('Generating reCAPTCHA v3 Security Token...');
+    const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'save_sku');
+
+    setSyncStepText('Writing Record to Google Sheets & Dispatching HTML Email...');
+    const syncRes = await syncWithAppsScript(settings.appScriptUrl, {
+      action: editingSkuId ? 'UPDATE_SKU' : 'ADD_SKU',
+      skuData: savedSku,
+      recaptchaToken,
+      timestamp: new Date().toISOString(),
+      adminEmail: settings.adminEmail,
+    });
+
+    setIsSyncing(false);
+    addLog(`Product "${savedSku.title}" saved & synced to Google Sheets`, 'ACTION');
+    showStatus('success', `Product "${savedSku.title}" saved to Google Sheets! ${syncRes.message}`);
+
+    handleCancelEdit();
   };
 
   const handleDeleteSku = async (id: string, title: string) => {
@@ -216,8 +283,7 @@ export default function AdminPage() {
   };
 
   const appScriptCode = `/**
- * BLISS BALANCE FOOTWEAR - SELF-HEALING GOOGLE SHEETS ENGINE
- * Slogan: Feel The Bliss
+ * BLISS BALANCE FOOTWEAR - COMPLETE GOOGLE SHEETS LIVE SYNC ENGINE
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
@@ -263,7 +329,7 @@ function doPost(e) {
 
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
-  } finally {
+  } font-mono {
     lock.releaseLock();
   }
 }`;
@@ -359,11 +425,7 @@ function doPost(e) {
       {isSyncing && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 max-w-sm w-full text-center space-y-6 shadow-2xl relative overflow-hidden">
-            
-            {/* Ambient Red Glow Filter */}
             <div className="absolute inset-0 bg-red-600/10 rounded-3xl blur-xl pointer-events-none" />
-
-            {/* Spinner & Logo Emblem Wrapper */}
             <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-4 border-red-600/20 border-t-red-600 animate-spin" />
               <BrandLogo size="md" className="relative z-10" />
@@ -385,7 +447,6 @@ function doPost(e) {
               <RefreshCw className="w-3 h-3 text-red-500 animate-spin" />
               <span>PLEASE DO NOT CLOSE THIS TAB...</span>
             </div>
-
           </div>
         </div>
       )}
@@ -516,14 +577,25 @@ function doPost(e) {
           {activeTab === 'skus' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
-              <div className="lg:col-span-6 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+              {/* Product Form (Create & Edit Mode) */}
+              <div className="lg:col-span-7 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
                 <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                   <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-red-600" /> CREATE NEW FOOTWEAR PRODUCT
+                    {editingSkuId ? <Edit className="w-5 h-5 text-red-600" /> : <Plus className="w-5 h-5 text-red-600" />}
+                    <span>{editingSkuId ? 'EDIT FOOTWEAR PRODUCT' : 'CREATE NEW FOOTWEAR PRODUCT'}</span>
                   </h3>
+
+                  {editingSkuId && (
+                    <button
+                      onClick={handleCancelEdit}
+                      className="px-3 py-1.5 rounded-xl bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase flex items-center gap-1 hover:bg-red-600 hover:text-white transition-all"
+                    >
+                      <X className="w-3.5 h-3.5" /> CANCEL EDIT
+                    </button>
+                  )}
                 </div>
 
-                <form onSubmit={handleAddSku} className="space-y-4">
+                <form onSubmit={handleSaveSku} className="space-y-5">
                   
                   <div>
                     <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
@@ -534,7 +606,7 @@ function doPost(e) {
                       required
                       value={newSku.title}
                       onChange={(e) => setNewSku({ ...newSku, title: e.target.value })}
-                      placeholder="e.g. Bliss Comfort Slides - Men"
+                      placeholder="e.g. Bliss X-Lines Chestnut Sneaker"
                       className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
@@ -547,7 +619,7 @@ function doPost(e) {
                       type="text"
                       value={newSku.subtitle}
                       onChange={(e) => setNewSku({ ...newSku, subtitle: e.target.value })}
-                      placeholder="e.g. Ultra-cushioned anti-skid slides for everyday wear"
+                      placeholder="e.g. Wide and roomy toe box, cushioned daily walking shoes"
                       className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
@@ -602,7 +674,7 @@ function doPost(e) {
                         required
                         value={newSku.price}
                         onChange={(e) => setNewSku({ ...newSku, price: Number(e.target.value) })}
-                        placeholder="1499"
+                        placeholder="3599"
                         className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
@@ -615,29 +687,107 @@ function doPost(e) {
                         type="number"
                         value={newSku.originalPrice || ''}
                         onChange={(e) => setNewSku({ ...newSku, originalPrice: Number(e.target.value) })}
-                        placeholder="2199"
+                        placeholder="4599"
                         className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2 pt-2">
-                    <div className="flex items-center justify-between">
+                  {/* Available Sizes Checkboxes */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1.5">
+                      Available Sizes
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {availableSizeOptions.map((size) => {
+                        const isChecked = (newSku.sizes || []).includes(size);
+                        return (
+                          <button
+                            type="button"
+                            key={size}
+                            onClick={() => toggleSize(size)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase border transition-all ${
+                              isChecked
+                                ? 'bg-red-600 text-white border-red-500 shadow'
+                                : 'bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800'
+                            }`}
+                          >
+                            {size} {isChecked && '✓'}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* DUAL IMAGE UPLOAD: Primary Image & Hover Image */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
                       <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
-                        Product Photo
+                        Primary Product Photo *
                       </label>
-                      <span className="text-[10px] text-red-600 font-bold bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-800">
-                        EXACT SIZE: 800 x 800 px (1:1)
-                      </span>
+                      <ImagePlaceholder
+                        dimensions="800 x 800 px (1:1)"
+                        aspectRatio="aspect-square"
+                        label="PRIMARY PHOTO DROPZONE"
+                        imageUrl={newSku.imageUrl}
+                        onImageUploaded={(base64) => setNewSku({ ...newSku, imageUrl: base64 })}
+                      />
                     </div>
 
-                    <ImagePlaceholder
-                      dimensions="800 x 800 px (1:1 Square)"
-                      aspectRatio="aspect-square"
-                      label="PRODUCT PHOTO DROPZONE"
-                      imageUrl={newSku.imageUrl}
-                      onImageUploaded={(base64) => setNewSku({ ...newSku, imageUrl: base64 })}
-                    />
+                    <div className="space-y-2">
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                        Hover Secondary Photo (Comet Style)
+                      </label>
+                      <ImagePlaceholder
+                        dimensions="800 x 800 px (1:1)"
+                        aspectRatio="aspect-square"
+                        label="HOVER PHOTO DROPZONE"
+                        imageUrl={newSku.hoverImageUrl}
+                        onImageUploaded={(base64) => setNewSku({ ...newSku, hoverImageUrl: base64 })}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dynamic External Buy Links */}
+                  <div className="space-y-3 pt-2">
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                      DYNAMIC BUYING LINKS (Leave empty if not listed)
+                    </label>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <span className="block text-[10px] text-amber-600 font-bold uppercase mb-1">Amazon Link</span>
+                        <input
+                          type="url"
+                          value={newSku.amazonUrl || ''}
+                          onChange={(e) => setNewSku({ ...newSku, amazonUrl: e.target.value })}
+                          placeholder="https://amazon.in/dp/..."
+                          className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <span className="block text-[10px] text-red-600 font-bold uppercase mb-1">Myntra Link</span>
+                        <input
+                          type="url"
+                          value={newSku.myntraUrl || ''}
+                          onChange={(e) => setNewSku({ ...newSku, myntraUrl: e.target.value })}
+                          placeholder="https://myntra.com/..."
+                          className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <span className="block text-[10px] text-blue-600 font-bold uppercase mb-1">Flipkart Link</span>
+                        <input
+                          type="url"
+                          value={newSku.flipkartUrl || ''}
+                          onChange={(e) => setNewSku({ ...newSku, flipkartUrl: e.target.value })}
+                          placeholder="https://flipkart.com/..."
+                          className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   <button
@@ -646,14 +796,14 @@ function doPost(e) {
                     className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:bg-neutral-400 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
                   >
                     <Save className="w-4 h-4" />
-                    <span>PUBLISH PRODUCT & SYNC TO GOOGLE SHEETS</span>
+                    <span>{editingSkuId ? 'UPDATE PRODUCT & SYNC TO SHEETS' : 'PUBLISH PRODUCT & SYNC TO SHEETS'}</span>
                   </button>
 
                 </form>
               </div>
 
-              {/* Active Products List */}
-              <div className="lg:col-span-6 space-y-4">
+              {/* Active Products List (With Edit Button) */}
+              <div className="lg:col-span-5 space-y-4">
                 <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                   <span>ACTIVE PRODUCTS</span>
                   <span className="text-xs text-red-600 font-bold">{skus.length} Items</span>
@@ -664,13 +814,15 @@ function doPost(e) {
                     <p className="text-xs text-neutral-500">No products created yet.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3 max-h-[750px] overflow-y-auto pr-1">
+                  <div className="space-y-3 max-h-[850px] overflow-y-auto pr-1">
                     {skus.map((sku) => (
                       <div
                         key={sku.id}
-                        className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between gap-4 hover:border-red-600 transition-all shadow-xs"
+                        className={`p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border flex items-center justify-between gap-4 transition-all shadow-xs ${
+                          editingSkuId === sku.id ? 'border-red-600 ring-2 ring-red-600/30' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
+                        }`}
                       >
-                        <div className="space-y-1">
+                        <div className="space-y-1 overflow-hidden">
                           <div className="flex items-center gap-2">
                             <span className="text-[9px] font-bold uppercase text-red-600 bg-red-50 dark:bg-red-950 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800">
                               {sku.gender} • {sku.category}
@@ -678,7 +830,7 @@ function doPost(e) {
                             <span className="text-[9px] text-neutral-400">{sku.id}</span>
                           </div>
 
-                          <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase leading-tight">
+                          <h4 className="font-heading text-base font-bold text-neutral-950 dark:text-white uppercase leading-tight truncate">
                             {sku.title}
                           </h4>
 
@@ -688,14 +840,25 @@ function doPost(e) {
                           </p>
                         </div>
 
-                        <button
-                          onClick={() => handleDeleteSku(sku.id, sku.title)}
-                          disabled={isSyncing}
-                          className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-red-600 hover:border-red-600 transition-all"
-                          title="Delete Product"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => handleEditClick(sku)}
+                            disabled={isSyncing}
+                            className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                            title="Edit Product"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteSku(sku.id, sku.title)}
+                            disabled={isSyncing}
+                            className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-red-600 hover:border-red-600 transition-all"
+                            title="Delete Product"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -715,7 +878,6 @@ function doPost(e) {
               </div>
 
               <form onSubmit={handleSaveSettings} className="space-y-5">
-                
                 <div className="space-y-3 bg-white dark:bg-black p-4 rounded-xl border border-neutral-200 dark:border-neutral-800">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold uppercase text-neutral-800 dark:text-neutral-200">
@@ -766,7 +928,6 @@ function doPost(e) {
                 >
                   SAVE BANNER & MEDIA CONFIG
                 </button>
-
               </form>
             </div>
           )}
@@ -775,15 +936,12 @@ function doPost(e) {
           {activeTab === 'appscript' && (
             <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
               <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
-                <div>
-                  <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
-                    <Database className="w-5 h-5 text-red-600" /> SELF-HEALING APPSCRIPT & BEAUTIFUL HTML EMAIL ENGINE
-                  </h3>
-                </div>
+                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                  <Database className="w-5 h-5 text-red-600" /> SELF-HEALING APPSCRIPT & BEAUTIFUL HTML EMAIL ENGINE
+                </h3>
               </div>
 
               <form onSubmit={handleSaveSettings} className="space-y-4">
-                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
@@ -840,7 +998,6 @@ function doPost(e) {
                 >
                   SAVE APPSCRIPT & EMAIL CONFIG
                 </button>
-
               </form>
             </div>
           )}
