@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Image as ImageIcon, Upload, Info } from 'lucide-react';
 
 interface ImagePlaceholderProps {
@@ -9,7 +9,7 @@ interface ImagePlaceholderProps {
   label?: string;
   imageUrl?: string;
   className?: string;
-  onClickAdminUpload?: () => void;
+  onImageUploaded?: (base64Url: string) => void;
 }
 
 export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
@@ -18,73 +18,95 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   label = 'PRODUCT PHOTO PLACEHOLDER',
   imageUrl,
   className = '',
-  onClickAdminUpload,
+  onImageUploaded,
 }) => {
-  // If user provided a real image URL (from Google Drive, AWS, Cloudinary, etc.)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && onImageUploaded) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        onImageUploaded(base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // If user provided a real image URL or Base64 string
   if (imageUrl && imageUrl.trim() !== '') {
     return (
-      <div className={`relative overflow-hidden rounded-xl bg-neutral-950 dark:bg-neutral-950 ${aspectRatio} ${className}`}>
+      <div className={`relative overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 ${aspectRatio} ${className} group`}>
         <img
           src={imageUrl}
           alt={label}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
-            // Fallback if URL fails to load
             (e.target as HTMLElement).style.display = 'none';
           }}
         />
-        {/* Specs tag overlay */}
-        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md border border-red-500/40 text-[10px] uppercase font-mono tracking-widest text-red-400 px-2 py-0.5 rounded">
+        <div className="absolute top-2 right-2 bg-neutral-900/90 text-[10px] uppercase font-mono tracking-widest text-red-400 px-2 py-0.5 rounded shadow">
           {dimensions}
         </div>
+
+        {onImageUploaded && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white font-mono text-xs font-bold gap-2"
+          >
+            <Upload className="w-4 h-4" /> CHANGE PHOTO
+          </button>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
       </div>
     );
   }
 
   return (
     <div
-      onClick={onClickAdminUpload}
-      className={`relative group overflow-hidden rounded-xl border-2 border-dashed border-red-600/40 dark:border-red-600/40 light:border-red-500/30 bg-gradient-to-br from-neutral-950 via-black to-neutral-900 light:from-slate-100 light:via-slate-50 light:to-slate-200 p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-red-500 hover:shadow-red-glow/30 ${aspectRatio} ${className} ${onClickAdminUpload ? 'cursor-pointer' : ''}`}
+      onClick={() => onImageUploaded && fileInputRef.current?.click()}
+      className={`relative group overflow-hidden rounded-xl border-2 border-dashed border-red-500/40 bg-neutral-50 dark:bg-neutral-900 p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-red-600 hover:shadow-md ${aspectRatio} ${className} ${onImageUploaded ? 'cursor-pointer' : ''}`}
     >
-      {/* Visual Tech Grid Pattern Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5091410_1px,transparent_1px),linear-gradient(to_bottom,#e5091410_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
 
-      {/* Tech Corner Crosshairs */}
-      <div className="absolute top-2 left-2 text-[10px] font-mono text-red-500/50">+</div>
-      <div className="absolute top-2 right-2 text-[10px] font-mono text-red-500/50">+</div>
-      <div className="absolute bottom-2 left-2 text-[10px] font-mono text-red-500/50">+</div>
-      <div className="absolute bottom-2 right-2 text-[10px] font-mono text-red-500/50">+</div>
+      {/* Tech Grid Pattern Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5091408_1px,transparent_1px),linear-gradient(to_bottom,#e5091408_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
 
-      {/* Icon Frame */}
-      <div className="relative z-10 w-12 h-12 rounded-xl bg-red-600/10 border border-red-500/30 flex items-center justify-center mb-3 text-red-500 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+      {/* Icon */}
+      <div className="relative z-10 w-12 h-12 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 flex items-center justify-center mb-3 text-red-600 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
         <ImageIcon className="w-6 h-6" />
       </div>
 
-      {/* Title & Dimension Text */}
-      <div className="relative z-10 space-y-1 max-w-[85%]">
-        <p className="text-xs uppercase font-mono font-bold tracking-widest text-neutral-300 dark:text-neutral-200 light:text-slate-800">
+      {/* Text Info */}
+      <div className="relative z-10 space-y-1 max-w-[85%] font-mono">
+        <p className="text-xs uppercase font-bold tracking-widest text-neutral-800 dark:text-neutral-200">
           {label}
         </p>
 
-        {/* Required Dimension Badge */}
-        <div className="inline-block bg-red-950/80 dark:bg-red-950/80 light:bg-red-100 border border-red-500/40 text-red-400 light:text-red-700 font-mono text-[11px] font-extrabold px-3 py-1 rounded-md shadow-sm">
+        <div className="inline-block bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 font-mono text-[11px] font-extrabold px-3 py-1 rounded-md shadow-xs">
           EXACT SIZE: {dimensions}
         </div>
 
-        <p className="text-[10px] font-mono text-neutral-500 dark:text-neutral-400 light:text-slate-600 flex items-center justify-center gap-1 pt-1">
-          <Info className="w-3 h-3 text-red-500 inline" />
-          <span>Upload photo in Admin Panel to replace</span>
+        <p className="text-[10px] text-neutral-500 dark:text-neutral-400 flex items-center justify-center gap-1 pt-1">
+          <Upload className="w-3 h-3 text-red-600 inline" />
+          <span>Click to upload image directly</span>
         </p>
       </div>
-
-      {/* Hover prompt */}
-      {onClickAdminUpload && (
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
-          <span className="flex items-center gap-2 font-mono text-xs text-red-400 font-bold border border-red-500 px-4 py-2 rounded-lg bg-red-950/40">
-            <Upload className="w-4 h-4" /> UPLOAD IMAGE IN ADMIN
-          </span>
-        </div>
-      )}
     </div>
   );
 };

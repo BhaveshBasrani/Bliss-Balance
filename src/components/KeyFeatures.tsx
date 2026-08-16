@@ -33,18 +33,18 @@ export const KeyFeatures: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 bg-black dark:bg-black light:bg-slate-100 border-b border-neutral-800 dark:border-neutral-800 light:border-slate-300 transition-colors">
+    <section className="py-16 bg-neutral-50 dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-red-500 uppercase bg-red-950/60 light:bg-red-100 px-3 py-1 rounded-full border border-red-500/30">
+          <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase bg-red-50 dark:bg-red-950 px-3 py-1 rounded-full border border-red-200 dark:border-red-800">
             THE BLISS BALANCE DIFFERENCE
           </span>
-          <h2 className="font-heading text-4xl sm:text-5xl font-black text-white dark:text-white light:text-slate-950 uppercase tracking-tight">
-            CRAFTED FOR YOUR <span className="text-red-500">EVERYDAY STEP</span>
+          <h2 className="font-heading text-4xl sm:text-5xl font-black text-neutral-950 dark:text-white uppercase tracking-tight">
+            CRAFTED FOR YOUR <span className="text-red-600">EVERYDAY STEP</span>
           </h2>
-          <p className="font-body text-neutral-400 dark:text-neutral-400 light:text-slate-600 text-sm sm:text-base">
+          <p className="font-body text-neutral-600 dark:text-neutral-400 text-sm sm:text-base">
             We focus on soft comfort, practical design, contemporary aesthetics, and everyday versatility.
           </p>
         </div>
@@ -56,22 +56,22 @@ export const KeyFeatures: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="group relative p-6 rounded-2xl bg-neutral-950 dark:bg-neutral-950 light:bg-white border border-neutral-800 dark:border-neutral-800 light:border-slate-200 hover:border-red-500/60 dark:hover:border-red-500/60 light:hover:border-red-500 transition-all duration-300 hover:shadow-red-glow/20 flex flex-col justify-between"
+                className="group relative p-6 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-red-950/50 light:bg-red-50 border border-red-500/30 flex items-center justify-center text-red-500 mb-4 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 flex items-center justify-center text-red-600 mb-4 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="font-heading text-xl font-bold text-white dark:text-white light:text-slate-950 tracking-wide uppercase mb-2 group-hover:text-red-500 transition-colors">
+                  <h3 className="font-heading text-xl font-bold text-neutral-950 dark:text-white tracking-wide uppercase mb-2 group-hover:text-red-600 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="font-body text-xs text-neutral-400 dark:text-neutral-400 light:text-slate-600 leading-relaxed">
+                  <p className="font-body text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
-                <div className="mt-4 pt-4 border-t border-neutral-900 dark:border-neutral-900 light:border-slate-100 flex items-center justify-between text-[10px] font-mono text-neutral-500 uppercase">
+                <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[10px] font-mono text-neutral-400 uppercase">
                   <span>SPEC 0{idx + 1}</span>
-                  <span className="text-red-500">BLISS CORE</span>
+                  <span className="text-red-600">BLISS CORE</span>
                 </div>
               </div>
             );
