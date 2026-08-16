@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Outfit, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -15,6 +15,12 @@ const jakarta = Plus_Jakarta_Sans({
   variable: '--font-jakarta',
   display: 'swap',
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: 'Bliss Balance • Modern Indian Footwear Brand | Walk in Bliss. Live in Balance.',
@@ -35,7 +41,6 @@ export const metadata: Metadata = {
     'Heels',
     'Comfortable Footwear India',
   ],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
