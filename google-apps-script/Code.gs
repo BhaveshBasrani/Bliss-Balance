@@ -1,10 +1,8 @@
 /**
  * BLISS BALANCE FOOTWEAR - HIGH-SCALE ENGINE & GOOGLE DRIVE IMAGE STORAGE
+ * Official Tagline: Feel The Bliss
  * Official reCAPTCHA Site Key: 6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa
  * Official reCAPTCHA Secret Key: 6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s
- * 
- * Auto-converts Base64 image payloads into public Google Drive CDN URLs
- * for 100% high-scale, zero-limit CDN serving across 10,000+ visitors!
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
@@ -17,7 +15,7 @@ function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
     status: "active",
     brand: "Bliss Balance",
-    tagline: "Walk in Bliss. Live in Balance.",
+    tagline: "Feel The Bliss",
     recaptchaProtected: true,
     scalableStorage: true
   })).setMimeType(ContentService.MimeType.JSON);
@@ -123,7 +121,7 @@ function uploadBase64ToDriveFolder(base64String, title) {
 
     return "https://lh3.googleusercontent.com/d/" + file.getId();
   } catch (e) {
-    return base64String; // Fallback to raw string if Drive API disabled
+    return base64String;
   }
 }
 
@@ -192,7 +190,7 @@ function sendBeautifulEmailNotification(adminEmail, sku) {
   var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; border-radius: 16px; overflow: hidden;">' +
     '<div style="background-color: #E50914; padding: 24px; text-align: center; color: white;">' +
       '<h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">BLISS BALANCE</h1>' +
-      '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Walk in Bliss. Live in Balance.</p>' +
+      '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Feel The Bliss</p>' +
     '</div>' +
     '<div style="padding: 24px; background-color: #ffffff;">' +
       '<h2 style="color: #111; font-size: 18px; margin-top: 0;">New Product Live Alert</h2>' +

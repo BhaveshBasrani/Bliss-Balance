@@ -4,29 +4,40 @@ import React from 'react';
 import { Truck, ShieldCheck, RefreshCw, Tag, Sparkles } from 'lucide-react';
 
 export const AnnouncementBar: React.FC<{ announcementText?: string }> = ({ announcementText }) => {
-  const text = announcementText || 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL STORE';
+  const customText = announcementText || 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL STORE';
 
-  const tickerItems = [
-    { icon: Truck, text: text },
-    { icon: Tag, text: "SPECIAL LAUNCH OFFER: FREE SHIPPING ON ALL ORDERS OVER ₹799" },
-    { icon: ShieldCheck, text: "CUSHIONED & ANTI-SKID FOOTWEAR GUARANTEE" },
-    { icon: RefreshCw, text: "COMPLIMENTARY 7-DAY EASY RETURNS & EXCHANGES" },
-    { icon: Sparkles, text: "NEW ARRIVALS: SLIDES, SANDALS & CLOGS LIVE NOW" },
+  const defaultAnnouncements = [
+    customText,
+    "FESTIVE LAUNCH OFFER: FREE SHIPPING ON ALL ORDERS OVER ₹799 PAN-INDIA",
+    "CUSHIONED & ANTI-SKID FOOTWEAR — ENGINEERED FOR EVERYDAY COMFORT & BALANCE",
+    "COMPLIMENTARY 7-DAY EASY RETURNS & REPLACEMENTS ON ALL PRODUCTS",
+    "NEW ARRIVALS LIVE NOW: SLIDES, SANDALS, FLIP-FLOPS & CLOGS FOR MEN & WOMEN"
   ];
 
   return (
-    <div className="w-full bg-[#E50914] text-white text-[11px] font-mono tracking-widest uppercase font-bold py-2 overflow-hidden border-b border-red-800 shadow-sm relative z-30">
-      <div className="flex whitespace-nowrap animate-marquee items-center gap-10">
-        {tickerItems.concat(tickerItems).map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div key={idx} className="inline-flex items-center gap-2 shrink-0">
-              <Icon className="w-3.5 h-3.5 text-white/90" />
-              <span>{item.text}</span>
-              <span className="text-white/40 ml-4 font-normal">•</span>
-            </div>
-          );
-        })}
+    <div className="w-full bg-[#E50914] text-white text-[10px] sm:text-[11px] font-mono tracking-widest uppercase font-extrabold py-2.5 overflow-hidden border-b border-red-800 shadow-xs relative z-30 select-none">
+      <div className="animate-marquee flex whitespace-nowrap">
+        
+        {/* First Loop Column */}
+        <div className="flex items-center space-x-10 pr-10">
+          {defaultAnnouncements.map((item, idx) => (
+            <span key={`l1-${idx}`} className="flex items-center space-x-3 text-white">
+              <span className="w-1.5 h-1.5 rounded-full bg-white inline-block shrink-0 animate-pulse" />
+              <span className="hover:text-neutral-200 transition-colors">{item}</span>
+            </span>
+          ))}
+        </div>
+
+        {/* Second Identical Loop Column for Seamless Continuous Loop */}
+        <div className="flex items-center space-x-10 pr-10">
+          {defaultAnnouncements.map((item, idx) => (
+            <span key={`l2-${idx}`} className="flex items-center space-x-3 text-white">
+              <span className="w-1.5 h-1.5 rounded-full bg-white inline-block shrink-0 animate-pulse" />
+              <span className="hover:text-neutral-200 transition-colors">{item}</span>
+            </span>
+          ))}
+        </div>
+
       </div>
     </div>
   );

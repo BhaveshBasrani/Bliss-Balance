@@ -42,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                   BLISS BALANCE
                 </span>
                 <span className="hidden sm:block text-[9px] font-mono tracking-widest text-neutral-500 dark:text-neutral-400 uppercase font-semibold mt-0.5">
-                  Walk in Bliss. Live in Balance.
+                  Feel The Bliss
                 </span>
               </div>
             </Link>

@@ -1,8 +1,8 @@
 import { FootwearSKU, CollectionItem, SiteSettings } from './types';
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  announcementText: 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL BRAND STORE',
-  heroHeadline: 'WALK IN BLISS. LIVE IN BALANCE.',
+  announcementText: 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL STORE',
+  heroHeadline: 'FEEL THE BLISS',
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',
   heroImageUrl: '',

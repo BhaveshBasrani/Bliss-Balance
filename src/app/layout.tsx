@@ -26,11 +26,12 @@ const siteUrl = 'https://blissbalance.rendervoid.xyz';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'Bliss Balance • Modern Indian Footwear Brand | Walk in Bliss. Live in Balance.',
+  title: 'Bliss Balance • Modern Indian Footwear Brand | Feel The Bliss',
   description:
     'Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.',
   keywords: [
     'Bliss Balance',
+    'Feel The Bliss',
     'Men Footwear',
     'Women Footwear',
     'Slippers',
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: siteUrl,
-    title: 'Bliss Balance • Walk in Bliss. Live in Balance.',
+    title: 'Bliss Balance • Feel The Bliss',
     description:
       'Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.',
     siteName: 'Bliss Balance',
@@ -69,7 +70,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bliss Balance • Modern Indian Footwear Brand',
+    title: 'Bliss Balance • Feel The Bliss',
     description:
       'Soft comfort, practical design, modern style, and everyday versatility. Slippers, slides, sandals & clogs for men and women.',
     images: [`${siteUrl}/Logo.svg`],
@@ -110,7 +111,7 @@ export default function RootLayout({
     name: 'Bliss Balance',
     url: siteUrl,
     logo: `${siteUrl}/Logo.svg`,
-    slogan: 'Walk in Bliss. Live in Balance.',
+    slogan: 'Feel The Bliss',
     description: 'Modern Indian footwear brand created for everyday comfort, style, and anti-skid stability.',
     address: {
       '@type': 'PostalAddress',
