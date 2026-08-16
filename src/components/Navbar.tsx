@@ -30,17 +30,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
     <>
       <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             
-            {/* Brand Logo & Title */}
-            <Link href="/" className="flex items-center gap-3.5 group">
-              <BrandLogo size="md" className="group-hover:scale-105 transition-transform duration-300" />
+            {/* Brand Logo & Compact Header Title */}
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0">
+              <BrandLogo size="sm" className="sm:hidden" />
+              <BrandLogo size="md" className="hidden sm:flex group-hover:scale-105 transition-transform duration-300" />
 
               <div className="flex flex-col">
-                <span className="font-heading text-2xl sm:text-3xl font-black tracking-tight text-neutral-950 dark:text-white uppercase leading-none">
+                <span className="font-heading text-lg sm:text-2xl lg:text-3xl font-black tracking-tight text-neutral-950 dark:text-white uppercase leading-none">
                   BLISS BALANCE
                 </span>
-                <span className="text-[9px] font-mono tracking-widest text-neutral-500 dark:text-neutral-400 uppercase font-semibold mt-0.5">
+                <span className="hidden sm:block text-[9px] font-mono tracking-widest text-neutral-500 dark:text-neutral-400 uppercase font-semibold mt-0.5">
                   Walk in Bliss. Live in Balance.
                 </span>
               </div>
@@ -61,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </nav>
 
             {/* Right Header Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-2.5">
               <Link
                 href="/about"
                 className="hidden md:inline-block text-xs font-heading font-bold text-neutral-700 dark:text-neutral-300 hover:text-red-600 transition-colors uppercase tracking-wider"
@@ -71,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
               <button
                 onClick={onOpenSearch}
-                className="p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all"
+                className="p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all"
                 title="Search Footwear"
               >
                 <Search className="w-4 h-4" />
@@ -82,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
-                  className="p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all flex items-center gap-1"
+                  className="p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all flex items-center gap-0.5 sm:gap-1"
                   title="Account Menu"
                 >
                   <UserIcon className="w-4 h-4" />
@@ -144,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               {/* Mobile Drawer Toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200"
+                className="lg:hidden p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>

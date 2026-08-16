@@ -22,10 +22,13 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+const siteUrl = 'https://blissbalance.rendervoid.xyz';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'Bliss Balance • Modern Indian Footwear Brand | Walk in Bliss. Live in Balance.',
   description:
-    'Bliss Balance offers everyday slippers, flip-flops, slides, sandals, clogs, casual shoes, sneakers, flats, loafers, and heels for men and women. Soft comfort, practical design, modern style, and everyday versatility.',
+    'Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.',
   keywords: [
     'Bliss Balance',
     'Men Footwear',
@@ -41,13 +44,55 @@ export const metadata: Metadata = {
     'Heels',
     'Comfortable Footwear India',
   ],
+  authors: [{ name: 'Bliss Balance' }],
+  creator: 'Bliss Balance',
+  publisher: 'Bliss Balance',
+  alternates: {
+    canonical: siteUrl,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: siteUrl,
+    title: 'Bliss Balance • Walk in Bliss. Live in Balance.',
+    description:
+      'Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.',
+    siteName: 'Bliss Balance',
+    images: [
+      {
+        url: `${siteUrl}/Logo.svg`,
+        width: 512,
+        height: 512,
+        alt: 'Bliss Balance Logo Emblem',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Bliss Balance • Modern Indian Footwear Brand',
+    description:
+      'Soft comfort, practical design, modern style, and everyday versatility. Slippers, slides, sandals & clogs for men and women.',
+    images: [`${siteUrl}/Logo.svg`],
+  },
   icons: {
     icon: [
+      { url: '/Logo.svg', type: 'image/svg+xml' },
       { url: '/icon.svg', type: 'image/svg+xml' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    shortcut: '/icon.svg',
-    apple: '/icon.svg',
+    shortcut: '/Logo.svg',
+    apple: '/Logo.svg',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -58,11 +103,49 @@ export default function RootLayout({
 }) {
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa';
 
+  // JSON-LD Schema Markup for Organization & WebSite
+  const schemaOrg = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Bliss Balance',
+    url: siteUrl,
+    logo: `${siteUrl}/Logo.svg`,
+    slogan: 'Walk in Bliss. Live in Balance.',
+    description: 'Modern Indian footwear brand created for everyday comfort, style, and anti-skid stability.',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'IN',
+    },
+  };
+
+  const schemaWebsite = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Bliss Balance',
+    url: siteUrl,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteUrl}/collections?search={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang="en" className={`${outfit.variable} ${jakarta.variable} light`} style={{ colorScheme: 'light' }}>
       <head>
-        <link rel="icon" type="image/svg+xml" href="/icon.svg" sizes="any" />
-        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/Logo.svg" sizes="any" />
+        <link rel="apple-touch-icon" href="/Logo.svg" />
+        
+        {/* Structured Data / JSON-LD Schemas */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaWebsite) }}
+        />
+
         {/* Official Google reCAPTCHA v3 Script */}
         <Script
           src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
