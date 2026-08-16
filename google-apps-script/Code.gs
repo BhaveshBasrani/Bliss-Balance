@@ -1,5 +1,5 @@
 /**
- * BLISS BALANCE FOOTWEAR - HIGH-SCALE ENGINE & GOOGLE DRIVE IMAGE STORAGE
+ * BLISS BALANCE FOOTWEAR - SELF-HEALING BACKEND & GOOGLE DRIVE IMAGE STORAGE
  * Official Tagline: Feel The Bliss
  * Official reCAPTCHA Site Key: 6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa
  * Official reCAPTCHA Secret Key: 6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s
@@ -9,7 +9,7 @@ var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
 var GOOGLE_DRIVE_FOLDER_NAME = "Bliss_Balance_Product_Photos";
 
 function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getOrCreateSpreadsheet();
   ensureAndRepairSheetStructure(ss);
 
   return ContentService.createTextOutput(JSON.stringify({
@@ -26,7 +26,7 @@ function doPost(e) {
   lock.tryLock(10000);
 
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = getOrCreateSpreadsheet();
     ensureAndRepairSheetStructure(ss);
 
     if (!e || !e.postData || !e.postData.contents) {
@@ -72,7 +72,48 @@ function doPost(e) {
   }
 }
 
+function getOrCreateSpreadsheet() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.getActive();
+    if (ss) return ss;
+  } catch (e) {}
+
+  try {
+    var files = DriveApp.getFilesByName("Bliss_Balance_Products_Database");
+    if (files.hasNext()) {
+      var file = files.next();
+      return SpreadsheetApp.open(file);
+    } else {
+      return SpreadsheetApp.create("Bliss_Balance_Products_Database");
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
+function ensureAndRepairSheetStructure(ss) {
+  if (!ss) {
+    ss = getOrCreateSpreadsheet();
+  }
+  if (!ss) return;
+
+  var sheet = ss.getSheetByName("Products") || ss.insertSheet("Products");
+  var expectedHeaders = [
+    "Timestamp", "Action", "SKU ID", "Title", "Category",
+    "Gender", "Selling Price (INR)", "MRP (INR)", "Image URL"
+  ];
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(expectedHeaders);
+    var headerRange = sheet.getRange(1, 1, 1, expectedHeaders.length);
+    headerRange.setBackground("#E50914");
+    headerRange.setFontColor("#FFFFFF");
+    headerRange.setFontWeight("bold");
+  }
+}
+
 function handleAddSku(ss, postData) {
+  if (!ss) ss = getOrCreateSpreadsheet();
   var sheet = ss.getSheetByName("Products");
   var sku = postData.skuData || {};
   var finalImageUrl = sku.imageUrl || "";
@@ -152,23 +193,8 @@ function verifyRecaptchaV3(token) {
   }
 }
 
-function ensureAndRepairSheetStructure(ss) {
-  var sheet = ss.getSheetByName("Products") || ss.insertSheet("Products");
-  var expectedHeaders = [
-    "Timestamp", "Action", "SKU ID", "Title", "Category",
-    "Gender", "Selling Price (INR)", "MRP (INR)", "Image URL"
-  ];
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(expectedHeaders);
-    var headerRange = sheet.getRange(1, 1, 1, expectedHeaders.length);
-    headerRange.setBackground("#E50914");
-    headerRange.setFontColor("#FFFFFF");
-    headerRange.setFontWeight("bold");
-  }
-}
-
 function handleDeleteSku(ss, postData) {
+  if (!ss) ss = getOrCreateSpreadsheet();
   var sheet = ss.getSheetByName("Products");
   var sku = postData.skuData || {};
   sheet.appendRow([

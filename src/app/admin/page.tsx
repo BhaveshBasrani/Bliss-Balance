@@ -208,16 +208,19 @@ export default function AdminPage() {
 
   const appScriptCode = `/**
  * BLISS BALANCE FOOTWEAR - SELF-HEALING ENGINE & BEAUTIFUL HTML EMAIL NOTIFIER
- * Modeled after Brindavanam Nature Centre Google Apps Script Architecture
  */
 
+var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
+var GOOGLE_DRIVE_FOLDER_NAME = "Bliss_Balance_Product_Photos";
+
 function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getOrCreateSpreadsheet();
   ensureAndRepairSheetStructure(ss);
+
   return ContentService.createTextOutput(JSON.stringify({
     status: "active",
     brand: "Bliss Balance",
-    tagline: "Walk in Bliss. Live in Balance."
+    tagline: "Feel The Bliss"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -226,13 +229,13 @@ function doPost(e) {
   lock.tryLock(10000);
 
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = getOrCreateSpreadsheet();
     ensureAndRepairSheetStructure(ss);
 
     if (!e || !e.postData || !e.postData.contents) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "ignored",
-        message: "Empty request"
+        message: "Empty request body"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -262,7 +265,28 @@ function doPost(e) {
   }
 }
 
+function getOrCreateSpreadsheet() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.getActive();
+    if (ss) return ss;
+  } catch (e) {}
+
+  try {
+    var files = DriveApp.getFilesByName("Bliss_Balance_Products_Database");
+    if (files.hasNext()) {
+      return SpreadsheetApp.open(files.next());
+    } else {
+      return SpreadsheetApp.create("Bliss_Balance_Products_Database");
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
 function ensureAndRepairSheetStructure(ss) {
+  if (!ss) ss = getOrCreateSpreadsheet();
+  if (!ss) return;
+
   var sheet = ss.getSheetByName("Products") || ss.insertSheet("Products");
   var expectedHeaders = [
     "Timestamp", "Action", "SKU ID", "Title", "Category",
@@ -276,75 +300,6 @@ function ensureAndRepairSheetStructure(ss) {
     headerRange.setFontColor("#FFFFFF");
     headerRange.setFontWeight("bold");
   }
-}
-
-function handleAddSku(ss, postData) {
-  var sheet = ss.getSheetByName("Products");
-  var sku = postData.skuData || {};
-
-  sheet.appendRow([
-    postData.timestamp || new Date().toISOString(),
-    postData.action || "ADD_SKU",
-    sku.id || "",
-    sku.title || "",
-    sku.category || "",
-    sku.gender || "",
-    sku.price || "",
-    sku.originalPrice || "",
-    sku.imageUrl || ""
-  ]);
-
-  sendBeautifulEmailNotification(postData.adminEmail, sku);
-
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "success",
-    message: "Product record appended & notification email dispatched!"
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-
-function handleDeleteSku(ss, postData) {
-  var sheet = ss.getSheetByName("Products");
-  var sku = postData.skuData || {};
-  sheet.appendRow([
-    postData.timestamp || new Date().toISOString(),
-    "DELETE_SKU",
-    sku.id || "",
-    sku.title || "",
-    "", "", "", "", ""
-  ]);
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "success",
-    message: "Delete action recorded in Google Sheets"
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-
-function sendBeautifulEmailNotification(adminEmail, sku) {
-  if (!adminEmail) return;
-  var subject = "✨ New Product Added: " + sku.title + " (Bliss Balance)";
-  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; border-radius: 16px; overflow: hidden;">' +
-    '<div style="background-color: #E50914; padding: 24px; text-align: center; color: white;">' +
-      '<h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">BLISS BALANCE</h1>' +
-      '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Walk in Bliss. Live in Balance.</p>' +
-    '</div>' +
-    '<div style="padding: 24px; background-color: #ffffff;">' +
-      '<h2 style="color: #111; font-size: 18px; margin-top: 0;">Product Live Alert</h2>' +
-      '<p style="color: #555; font-size: 14px;">A new footwear product has been created and synced:</p>' +
-      '<table style="width: 100%; border-collapse: collapse; margin-top: 16px;">' +
-        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Title:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">' + sku.title + '</td></tr>' +
-        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Category:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">' + sku.gender + ' • ' + sku.category + '</td></tr>' +
-        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Price:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">₹' + sku.price + '</td></tr>' +
-      '</table>' +
-    '</div>' +
-    '<div style="background-color: #f8f8f8; padding: 16px; text-align: center; font-size: 12px; color: #888;">' +
-      '© ' + new Date().getFullYear() + ' Bliss Balance Official Store Engine' +
-    '</div>' +
-  '</div>';
-
-  MailApp.sendEmail({
-    to: adminEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  });
 }`;
 
   const copyCode = () => {
