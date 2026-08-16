@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           
-          {/* Brand Info Column with BIG LOGO */}
+          {/* Brand Info Column */}
           <div className="md:col-span-4 space-y-4">
             <Link href="/" className="flex items-center gap-4 group">
               <BrandLogo size="lg" className="group-hover:scale-105 transition-transform" />
@@ -35,14 +35,26 @@ export const Footer: React.FC = () => {
             </p>
           </div>
 
+          {/* Quick Links Column */}
+          <div className="md:col-span-2 space-y-3">
+            <h4 className="font-heading text-sm font-bold text-neutral-950 dark:text-white uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800 pb-2">
+              HELP & INFO
+            </h4>
+            <div className="flex flex-col space-y-2 text-xs font-mono text-neutral-700 dark:text-neutral-300">
+              <Link href="/about" className="hover:text-red-600 transition-colors py-0.5">About Us</Link>
+              <Link href="/faq" className="hover:text-red-600 transition-colors py-0.5">FAQ</Link>
+              <Link href="/account" className="hover:text-red-600 transition-colors py-0.5">Track Order</Link>
+            </div>
+          </div>
+
           {/* Men's Footwear Column */}
-          <div className="md:col-span-4 space-y-3">
-            <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800 pb-2">
+          <div className="md:col-span-3 space-y-3">
+            <h4 className="font-heading text-sm font-bold text-neutral-950 dark:text-white uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800 pb-2">
               MEN'S FOOTWEAR
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono text-neutral-700 dark:text-neutral-300">
-              {['Slippers', 'Flip-Flops', 'Slides', 'Sandals', 'Clogs', 'Casual Shoes', 'Sneakers', 'Loafers', 'Formal Footwear'].map((item) => (
-                <Link key={item} href={`/men?type=${encodeURIComponent(item)}`} className="hover:text-red-600 transition-colors py-1">
+            <div className="grid grid-cols-2 gap-1.5 text-xs font-mono text-neutral-700 dark:text-neutral-300">
+              {['Slippers', 'Flip-Flops', 'Slides', 'Sandals', 'Clogs', 'Casual Shoes', 'Sneakers', 'Loafers'].map((item) => (
+                <Link key={item} href={`/men?type=${encodeURIComponent(item)}`} className="hover:text-red-600 transition-colors py-0.5">
                   {item}
                 </Link>
               ))}
@@ -50,13 +62,13 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Women's Footwear Column */}
-          <div className="md:col-span-4 space-y-3">
-            <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800 pb-2">
+          <div className="md:col-span-3 space-y-3">
+            <h4 className="font-heading text-sm font-bold text-neutral-950 dark:text-white uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800 pb-2">
               WOMEN'S FOOTWEAR
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono text-neutral-700 dark:text-neutral-300">
-              {['Slippers', 'Flip-Flops', 'Slides', 'Sandals', 'Flats', 'Casual Shoes', 'Sneakers', 'Clogs', 'Heels'].map((item) => (
-                <Link key={item} href={`/women?type=${encodeURIComponent(item)}`} className="hover:text-red-600 transition-colors py-1">
+            <div className="grid grid-cols-2 gap-1.5 text-xs font-mono text-neutral-700 dark:text-neutral-300">
+              {['Slippers', 'Flip-Flops', 'Slides', 'Sandals', 'Flats', 'Casual Shoes', 'Sneakers', 'Heels'].map((item) => (
+                <Link key={item} href={`/women?type=${encodeURIComponent(item)}`} className="hover:text-red-600 transition-colors py-0.5">
                   {item}
                 </Link>
               ))}
@@ -65,22 +77,11 @@ export const Footer: React.FC = () => {
 
         </div>
 
-        {/* SEO Text Block */}
-        <div className="p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-400 space-y-2 leading-relaxed">
-          <p className="font-mono font-bold text-neutral-900 dark:text-neutral-200 uppercase tracking-widest">
-            BLISS BALANCE • EVERYDAY FOOTWEAR STORE
-          </p>
-          <p>
-            Bliss Balance offers everyday slippers, slides, sandals, clogs, casual walking shoes, sneakers, flats, and loafers for men and women. Engineered with soft cushioning, lightweight construction, and textured anti-skid outsoles, Bliss Balance footwear is designed for everyday stability at home, work, travel, and casual outings. Available on official marketplace partners including Amazon and Myntra.
-          </p>
-        </div>
-
         {/* Copyright & Subtle Theme Toggle */}
         <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-neutral-500 gap-4">
           <p>© {new Date().getFullYear()} BLISS BALANCE. All rights reserved. Walk in Bliss. Live in Balance.</p>
 
           <div className="flex items-center gap-4">
-            {/* Small Subtle Theme Button */}
             <button
               onClick={toggleTheme}
               className="p-2 px-3 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 transition-all flex items-center gap-2 text-[11px] font-bold uppercase"
@@ -99,7 +100,6 @@ export const Footer: React.FC = () => {
               )}
             </button>
 
-            {/* Subtle Admin Link */}
             <Link
               href="/admin"
               className="text-[11px] font-mono text-neutral-400 hover:text-red-600 flex items-center gap-1"

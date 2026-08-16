@@ -1,7 +1,7 @@
 import { FootwearSKU, CollectionItem, SiteSettings } from './types';
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  announcementText: 'FREE SHIPPING ON ORDERS OVER ₹999 • COMFORT-FOCUSED FOOTWEAR • EASY Marketplace REDIRECTS',
+  announcementText: 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL BRAND STORE',
   heroHeadline: 'WALK IN BLISS. LIVE IN BALANCE.',
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',
@@ -63,86 +63,20 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
   },
 ];
 
-export const INITIAL_SKUS: FootwearSKU[] = [
-  {
-    id: 'sku-bb-m01',
-    title: 'Bliss Comfort Slides - Men',
-    subtitle: 'Ultra-cushioned anti-skid slides for indoor & outdoor wear',
-    gender: 'Men',
-    category: 'Slides',
-    price: 1299,
-    originalPrice: 1999,
-    amazonUrl: 'https://www.amazon.in/dp/example-bliss-slides-men',
-    myntraUrl: 'https://www.myntra.com/bliss-balance-men-slides',
-    imageDimensions: '800 x 800 px (1:1 Product Image)',
-    features: ['Cushioned Footwear', 'Lightweight Feel', 'Anti-Skid Outsole', 'Water-Resistant'],
-    isNewArrival: true,
-    isBestseller: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sku-bb-w01',
-    title: 'Bliss Everyday Sandals - Women',
-    subtitle: 'Adjustable fit lightweight sandals crafted for daily walking comfort',
-    gender: 'Women',
-    category: 'Sandals',
-    price: 1499,
-    originalPrice: 2299,
-    amazonUrl: 'https://www.amazon.in/dp/example-bliss-sandals-women',
-    myntraUrl: 'https://www.myntra.com/bliss-balance-women-sandals',
-    imageDimensions: '800 x 800 px (1:1 Product Image)',
-    features: ['Adjustable Strap', 'Soft Cushioning', 'Reliable Grip', 'Everyday Versatility'],
-    isNewArrival: true,
-    isBestseller: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sku-bb-m02',
-    title: 'Bliss Walking Clogs - Men',
-    subtitle: 'Breathable lightweight outdoor & indoor clogs with textured sole',
-    gender: 'Men',
-    category: 'Clogs',
-    price: 1699,
-    originalPrice: 2499,
-    amazonUrl: 'https://www.amazon.in/dp/example-bliss-clogs-men',
-    myntraUrl: 'https://www.myntra.com/bliss-balance-men-clogs',
-    imageDimensions: '800 x 800 px (1:1 Product Image)',
-    features: ['Textured Outsole', 'Lightweight EVA', 'Ventilated Design', 'Supportive Bed'],
-    isNewArrival: false,
-    isBestseller: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'sku-bb-w02',
-    title: 'Bliss Minimalist Flats - Women',
-    subtitle: 'Sleek contemporary flats with soft padded footbed for daily outings',
-    gender: 'Women',
-    category: 'Flats',
-    price: 1399,
-    originalPrice: 1899,
-    amazonUrl: 'https://www.amazon.in/dp/example-bliss-flats-women',
-    myntraUrl: 'https://www.myntra.com/bliss-balance-women-flats',
-    imageDimensions: '800 x 800 px (1:1 Product Image)',
-    features: ['Padded Footbed', 'Flexible Rubber Sole', 'Modern Silhouette', 'All-Day Comfort'],
-    isNewArrival: true,
-    isBestseller: false,
-    createdAt: new Date().toISOString(),
-  },
-];
+// Zero demo/example SKUs
+export const INITIAL_SKUS: FootwearSKU[] = [];
 
-// Data Store Helpers for Local Storage & Persistence
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v1';
-const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v1';
-const COLLECTIONS_STORAGE_KEY = 'bliss_balance_collections_v1';
+// Persistence Storage Keys
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v2';
+const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v2';
 
 export function getStoredSKUs(): FootwearSKU[] {
-  if (typeof window === 'undefined') return INITIAL_SKUS;
+  if (typeof window === 'undefined') return [];
   try {
     const data = localStorage.getItem(SKUS_STORAGE_KEY);
-    return data ? JSON.parse(data) : INITIAL_SKUS;
+    return data ? JSON.parse(data) : [];
   } catch (e) {
-    console.error('Error reading stored SKUs:', e);
-    return INITIAL_SKUS;
+    return [];
   }
 }
 
@@ -161,7 +95,6 @@ export function getStoredSettings(): SiteSettings {
     const data = localStorage.getItem(SETTINGS_STORAGE_KEY);
     return data ? JSON.parse(data) : DEFAULT_SITE_SETTINGS;
   } catch (e) {
-    console.error('Error reading settings:', e);
     return DEFAULT_SITE_SETTINGS;
   }
 }

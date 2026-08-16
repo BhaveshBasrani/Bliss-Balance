@@ -3,43 +3,35 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 10 10 10;
-    --foreground: 255 255 255;
-  }
-
-  html.light {
-    --background: 242 244 247;
-    --foreground: 15 15 15;
-  }
-
   body {
     overflow-x: hidden;
+    background-color: #ffffff;
+    color: #080808;
+  }
+
+  html.dark body {
+    background-color: #080808;
+    color: #ffffff;
   }
 }
 
-/* Custom Neomorphism utilities for Light Mode */
-html.light .neo-box {
-  background: #f2f4f7;
-  box-shadow: 8px 8px 16px #d1d5db, -8px -8px 16px #ffffff;
-  border-radius: 1rem;
+/* Nothing OS Dot Matrix Background Patterns */
+.nothing-dot-grid-light {
+  background-image: radial-gradient(#080808 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-html.light .neo-inset {
-  background: #f2f4f7;
-  box-shadow: inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff;
+.nothing-dot-grid-dark {
+  background-image: radial-gradient(#ffffff20 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-/* Red Glow Animations */
-.glow-red-sm {
-  box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+.nothing-red-grid {
+  background-image: radial-gradient(#e5091440 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
-.glow-red-md {
-  box-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
-}
-
-/* Hide scrollbar for category horizontal scroll */
+/* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

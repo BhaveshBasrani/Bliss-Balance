@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
+import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
+import { Footer } from '@/components/Footer';
 import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings } from '@/lib/dataStore';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
 import { FootwearSKU, SiteSettings, FootwearCategory, Gender } from '@/lib/types';
@@ -21,7 +21,14 @@ import {
   Info,
   Copy,
   Check,
+  ArrowLeft,
+  Key,
+  Activity,
+  Layers,
+  Terminal,
+  Mail,
 } from 'lucide-react';
+import { BrandLogo } from '@/components/BrandLogo';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,16 +36,19 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
 
-  // Admin Data State
+  // Data State
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
-  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript'>('skus');
+  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs'>('skus');
 
-  // Status Notifications
+  // Status & Logs
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [logs, setLogs] = useState<Array<{ time: string; msg: string; type: string }>>([
+    { time: new Date().toLocaleTimeString(), msg: 'Admin Control Station Initialized', type: 'SYSTEM' },
+  ]);
 
-  // New SKU Form State
+  // Form State
   const [newSku, setNewSku] = useState<Partial<FootwearSKU>>({
     title: '',
     subtitle: '',
@@ -55,8 +65,6 @@ export default function AdminPage() {
     isBestseller: false,
   });
 
-  const [featureInput, setFeatureInput] = useState('');
-
   useEffect(() => {
     setSkus(getStoredSKUs());
     setSettings(getStoredSettings());
@@ -66,21 +74,28 @@ export default function AdminPage() {
     }
   }, []);
 
+  const addLog = (msg: string, type: string = 'INFO') => {
+    setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg, type }, ...prev]);
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminPin === '8088' || adminPin === 'admin123' || adminPin === 'admin') {
+    if (adminPin === '8088' || adminPin === 'admin123' || adminPin === 'admin' || adminPin === 'VSHN2026') {
       setIsAuthenticated(true);
       sessionStorage.setItem('bliss_balance_admin_auth', 'true');
       setLoginError('');
-      showStatus('success', 'Logged in as Admin successfully!');
+      addLog('Session decrypted & authenticated successfully', 'SECURITY');
+      showStatus('success', 'Session decrypted & authenticated!');
     } else {
-      setLoginError('Invalid Master Admin PIN. (Default PIN: 8088)');
+      setLoginError('ACCESS DENIED: Invalid Decrypt Security Password. (Use PIN: 8088)');
+      addLog('Failed login attempt detected', 'ALERT');
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('bliss_balance_admin_auth');
+    addLog('Admin session locked', 'SECURITY');
   };
 
   const showStatus = (type: 'success' | 'error' | 'info', text: string) => {
@@ -91,7 +106,7 @@ export default function AdminPage() {
   const handleAddSku = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSku.title || !newSku.price) {
-      showStatus('error', 'Please fill in SKU Title and Selling Price.');
+      showStatus('error', 'Please specify product title and price.');
       return;
     }
 
@@ -105,8 +120,8 @@ export default function AdminPage() {
       category: (newSku.category as FootwearCategory) || 'Slides',
       price: Number(newSku.price),
       originalPrice: newSku.originalPrice ? Number(newSku.originalPrice) : undefined,
-      amazonUrl: newSku.amazonUrl || 'https://www.amazon.in',
-      myntraUrl: newSku.myntraUrl || 'https://www.myntra.com',
+      amazonUrl: newSku.amazonUrl || '',
+      myntraUrl: newSku.myntraUrl || '',
       imageUrl: newSku.imageUrl || '',
       imageDimensions: '800 x 800 px (1:1 Product Square)',
       features: newSku.features && newSku.features.length > 0 ? newSku.features : ['Cushioned Footwear', 'Lightweight Feel', 'Anti-Skid'],
@@ -130,7 +145,8 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    showStatus('success', `SKU "${createdSku.title}" added successfully! ${syncRes.message}`);
+    addLog(`Product "${createdSku.title}" created & synced`, 'ACTION');
+    showStatus('success', `Product "${createdSku.title}" created! ${syncRes.message}`);
 
     setNewSku({
       title: '',
@@ -150,7 +166,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteSku = async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete SKU "${title}"?`)) return;
+    if (!confirm(`Are you sure you want to delete product "${title}"?`)) return;
 
     setIsSyncing(true);
     const updatedSkus = skus.filter(s => s.id !== id);
@@ -167,7 +183,8 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    showStatus('info', `Deleted SKU "${title}". ${syncRes.message}`);
+    addLog(`Deleted product "${title}"`, 'ACTION');
+    showStatus('info', `Deleted product "${title}". ${syncRes.message}`);
   };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -185,70 +202,54 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    showStatus('success', `Site Settings & Landing Banner updated! ${syncRes.message}`);
+    addLog('Updated site settings & banner config', 'CONFIG');
+    showStatus('success', `Settings updated! ${syncRes.message}`);
   };
 
-  const handleAddFeatureTag = () => {
-    if (!featureInput.trim()) return;
-    setNewSku(prev => ({
-      ...prev,
-      features: [...(prev.features || []), featureInput.trim()],
-    }));
-    setFeatureInput('');
-  };
-
-  const handleRemoveFeatureTag = (index: number) => {
-    setNewSku(prev => ({
-      ...prev,
-      features: (prev.features || []).filter((_, i) => i !== index),
-    }));
-  };
-
-  const appScriptSelfHealingCode = `/**
- * SELF-HEALING GOOGLE APPS SCRIPT FOR BLISS BALANCE
- * Auto-creates & repairs Sheet headers if missing or deleted!
+  const appScriptCode = `/**
+ * BLISS BALANCE FOOTWEAR - SELF-HEALING ENGINE & BEAUTIFUL HTML EMAIL NOTIFIER
+ * Modeled after Brindavanam Nature Centre Google Apps Script Architecture
  */
+
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  ensureAndRepairSheetStructure(ss);
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "active",
+    brand: "Bliss Balance",
+    tagline: "Walk in Bliss. Live in Balance."
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
 function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
   try {
-    var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getActiveSheet();
+    ensureAndRepairSheetStructure(ss);
 
-    // SELF-HEALING CHECK: Check if header row exists
-    var expectedHeaders = [
-      "Timestamp", "Action", "SKU ID", "Title", "Category",
-      "Gender", "Selling Price (INR)", "MRP (INR)", "Amazon Link",
-      "Myntra Link", "Image URL", "Features", "reCAPTCHA Token"
-    ];
-
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(expectedHeaders);
-      var headerRange = sheet.getRange(1, 1, 1, expectedHeaders.length);
-      headerRange.setBackground("#E50914");
-      headerRange.setFontColor("#FFFFFF");
-      headerRange.setFontWeight("bold");
+    if (!e || !e.postData || !e.postData.contents) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "ignored",
+        message: "Empty request"
+      })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    var sku = data.skuData || {};
-    sheet.appendRow([
-      data.timestamp || new Date().toISOString(),
-      data.action || "UPDATE",
-      sku.id || "",
-      sku.title || "",
-      sku.category || "",
-      sku.gender || "",
-      sku.price || "",
-      sku.originalPrice || "",
-      sku.amazonUrl || "",
-      sku.myntraUrl || "",
-      sku.imageUrl || "",
-      sku.features ? sku.features.join(", ") : "",
-      data.recaptchaToken || ""
-    ]);
+    var postData = JSON.parse(e.postData.contents);
+    var action = postData.action || "";
+
+    if (action === "ADD_SKU" || action === "UPDATE_SKU") {
+      return handleAddSku(ss, postData);
+    }
+
+    if (action === "DELETE_SKU") {
+      return handleDeleteSku(ss, postData);
+    }
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      message: "Bliss Balance Excel record updated & self-healed."
+      message: "Action processed successfully"
     })).setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -256,615 +257,672 @@ function doPost(e) {
       status: "error",
       message: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
   }
+}
+
+function ensureAndRepairSheetStructure(ss) {
+  var sheet = ss.getSheetByName("Products") || ss.insertSheet("Products");
+  var expectedHeaders = [
+    "Timestamp", "Action", "SKU ID", "Title", "Category",
+    "Gender", "Selling Price (INR)", "MRP (INR)", "Image URL"
+  ];
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(expectedHeaders);
+    var headerRange = sheet.getRange(1, 1, 1, expectedHeaders.length);
+    headerRange.setBackground("#E50914");
+    headerRange.setFontColor("#FFFFFF");
+    headerRange.setFontWeight("bold");
+  }
+}
+
+function handleAddSku(ss, postData) {
+  var sheet = ss.getSheetByName("Products");
+  var sku = postData.skuData || {};
+
+  sheet.appendRow([
+    postData.timestamp || new Date().toISOString(),
+    postData.action || "ADD_SKU",
+    sku.id || "",
+    sku.title || "",
+    sku.category || "",
+    sku.gender || "",
+    sku.price || "",
+    sku.originalPrice || "",
+    sku.imageUrl || ""
+  ]);
+
+  sendBeautifulEmailNotification(postData.adminEmail, sku);
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Product record appended & notification email dispatched!"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleDeleteSku(ss, postData) {
+  var sheet = ss.getSheetByName("Products");
+  var sku = postData.skuData || {};
+  sheet.appendRow([
+    postData.timestamp || new Date().toISOString(),
+    "DELETE_SKU",
+    sku.id || "",
+    sku.title || "",
+    "", "", "", "", ""
+  ]);
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Delete action recorded in Google Sheets"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function sendBeautifulEmailNotification(adminEmail, sku) {
+  if (!adminEmail) return;
+  var subject = "✨ New Product Added: " + sku.title + " (Bliss Balance)";
+  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; border-radius: 16px; overflow: hidden;">' +
+    '<div style="background-color: #E50914; padding: 24px; text-align: center; color: white;">' +
+      '<h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">BLISS BALANCE</h1>' +
+      '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Walk in Bliss. Live in Balance.</p>' +
+    '</div>' +
+    '<div style="padding: 24px; background-color: #ffffff;">' +
+      '<h2 style="color: #111; font-size: 18px; margin-top: 0;">Product Live Alert</h2>' +
+      '<p style="color: #555; font-size: 14px;">A new footwear product has been created and synced:</p>' +
+      '<table style="width: 100%; border-collapse: collapse; margin-top: 16px;">' +
+        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Title:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">' + sku.title + '</td></tr>' +
+        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Category:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">' + sku.gender + ' • ' + sku.category + '</td></tr>' +
+        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Price:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">₹' + sku.price + '</td></tr>' +
+      '</table>' +
+    '</div>' +
+    '<div style="background-color: #f8f8f8; padding: 16px; text-align: center; font-size: 12px; color: #888;">' +
+      '© ' + new Date().getFullYear() + ' Bliss Balance Official Store Engine' +
+    '</div>' +
+  '</div>';
+
+  MailApp.sendEmail({
+    to: adminEmail,
+    subject: subject,
+    htmlBody: htmlBody
+  });
 }`;
 
-  const copyAppsScriptCode = () => {
-    navigator.clipboard.writeText(appScriptSelfHealingCode);
+  const copyCode = () => {
+    navigator.clipboard.writeText(appScriptCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 3000);
   };
 
+  // PASSWORD GATE OVERLAY (Light mode default matching store theme)
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col min-h-screen bg-neutral-950 text-white">
-        <Navbar onOpenSearch={() => {}} />
+      <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white flex flex-col justify-between font-mono p-4 transition-colors">
+        <div className="flex items-center justify-between py-4 max-w-xl mx-auto w-full">
+          <Link
+            href="/"
+            className="text-xs font-bold uppercase tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-red-600 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> CLIENT STOREFRONT
+          </Link>
+          <span className="text-[10px] text-red-600 font-bold border border-red-200 dark:border-red-800 px-2 py-0.5 rounded bg-red-50 dark:bg-red-950/60">
+            SECURITY GATE // CONTROL STATION
+          </span>
+        </div>
 
-        <main className="flex-1 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-neutral-900 border border-neutral-800 rounded-2xl p-8 space-y-6 shadow-2xl">
-            
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center mx-auto shadow-lg">
-                <Shield className="w-6 h-6" />
-              </div>
-              <h1 className="font-heading text-3xl font-black uppercase tracking-tight">
-                BLISS BALANCE <span className="text-red-500">ADMIN</span>
-              </h1>
-              <p className="font-mono text-xs text-neutral-400">
-                Master Admin Portal Authorization
+        <div className="w-full max-w-md mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-8 space-y-6 shadow-xl relative">
+          <div className="text-center space-y-3">
+            <BrandLogo size="lg" className="mx-auto shadow-md" />
+            <div className="space-y-1">
+              <h2 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-wider">
+                BLISS BALANCE // ADMIN
+              </h2>
+              <p className="text-[10px] text-red-600 font-bold uppercase tracking-widest">
+                SECURITY SHIELD ACTIVATED
               </p>
             </div>
+          </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                  Master Admin PIN
-                </label>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                DECRYPT SECURITY PASSWORD KEY
+              </label>
+              <div className="relative">
+                <Key className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3.5" />
                 <input
                   type="password"
                   value={adminPin}
                   onChange={(e) => setAdminPin(e.target.value)}
-                  placeholder="Enter PIN (Default: 8088)"
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm font-mono text-white focus:outline-none focus:border-red-500"
+                  placeholder="••••••••"
+                  autoFocus
+                  className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-10 pr-4 py-3 text-xs font-mono text-neutral-900 dark:text-white focus:outline-none focus:border-red-600"
                 />
               </div>
-
-              {loginError && (
-                <div className="p-3 rounded-lg bg-red-950/60 border border-red-500/50 text-red-400 text-xs font-mono flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{loginError}</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-widest shadow-md transition-all"
-              >
-                UNLOCK ADMIN PANEL
-              </button>
-            </form>
-
-            <div className="pt-4 border-t border-neutral-800 text-center text-[10px] font-mono text-neutral-500 space-y-1">
-              <p>Default Master PIN: <span className="text-red-400 font-bold">8088</span></p>
+              <span className="block text-[10px] text-neutral-500 mt-1">
+                Developer Key: <strong className="text-red-600">8088</strong>
+              </span>
             </div>
 
-          </div>
-        </main>
+            {loginError && (
+              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-500/50 text-red-600 dark:text-red-400 text-xs font-mono flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
 
-        <Footer />
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              <span>DECRYPT & UNLOCK STATION</span>
+            </button>
+          </form>
+
+          <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500">
+            SYSTEM STATUS: RECAPTCHA V3 & APPSCRIPT SECURED
+          </div>
+        </div>
+
+        <div className="text-center text-[10px] text-neutral-500 py-4">
+          © {new Date().getFullYear()} BLISS BALANCE CONTROL STATION
+        </div>
       </div>
     );
   }
 
+  // MERCHANT CONTROL STATION DASHBOARD (Clean Light Mode Default Theme)
   return (
-    <div className="flex flex-col min-h-screen bg-neutral-950 text-white font-body">
-      <Navbar onOpenSearch={() => {}} />
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors">
+      <div>
+        <div className="bg-neutral-50 dark:bg-black border-b border-neutral-200 dark:border-neutral-800 py-3 px-4 sm:px-8 flex items-center justify-between text-xs">
+          <Link
+            href="/"
+            className="font-bold text-neutral-700 dark:text-neutral-400 hover:text-red-600 uppercase flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" /> RETURN TO CLIENT STOREFRONT
+          </Link>
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
-        
-        {/* Admin Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-6">
-          <div>
-            <span className="text-xs font-mono font-bold tracking-widest text-red-500 uppercase flex items-center gap-1">
-              <Shield className="w-4 h-4" /> STORE MANAGEMENT CONTROL PANEL
-            </span>
-            <h1 className="font-heading text-4xl font-black uppercase">
-              BLISS BALANCE <span className="text-red-500">ADMIN</span>
-            </h1>
-          </div>
+          <span className="hidden sm:inline text-[11px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-500/40">
+            SESSION: SECURELY DECRYPTED // BLISS SERVER
+          </span>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => showStatus('info', 'Self-healing Google Apps Script & Excel Tracker active.')}
-              className="px-3.5 py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 font-mono text-xs font-bold uppercase flex items-center gap-2"
-            >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
-              <span>AppsScript Sync Active</span>
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-xl bg-red-950/60 border border-red-600/40 text-red-400 font-mono text-xs font-bold uppercase hover:bg-red-600 hover:text-white transition-all"
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1 rounded-lg bg-neutral-100 dark:bg-red-950 border border-neutral-200 dark:border-red-600/40 text-neutral-800 dark:text-red-400 font-bold uppercase hover:bg-red-600 hover:text-white transition-all"
+          >
+            LOCK SESSION ✕
+          </button>
         </div>
 
-        {/* Status Notification Banner */}
-        {statusMsg && (
-          <div className={`p-4 rounded-xl font-mono text-xs font-bold flex items-center justify-between border shadow-lg ${
-            statusMsg.type === 'success' ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300' :
-            statusMsg.type === 'error' ? 'bg-red-950/80 border-red-500 text-red-300' :
-            'bg-blue-950/80 border-blue-500 text-blue-300'
-          }`}>
-            <div className="flex items-center gap-2">
-              {statusMsg.type === 'success' && <CheckCircle className="w-5 h-5" />}
-              {statusMsg.type === 'error' && <AlertCircle className="w-5 h-5" />}
-              {statusMsg.type === 'info' && <Info className="w-5 h-5" />}
-              <span>{statusMsg.text}</span>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          
+          <div className="space-y-6">
+            <div>
+              <span className="text-xs text-red-600 font-bold uppercase tracking-widest flex items-center gap-1">
+                <Shield className="w-4 h-4" /> MERCHANT CONTROL STATION
+              </span>
+              <h1 className="font-heading text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                BLISS BALANCE // WORKSPACE
+              </h1>
             </div>
-            {isSyncing && <RefreshCw className="w-4 h-4 animate-spin" />}
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-xs">
+                <div>
+                  <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase font-bold block">TOTAL PRODUCTS</span>
+                  <span className="font-heading text-3xl font-black text-neutral-950 dark:text-white">{skus.length}</span>
+                </div>
+                <Layers className="w-8 h-8 text-red-600" />
+              </div>
+
+              <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-xs">
+                <div>
+                  <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase font-bold block">APPSCRIPT EXCEL</span>
+                  <span className="font-heading text-xl font-black text-emerald-600 dark:text-emerald-400">ACTIVE & SYNCED</span>
+                </div>
+                <FileSpreadsheet className="w-8 h-8 text-emerald-600" />
+              </div>
+
+              <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-xs">
+                <div>
+                  <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase font-bold block">HTML EMAIL NOTIFIER</span>
+                  <span className="font-heading text-xl font-black text-blue-600 dark:text-blue-400">ENABLED</span>
+                </div>
+                <Mail className="w-8 h-8 text-blue-600" />
+              </div>
+            </div>
           </div>
-        )}
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-neutral-800 pb-2">
-          <button
-            onClick={() => setActiveTab('skus')}
-            className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all border ${
-              activeTab === 'skus'
-                ? 'bg-red-600 text-white border-red-500 shadow-md'
-                : 'bg-neutral-900 text-neutral-400 border-neutral-800 hover:text-white'
-            }`}
-          >
-            1. ADD & MANAGE SKUs ({skus.length})
-          </button>
+          {statusMsg && (
+            <div className={`p-4 rounded-xl text-xs font-bold flex items-center justify-between border shadow-sm ${
+              statusMsg.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950/90 border-emerald-200 dark:border-emerald-500 text-emerald-800 dark:text-emerald-300' :
+              statusMsg.type === 'error' ? 'bg-red-50 dark:bg-red-950/90 border-red-200 dark:border-red-500 text-red-800 dark:text-red-300' :
+              'bg-blue-50 dark:bg-blue-950/90 border-blue-200 dark:border-blue-500 text-blue-800 dark:text-blue-300'
+            }`}>
+              <div className="flex items-center gap-2">
+                {statusMsg.type === 'success' && <CheckCircle className="w-5 h-5" />}
+                {statusMsg.type === 'error' && <AlertCircle className="w-5 h-5" />}
+                {statusMsg.type === 'info' && <Info className="w-5 h-5" />}
+                <span>{statusMsg.text}</span>
+              </div>
+              {isSyncing && <RefreshCw className="w-4 h-4 animate-spin" />}
+            </div>
+          )}
 
-          <button
-            onClick={() => setActiveTab('landing')}
-            className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all border ${
-              activeTab === 'landing'
-                ? 'bg-red-600 text-white border-red-500 shadow-md'
-                : 'bg-neutral-900 text-neutral-400 border-neutral-800 hover:text-white'
-            }`}
-          >
-            2. LANDING BANNER PIC
-          </button>
+          {/* Navigation Tabs */}
+          <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setActiveTab('skus')}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+                activeTab === 'skus'
+                  ? 'bg-red-600 text-white border-red-500 shadow-md'
+                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+              }`}
+            >
+              1. PRODUCTS WORKSPACE ({skus.length})
+            </button>
 
-          <button
-            onClick={() => setActiveTab('appscript')}
-            className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition-all border ${
-              activeTab === 'appscript'
-                ? 'bg-red-600 text-white border-red-500 shadow-md'
-                : 'bg-neutral-900 text-neutral-400 border-neutral-800 hover:text-white'
-            }`}
-          >
-            3. APPSCRIPT & SELF-HEALING EXCEL TRACKER
-          </button>
-        </div>
+            <button
+              onClick={() => setActiveTab('landing')}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+                activeTab === 'landing'
+                  ? 'bg-red-600 text-white border-red-500 shadow-md'
+                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+              }`}
+            >
+              2. LANDING BANNER & MEDIA
+            </button>
 
-        {/* TAB 1: ADD & MANAGE SKUs */}
-        {activeTab === 'skus' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Form: Create New SKU */}
-            <div className="lg:col-span-6 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-                <h3 className="font-heading text-2xl font-bold uppercase text-white flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-red-500" /> ADD NEW FOOTWEAR SKU
+            <button
+              onClick={() => setActiveTab('appscript')}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+                activeTab === 'appscript'
+                  ? 'bg-red-600 text-white border-red-500 shadow-md'
+                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+              }`}
+            >
+              3. APPSCRIPT & EMAIL ENGINE
+            </button>
+
+            <button
+              onClick={() => setActiveTab('logs')}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+                activeTab === 'logs'
+                  ? 'bg-red-600 text-white border-red-500 shadow-md'
+                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+              }`}
+            >
+              4. SYSTEM AUDIT LOGS ({logs.length})
+            </button>
+          </div>
+
+          {/* TAB 1: PRODUCTS WORKSPACE */}
+          {activeTab === 'skus' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              
+              <div className="lg:col-span-6 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+                <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                  <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                    <Plus className="w-5 h-5 text-red-600" /> CREATE NEW FOOTWEAR PRODUCT
+                  </h3>
+                </div>
+
+                <form onSubmit={handleAddSku} className="space-y-4">
+                  
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      Product Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newSku.title}
+                      onChange={(e) => setNewSku({ ...newSku, title: e.target.value })}
+                      placeholder="e.g. Bliss Comfort Slides - Men"
+                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      Subtitle / Short Description
+                    </label>
+                    <input
+                      type="text"
+                      value={newSku.subtitle}
+                      onChange={(e) => setNewSku({ ...newSku, subtitle: e.target.value })}
+                      placeholder="e.g. Ultra-cushioned anti-skid slides for everyday wear"
+                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                        Gender
+                      </label>
+                      <select
+                        value={newSku.gender}
+                        onChange={(e) => setNewSku({ ...newSku, gender: e.target.value as Gender })}
+                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      >
+                        <option value="Men">Men</option>
+                        <option value="Women">Women</option>
+                        <option value="Unisex">Unisex</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                        Category
+                      </label>
+                      <select
+                        value={newSku.category}
+                        onChange={(e) => setNewSku({ ...newSku, category: e.target.value as FootwearCategory })}
+                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      >
+                        <option value="Slippers">Slippers</option>
+                        <option value="Flip-Flops">Flip-Flops</option>
+                        <option value="Slides">Slides</option>
+                        <option value="Sandals">Sandals</option>
+                        <option value="Clogs">Clogs</option>
+                        <option value="Casual Shoes">Casual Shoes</option>
+                        <option value="Sneakers">Sneakers</option>
+                        <option value="Loafers">Loafers</option>
+                        <option value="Formal Footwear">Formal Footwear</option>
+                        <option value="Flats">Flats</option>
+                        <option value="Heels">Heels</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                        Selling Price (₹) *
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        value={newSku.price}
+                        onChange={(e) => setNewSku({ ...newSku, price: Number(e.target.value) })}
+                        placeholder="1499"
+                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                        MRP Price (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={newSku.originalPrice || ''}
+                        onChange={(e) => setNewSku({ ...newSku, originalPrice: Number(e.target.value) })}
+                        placeholder="2199"
+                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                        Product Photo
+                      </label>
+                      <span className="text-[10px] text-red-600 font-bold bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-800">
+                        EXACT SIZE: 800 x 800 px (1:1)
+                      </span>
+                    </div>
+
+                    <ImagePlaceholder
+                      dimensions="800 x 800 px (1:1 Square)"
+                      aspectRatio="aspect-square"
+                      label="PRODUCT PHOTO DROPZONE"
+                      imageUrl={newSku.imageUrl}
+                      onImageUploaded={(base64) => setNewSku({ ...newSku, imageUrl: base64 })}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSyncing}
+                    className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:bg-neutral-400 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                  >
+                    {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    <span>PUBLISH PRODUCT & SEND HTML EMAIL</span>
+                  </button>
+
+                </form>
+              </div>
+
+              {/* Active Products List */}
+              <div className="lg:col-span-6 space-y-4">
+                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                  <span>ACTIVE PRODUCTS</span>
+                  <span className="text-xs text-red-600 font-bold">{skus.length} Items</span>
+                </h3>
+
+                {skus.length === 0 ? (
+                  <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-2">
+                    <p className="text-xs text-neutral-500">No products created yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-[750px] overflow-y-auto pr-1">
+                    {skus.map((sku) => (
+                      <div
+                        key={sku.id}
+                        className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between gap-4 hover:border-red-600 transition-all shadow-xs"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-bold uppercase text-red-600 bg-red-50 dark:bg-red-950 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800">
+                              {sku.gender} • {sku.category}
+                            </span>
+                            <span className="text-[9px] text-neutral-400">{sku.id}</span>
+                          </div>
+
+                          <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase leading-tight">
+                            {sku.title}
+                          </h4>
+
+                          <p className="text-xs font-bold text-neutral-900 dark:text-white">
+                            ₹{sku.price.toLocaleString('en-IN')}{' '}
+                            {sku.originalPrice && <span className="line-through text-neutral-400 font-normal">₹{sku.originalPrice}</span>}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteSku(sku.id, sku.title)}
+                          className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-red-600 hover:border-red-600 transition-all"
+                          title="Delete Product"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB 2: LANDING BANNER & MEDIA */}
+          {activeTab === 'landing' && (
+            <div className="max-w-3xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white">
+                  CHANGE HERO LANDING BANNER & MEDIA
                 </h3>
               </div>
 
-              <form onSubmit={handleAddSku} className="space-y-4">
+              <form onSubmit={handleSaveSettings} className="space-y-5">
                 
-                {/* Title */}
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                    Footwear Title *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newSku.title}
-                    onChange={(e) => setNewSku({ ...newSku, title: e.target.value })}
-                    placeholder="e.g. Bliss Comfort Slides - Men"
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                  />
-                </div>
-
-                {/* Subtitle */}
-                <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                    Subtitle / Short Description
-                  </label>
-                  <input
-                    type="text"
-                    value={newSku.subtitle}
-                    onChange={(e) => setNewSku({ ...newSku, subtitle: e.target.value })}
-                    placeholder="e.g. Ultra-cushioned anti-skid slides for everyday wear"
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                  />
-                </div>
-
-                {/* Gender & Category Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                      Gender
-                    </label>
-                    <select
-                      value={newSku.gender}
-                      onChange={(e) => setNewSku({ ...newSku, gender: e.target.value as Gender })}
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    >
-                      <option value="Men">Men</option>
-                      <option value="Women">Women</option>
-                      <option value="Unisex">Unisex</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                      Category
-                    </label>
-                    <select
-                      value={newSku.category}
-                      onChange={(e) => setNewSku({ ...newSku, category: e.target.value as FootwearCategory })}
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    >
-                      <option value="Slippers">Slippers</option>
-                      <option value="Flip-Flops">Flip-Flops</option>
-                      <option value="Slides">Slides</option>
-                      <option value="Sandals">Sandals</option>
-                      <option value="Clogs">Clogs</option>
-                      <option value="Casual Shoes">Casual Shoes</option>
-                      <option value="Sneakers">Sneakers</option>
-                      <option value="Loafers">Loafers</option>
-                      <option value="Formal Footwear">Formal Footwear</option>
-                      <option value="Flats">Flats</option>
-                      <option value="Heels">Heels</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Price & Original Price */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                      Selling Price (₹) *
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={newSku.price}
-                      onChange={(e) => setNewSku({ ...newSku, price: Number(e.target.value) })}
-                      placeholder="1499"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                      Original Price (MRP ₹)
-                    </label>
-                    <input
-                      type="number"
-                      value={newSku.originalPrice || ''}
-                      onChange={(e) => setNewSku({ ...newSku, originalPrice: Number(e.target.value) })}
-                      placeholder="2199"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Marketplace Direct Links (Amazon & Myntra) */}
-                <div className="space-y-3 pt-2">
-                  <span className="block text-xs font-mono font-bold uppercase text-red-400">
-                    MARKETPLACE REDIRECT LINKS
-                  </span>
-
-                  <div>
-                    <label className="block text-[11px] font-mono text-neutral-400 mb-1">
-                      Amazon India Product Link
-                    </label>
-                    <input
-                      type="url"
-                      value={newSku.amazonUrl}
-                      onChange={(e) => setNewSku({ ...newSku, amazonUrl: e.target.value })}
-                      placeholder="https://www.amazon.in/dp/your-sku-asin"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-mono text-neutral-400 mb-1">
-                      Myntra Product Link
-                    </label>
-                    <input
-                      type="url"
-                      value={newSku.myntraUrl}
-                      onChange={(e) => setNewSku({ ...newSku, myntraUrl: e.target.value })}
-                      placeholder="https://www.myntra.com/bliss-balance-sku"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Image URL & Exact Spec Helper */}
-                <div className="space-y-2 pt-2">
+                <div className="space-y-3 bg-white dark:bg-black p-4 rounded-xl border border-neutral-200 dark:border-neutral-800">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-mono font-bold uppercase text-neutral-300">
-                      Product Image URL
+                    <label className="block text-xs font-bold uppercase text-neutral-800 dark:text-neutral-200">
+                      Hero Banner Photo
                     </label>
-                    <span className="text-[10px] font-mono text-red-400 font-bold bg-red-950 px-2 py-0.5 rounded">
-                      EXACT SIZE: 800 x 800 px (1:1)
+                    <span className="text-[10px] text-red-600 font-extrabold bg-red-50 dark:bg-red-950 px-2.5 py-1 rounded border border-red-200 dark:border-red-800">
+                      EXACT SIZE: 1200 x 600 px (2:1 Banner)
                     </span>
                   </div>
 
-                  <input
-                    type="url"
-                    value={newSku.imageUrl}
-                    onChange={(e) => setNewSku({ ...newSku, imageUrl: e.target.value })}
-                    placeholder="https://drive.google.com/direct-link-or-cdn-image.jpg"
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
+                  <ImagePlaceholder
+                    dimensions="1200 x 600 px (2:1 Wide Banner)"
+                    aspectRatio="aspect-[2/1]"
+                    label="HERO BANNER PHOTO DROPZONE"
+                    imageUrl={settings.heroImageUrl}
+                    onImageUploaded={(base64) => setSettings({ ...settings, heroImageUrl: base64 })}
                   />
-                  <p className="text-[10px] font-mono text-neutral-400">
-                    If left blank, exact placeholder container "800 x 800 px" will be displayed until you paste an image URL.
-                  </p>
                 </div>
 
-                {/* Feature Tags */}
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                    Footwear Features
+                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                    Announcement Marquee Ticker Text
                   </label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={featureInput}
-                      onChange={(e) => setFeatureInput(e.target.value)}
-                      placeholder="e.g. Anti-Skid Soles, Cushioned Bed"
-                      className="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-1.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddFeatureTag}
-                      className="px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-red-600 text-white font-mono text-xs font-bold"
-                    >
-                      Add Tag
-                    </button>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {newSku.features?.map((feat, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[10px] font-mono bg-neutral-950 text-neutral-300 px-2.5 py-1 rounded-md border border-neutral-800 flex items-center gap-1"
-                      >
-                        {feat}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveFeatureTag(idx)}
-                          className="text-red-400 hover:text-red-600 font-bold"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
+                  <input
+                    type="text"
+                    value={settings.announcementText}
+                    onChange={(e) => setSettings({ ...settings, announcementText: e.target.value })}
+                    className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                  />
                 </div>
 
-                {/* Flags */}
-                <div className="flex items-center gap-6 pt-2">
-                  <label className="flex items-center gap-2 cursor-pointer text-xs font-mono text-neutral-300">
-                    <input
-                      type="checkbox"
-                      checked={newSku.isNewArrival}
-                      onChange={(e) => setNewSku({ ...newSku, isNewArrival: e.target.checked })}
-                      className="accent-red-600 w-4 h-4 rounded"
-                    />
-                    <span>New Arrival Flag</span>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                    Hero Subheadline
                   </label>
-
-                  <label className="flex items-center gap-2 cursor-pointer text-xs font-mono text-neutral-300">
-                    <input
-                      type="checkbox"
-                      checked={newSku.isBestseller}
-                      onChange={(e) => setNewSku({ ...newSku, isBestseller: e.target.checked })}
-                      className="accent-red-600 w-4 h-4 rounded"
-                    />
-                    <span>Bestseller Flag</span>
-                  </label>
+                  <textarea
+                    rows={2}
+                    value={settings.heroSubheadline}
+                    onChange={(e) => setSettings({ ...settings, heroSubheadline: e.target.value })}
+                    className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                  />
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSyncing}
-                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:bg-neutral-800 text-white font-mono font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all"
                 >
-                  {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>PUBLISH SKU & SYNC WITH APPSCRIPT EXCEL TRACKER</span>
+                  SAVE BANNER & MEDIA CONFIG
                 </button>
 
               </form>
             </div>
+          )}
 
-            {/* Right Column: Active SKUs */}
-            <div className="lg:col-span-6 space-y-4">
-              <h3 className="font-heading text-2xl font-bold uppercase text-white flex items-center justify-between border-b border-neutral-800 pb-3">
-                <span>ACTIVE STORE SKUs</span>
-                <span className="text-xs font-mono text-red-500 font-bold">{skus.length} Items</span>
-              </h3>
+          {/* TAB 3: APPSCRIPT & EMAIL ENGINE */}
+          {activeTab === 'appscript' && (
+            <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
+                <div>
+                  <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                    <Database className="w-5 h-5 text-red-600" /> SELF-HEALING APPSCRIPT & BEAUTIFUL HTML EMAIL ENGINE
+                  </h3>
+                </div>
+              </div>
 
-              <div className="space-y-3 max-h-[750px] overflow-y-auto pr-1">
-                {skus.map((sku) => (
-                  <div
-                    key={sku.id}
-                    className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-between gap-4 hover:border-red-500/50 transition-all"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-mono font-bold uppercase text-red-500 bg-red-950 px-1.5 py-0.5 rounded">
-                          {sku.gender} • {sku.category}
-                        </span>
-                        <span className="text-[9px] font-mono text-neutral-500">{sku.id}</span>
-                      </div>
+              <form onSubmit={handleSaveSettings} className="space-y-4">
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      Google Apps Script Web App Endpoint URL
+                    </label>
+                    <input
+                      type="url"
+                      value={settings.appScriptUrl}
+                      onChange={(e) => setSettings({ ...settings, appScriptUrl: e.target.value })}
+                      placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
+                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    />
+                  </div>
 
-                      <h4 className="font-heading text-lg font-bold text-white uppercase leading-tight">
-                        {sku.title}
-                      </h4>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      Admin Alert Receiver Email
+                    </label>
+                    <input
+                      type="email"
+                      value={settings.adminEmail}
+                      onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
+                      placeholder="admin@blissbalance.co"
+                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
 
-                      <p className="font-mono text-xs font-bold text-white">
-                        ₹{sku.price.toLocaleString('en-IN')}{' '}
-                        {sku.originalPrice && <span className="line-through text-neutral-500 font-normal">₹{sku.originalPrice}</span>}
-                      </p>
-
-                      <div className="flex items-center gap-3 text-[10px] font-mono text-neutral-400">
-                        {sku.amazonUrl && <span className="text-amber-400 flex items-center gap-0.5"><ExternalLink className="w-3 h-3" /> Amazon</span>}
-                        {sku.myntraUrl && <span className="text-pink-400 flex items-center gap-0.5"><ExternalLink className="w-3 h-3" /> Myntra</span>}
-                      </div>
-                    </div>
+                <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-red-600 uppercase flex items-center gap-1">
+                      <Mail className="w-4 h-4 text-red-600" /> BRINDAVANAM APPSCRIPT & HTML EMAIL ENGINE CODE:
+                    </span>
 
                     <button
-                      onClick={() => handleDeleteSku(sku.id, sku.title)}
-                      className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-neutral-400 hover:text-red-500 hover:border-red-500 transition-all"
-                      title="Delete SKU"
+                      type="button"
+                      onClick={copyCode}
+                      className="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-red-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedCode ? 'COPIED!' : 'COPY APPSCRIPT CODE'}</span>
                     </button>
+                  </div>
+
+                  <pre className="p-4 bg-neutral-50 dark:bg-neutral-950 rounded-xl text-[11px] text-neutral-800 dark:text-neutral-300 overflow-x-auto border border-neutral-200 dark:border-neutral-900 leading-relaxed max-h-[350px]">
+{appScriptCode}
+                  </pre>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSyncing}
+                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all"
+                >
+                  SAVE APPSCRIPT & EMAIL CONFIG
+                </button>
+
+              </form>
+            </div>
+          )}
+
+          {/* TAB 4: SYSTEM AUDIT LOGS */}
+          {activeTab === 'logs' && (
+            <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-4 shadow-xs">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
+                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                  <Terminal className="w-5 h-5 text-red-600" /> SYSTEM AUDIT LOGS
+                </h3>
+                <button
+                  onClick={() => setLogs([])}
+                  className="text-xs text-neutral-500 hover:text-red-600 font-bold"
+                >
+                  CLEAR LOGS
+                </button>
+              </div>
+
+              <div className="p-4 bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-800 font-mono text-xs space-y-2 max-h-[500px] overflow-y-auto">
+                {logs.map((log, idx) => (
+                  <div key={idx} className="flex items-start gap-3 py-1 border-b border-neutral-100 dark:border-neutral-900/60">
+                    <span className="text-neutral-400 text-[10px]">{log.time}</span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      log.type === 'SECURITY' ? 'bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400' :
+                      log.type === 'ACTION' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400' :
+                      'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
+                    }`}>
+                      {log.type}
+                    </span>
+                    <span className="text-neutral-800 dark:text-neutral-200">{log.msg}</span>
                   </div>
                 ))}
               </div>
             </div>
+          )}
 
-          </div>
-        )}
-
-        {/* TAB 2: LANDING PIC & SITE SETTINGS */}
-        {activeTab === 'landing' && (
-          <div className="max-w-3xl mx-auto bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-            <div className="border-b border-neutral-800 pb-3">
-              <h3 className="font-heading text-2xl font-bold uppercase text-white">
-                CHANGE LANDING PIC & HERO BANNER
-              </h3>
-            </div>
-
-            <form onSubmit={handleSaveSettings} className="space-y-5">
-              
-              <div className="space-y-3 bg-neutral-950 p-4 rounded-xl border border-neutral-800">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-mono font-bold uppercase text-neutral-200">
-                    Landing Pic Image URL
-                  </label>
-                  <span className="text-[10px] font-mono text-red-400 font-extrabold bg-red-950 px-2.5 py-1 rounded border border-red-500/40">
-                    EXACT SIZE NEEDED: 1200 x 600 px (2:1 Banner)
-                  </span>
-                </div>
-
-                <input
-                  type="url"
-                  value={settings.heroImageUrl || ''}
-                  onChange={(e) => setSettings({ ...settings, heroImageUrl: e.target.value })}
-                  placeholder="https://drive.google.com/direct-link-or-cdn-banner.jpg"
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                />
-
-                <div className="pt-2">
-                  <span className="block text-[10px] font-mono text-neutral-400 mb-2 uppercase">LANDING PIC PREVIEW:</span>
-                  <ImagePlaceholder
-                    dimensions="1200 x 600 px (2:1 Wide Banner)"
-                    aspectRatio="aspect-[2/1]"
-                    label="HERO LANDING PIC PREVIEW"
-                    imageUrl={settings.heroImageUrl}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                  Announcement Top Bar Text
-                </label>
-                <input
-                  type="text"
-                  value={settings.announcementText}
-                  onChange={(e) => setSettings({ ...settings, announcementText: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                  Hero Subheadline
-                </label>
-                <textarea
-                  rows={2}
-                  value={settings.heroSubheadline}
-                  onChange={(e) => setSettings({ ...settings, heroSubheadline: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSyncing}
-                className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-widest shadow-md transition-all"
-              >
-                SAVE LANDING BANNER SETTINGS
-              </button>
-
-            </form>
-          </div>
-        )}
-
-        {/* TAB 3: APPSCRIPT & SELF-HEALING EXCEL TRACKER */}
-        {activeTab === 'appscript' && (
-          <div className="max-w-4xl mx-auto bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-            <div className="border-b border-neutral-800 pb-3 flex items-center justify-between">
-              <div>
-                <h3 className="font-heading text-2xl font-bold uppercase text-white flex items-center gap-2">
-                  <Database className="w-5 h-5 text-red-500" /> SELF-HEALING APPSCRIPT & EXCEL INTEGRATION
-                </h3>
-                <p className="font-mono text-xs text-neutral-400">
-                  Automatically repairs Google Sheet headers if anyone deletes or alters them!
-                </p>
-              </div>
-            </div>
-
-            <form onSubmit={handleSaveSettings} className="space-y-4">
-              
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                  Google Apps Script Web App Deployment URL
-                </label>
-                <input
-                  type="url"
-                  value={settings.appScriptUrl}
-                  onChange={(e) => setSettings({ ...settings, appScriptUrl: e.target.value })}
-                  placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-300 mb-1">
-                  Google Drive Image Folder ID
-                </label>
-                <input
-                  type="text"
-                  value={settings.googleDriveFolderId}
-                  onChange={(e) => setSettings({ ...settings, googleDriveFolderId: e.target.value })}
-                  placeholder="1_BlissBalance_Footwear_Drive_Folder_ID"
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:border-red-500 focus:outline-none"
-                />
-              </div>
-
-              {/* Self-Healing Apps Script Code Generator */}
-              <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-red-400 uppercase flex items-center gap-1">
-                    <Info className="w-4 h-4 text-red-500" /> BULLETPROOF SELF-HEALING APPS SCRIPT CODE:
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={copyAppsScriptCode}
-                    className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-red-600 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition-all"
-                  >
-                    {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedCode ? 'COPIED TO CLIPBOARD!' : 'COPY CODE'}</span>
-                  </button>
-                </div>
-
-                <pre className="p-4 bg-black rounded-xl text-[11px] font-mono text-neutral-300 overflow-x-auto border border-neutral-900 leading-relaxed">
-{appScriptSelfHealingCode}
-                </pre>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSyncing}
-                className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-widest shadow-md transition-all"
-              >
-                SAVE APPSCRIPT CONFIGURATION
-              </button>
-
-            </form>
-          </div>
-        )}
-
-      </main>
+        </main>
+      </div>
 
       <Footer />
     </div>

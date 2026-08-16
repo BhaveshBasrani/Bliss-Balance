@@ -12,22 +12,19 @@ const config: Config = {
       colors: {
         brand: {
           red: '#E50914',
-          crimson: '#D00000',
-          darkRed: '#990000',
-          brightRed: '#FF1E27',
-          black: '#0A0A0A',
+          black: '#080808',
           white: '#FFFFFF',
-          offWhite: '#F8F9FA',
+          neutralOff: '#F5F5F5',
         },
       },
       fontFamily: {
-        heading: ['var(--font-outfit)', 'sans-serif'],
+        heading: ['var(--font-space)', 'var(--font-outfit)', 'sans-serif'],
         body: ['var(--font-jakarta)', 'sans-serif'],
-        mono: ['var(--font-jakarta)', 'monospace'],
+        mono: ['var(--font-space)', 'monospace'],
       },
       animation: {
-        'marquee': 'marquee 25s linear infinite',
-        'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'marquee': 'marquee 22s linear infinite',
+        'flicker': 'flicker 0.15s ease-in-out infinite',
       },
       keyframes: {
         marquee: {

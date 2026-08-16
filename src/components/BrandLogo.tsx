@@ -9,25 +9,25 @@ interface BrandLogoProps {
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '' }) => {
   const dimensions = {
-    sm: 'w-10 h-10 rounded-xl',
-    md: 'w-14 h-14 rounded-2xl',
-    lg: 'w-20 h-20 rounded-2xl',
-    xl: 'w-32 h-32 rounded-3xl',
+    sm: 'w-9 h-9 rounded-xl',
+    md: 'w-11 h-11 rounded-2xl',
+    lg: 'w-14 h-14 rounded-2xl',
+    xl: 'w-24 h-24 rounded-3xl',
   }[size];
 
   const imgDimensions = {
-    sm: 'w-6 h-6',
-    md: 'w-9 h-9',
+    sm: 'w-8 h-8',
+    md: 'w-10 h-10',
     lg: 'w-12 h-12',
-    xl: 'w-20 h-20',
+    xl: 'w-22 h-22',
   }[size];
 
   return (
-    <div className={`relative bg-[#E50914] flex items-center justify-center shadow-lg overflow-hidden shrink-0 ${dimensions} ${className}`}>
+    <div className={`relative bg-[#E50914] flex items-center justify-center shadow-sm overflow-hidden shrink-0 ${dimensions} ${className}`}>
       <img
         src="/Logo.svg"
-        alt="Bliss Balance Logo"
-        className={`object-contain filter brightness-0 invert ${imgDimensions}`}
+        alt="Bliss Balance Emblem"
+        className={`object-contain filter brightness-0 invert scale-110 ${imgDimensions}`}
       />
     </div>
   );
