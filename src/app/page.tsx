@@ -11,7 +11,7 @@ import { PhilosophySection } from '@/components/PhilosophySection';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
 import { IntroLoader } from '@/components/IntroLoader';
-import { getStoredSKUs, getStoredSettings, INITIAL_COLLECTIONS } from '@/lib/dataStore';
+import { getStoredSKUs, getStoredSettings, saveStoredSettings, INITIAL_COLLECTIONS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -27,6 +27,12 @@ export default function HomePage() {
     setSettings(getStoredSettings());
   }, []);
 
+  const handleHeroImageUploaded = (base64Url: string) => {
+    const updated = { ...settings, heroImageUrl: base64Url };
+    setSettings(updated);
+    saveStoredSettings(updated);
+  };
+
   const displayedSkus = skus.filter(s => {
     if (selectedTab === 'All') return true;
     return s.gender === selectedTab || s.gender === 'Unisex';
@@ -34,20 +40,20 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white transition-colors duration-300">
-      {/* Pitch Black Comet-Style Intro Loader */}
+      {/* Comet-Style Pitch Black Intro Loader */}
       <IntroLoader />
 
-      {/* Top Ticker */}
+      {/* Top Infinite Marquee Ticker */}
       <AnnouncementBar announcementText={settings.announcementText} />
 
-      {/* Main Header Nav */}
+      {/* Main Header Navbar */}
       <Navbar onOpenSearch={() => setSearchOpen(true)} />
 
       <main className="flex-1">
-        {/* Main Hero Section */}
-        <HeroSection settings={settings} />
+        {/* High-Impact Visual Hero Section */}
+        <HeroSection settings={settings} onImageUploaded={handleHeroImageUploaded} />
 
-        {/* Brand Differentiators */}
+        {/* Brand Differentiators Grid */}
         <KeyFeatures />
 
         {/* Footwear Collections Grid */}
@@ -69,7 +75,7 @@ export default function HomePage() {
               </div>
 
               {/* Filter Tabs */}
-              <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 p-1.5 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm">
+              <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 p-1.5 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xs">
                 {(['All', 'Men', 'Women'] as const).map((tab) => (
                   <button
                     key={tab}
@@ -77,7 +83,7 @@ export default function HomePage() {
                     className={`px-4 py-2 rounded-lg font-mono text-xs font-bold uppercase tracking-wider transition-all ${
                       selectedTab === tab
                         ? 'bg-red-600 text-white shadow-md'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
                     }`}
                   >
                     {tab}
@@ -101,11 +107,11 @@ export default function HomePage() {
               </div>
             )}
 
-            {/* View Full Catalog Link */}
+            {/* View Full Catalog */}
             <div className="mt-12 text-center">
               <Link
                 href="/collections"
-                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-neutral-900 dark:bg-neutral-900 text-white font-mono font-extrabold text-xs uppercase tracking-widest hover:bg-neutral-800 transition-all shadow-md"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-neutral-950 dark:bg-neutral-900 text-white font-mono font-extrabold text-xs uppercase tracking-widest hover:bg-neutral-800 transition-all shadow-md"
               >
                 <span>EXPLORE ALL COLLECTIONS</span>
                 <ArrowRight className="w-4 h-4 text-red-500" />
