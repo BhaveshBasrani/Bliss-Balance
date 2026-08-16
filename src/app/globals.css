@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 10 10 10;
+    --foreground: 255 255 255;
+  }
+
+  html.light {
+    --background: 242 244 247;
+    --foreground: 15 15 15;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Neomorphism utilities for Light Mode */
+html.light .neo-box {
+  background: #f2f4f7;
+  box-shadow: 8px 8px 16px #d1d5db, -8px -8px 16px #ffffff;
+  border-radius: 1rem;
+}
+
+html.light .neo-inset {
+  background: #f2f4f7;
+  box-shadow: inset 4px 4px 8px #d1d5db, inset -4px -4px 8px #ffffff;
+}
+
+/* Red Glow Animations */
+.glow-red-sm {
+  box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+}
+
+.glow-red-md {
+  box-shadow: 0 0 30px rgba(229, 9, 20, 0.5);
+}
+
+/* Hide scrollbar for category horizontal scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

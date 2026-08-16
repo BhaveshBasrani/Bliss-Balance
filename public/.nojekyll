@@ -1,0 +1,2 @@
+# Bypasses GitHub Pages default Jekyll engine processing
+# Ensures _next/ asset directories are served properly without 404 errors.

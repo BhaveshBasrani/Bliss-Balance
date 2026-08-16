@@ -1,0 +1,126 @@
+'use client';
+
+import React, { useState } from 'react';
+import { ExternalLink, Tag, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { ImagePlaceholder } from './ImagePlaceholder';
+import { FootwearSKU } from '@/lib/types';
+
+interface SkuCardProps {
+  sku: FootwearSKU;
+}
+
+export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const discountPercent = sku.originalPrice
+    ? Math.round(((sku.originalPrice - sku.price) / sku.originalPrice) * 100)
+    : 0;
+
+  return (
+    <>
+      <div className="group relative rounded-2xl overflow-hidden bg-black dark:bg-black light:bg-white border border-neutral-800 dark:border-neutral-800 light:border-slate-200 hover:border-red-600 transition-all duration-300 shadow-xl flex flex-col justify-between">
+        
+        {/* Top Badges */}
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1">
+          {sku.isNewArrival && (
+            <span className="bg-red-600 text-white font-mono text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded shadow-md">
+              NEW ARRIVAL
+            </span>
+          )}
+          {sku.isBestseller && (
+            <span className="bg-neutral-900 border border-neutral-700 text-neutral-200 font-mono text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded shadow-md">
+              BESTSELLER
+            </span>
+          )}
+        </div>
+
+        {/* Product Image Spec Placeholder (800 x 800 px) */}
+        <div className="p-3">
+          <ImagePlaceholder
+            dimensions={sku.imageDimensions || "800 x 800 px (1:1 Product Square)"}
+            aspectRatio="aspect-square"
+            label={sku.title}
+            imageUrl={sku.imageUrl}
+          />
+        </div>
+
+        {/* Product Details Content */}
+        <div className="p-5 pt-2 flex-1 flex flex-col justify-between space-y-3">
+          
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400">
+                {sku.gender} • {sku.category}
+              </span>
+              {discountPercent > 0 && (
+                <span className="text-[10px] font-mono font-extrabold text-red-500 bg-red-950/60 light:bg-red-100 px-2 py-0.5 rounded border border-red-500/30">
+                  SAVE {discountPercent}%
+                </span>
+              )}
+            </div>
+
+            <h3 className="font-heading text-xl font-bold text-white dark:text-white light:text-slate-950 uppercase tracking-wide group-hover:text-red-500 transition-colors">
+              {sku.title}
+            </h3>
+
+            <p className="font-body text-xs text-neutral-400 dark:text-neutral-400 light:text-slate-600 line-clamp-2 mt-1">
+              {sku.subtitle}
+            </p>
+          </div>
+
+          {/* Feature Tags */}
+          <div className="flex flex-wrap gap-1 pt-1">
+            {sku.features.slice(0, 3).map((feat, idx) => (
+              <span
+                key={idx}
+                className="text-[9px] font-mono text-neutral-300 dark:text-neutral-300 light:text-slate-700 bg-neutral-900 dark:bg-neutral-900 light:bg-slate-100 px-2 py-0.5 rounded border border-neutral-800 dark:border-neutral-800 light:border-slate-300"
+              >
+                {feat}
+              </span>
+            ))}
+          </div>
+
+          {/* Price & Action Buttons */}
+          <div className="pt-3 border-t border-neutral-900 dark:border-neutral-900 light:border-slate-200">
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="font-heading text-2xl font-black text-white dark:text-white light:text-slate-950">
+                ₹{sku.price.toLocaleString('en-IN')}
+              </span>
+              {sku.originalPrice && (
+                <span className="font-mono text-xs text-neutral-500 line-through">
+                  ₹{sku.originalPrice.toLocaleString('en-IN')}
+                </span>
+              )}
+              <span className="text-[10px] font-mono text-neutral-400 ml-auto">INCL. TAXES</span>
+            </div>
+
+            {/* Direct Marketplace Buttons (Amazon & Myntra Redirects) */}
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href={sku.amazonUrl || 'https://www.amazon.in'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-black font-mono font-bold text-[11px] uppercase tracking-wider shadow-md transition-all"
+              >
+                <span>AMAZON</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              <a
+                href={sku.myntraUrl || 'https://www.myntra.com'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-mono font-bold text-[11px] uppercase tracking-wider shadow-md transition-all"
+              >
+                <span>MYNTRA</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </>
+  );
+};
