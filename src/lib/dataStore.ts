@@ -5,10 +5,10 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroHeadline: 'WALK IN BLISS. LIVE IN BALANCE.',
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',
-  heroImageUrl: '', // Empty: user will add custom photo via Admin Panel
-  appScriptUrl: 'https://script.google.com/macros/s/AKfycbx_EXAMPLE_BLISS_BALANCE/exec',
+  heroImageUrl: '',
+  appScriptUrl: process.env.NEXT_PUBLIC_APPSCRIPT_URL || 'https://script.google.com/macros/s/AKfycbykDG_64LHgNhlS6gu-TowyNkTAC2Qfl3ohBoKmzQaub5oD0jj8Ah2Ow227lLG4D45ZzA/exec',
   googleDriveFolderId: '1_BlissBalance_Footwear_Drive_Folder_ID',
-  recaptchaSiteKey: '6Ld_EXAMPLE_RECAPTCHA_V3_SITE_KEY',
+  recaptchaSiteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa',
   adminEmail: 'admin@blissbalance.co',
 };
 

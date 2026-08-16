@@ -1,56 +1,48 @@
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import { Outfit, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { MobileBottomNav } from '@/components/MobileBottomNav';
+import Script from 'next/script';
 
 const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-outfit',
-  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
 });
 
-const jakartaSans = Plus_Jakarta_Sans({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-jakarta',
-  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-  themeColor: '#FFFFFF',
-};
-
 export const metadata: Metadata = {
-  title: 'BLISS BALANCE | Official Store | Walk in Bliss. Live in Balance.',
-  description: 'Official Bliss Balance footwear store. Discover comfortable, lightweight, anti-skid slippers, sandals, slides, clogs, sneakers & casual shoes for Men and Women.',
+  title: 'Bliss Balance • Modern Indian Footwear Brand | Walk in Bliss. Live in Balance.',
+  description:
+    'Bliss Balance offers everyday slippers, flip-flops, slides, sandals, clogs, casual shoes, sneakers, flats, loafers, and heels for men and women. Soft comfort, practical design, modern style, and everyday versatility.',
   keywords: [
     'Bliss Balance',
-    'Bliss Balance footwear',
-    'Bliss Balance slippers',
-    'Bliss Balance sandals',
-    'Bliss Balance slides',
-    'men slippers',
-    'women slippers',
-    'everyday walking footwear'
+    'Men Footwear',
+    'Women Footwear',
+    'Slippers',
+    'Flip-Flops',
+    'Slides',
+    'Sandals',
+    'Clogs',
+    'Casual Shoes',
+    'Sneakers',
+    'Loafers',
+    'Heels',
+    'Comfortable Footwear India',
   ],
-  authors: [{ name: 'Bliss Balance' }],
-  creator: 'Bliss Balance',
-  publisher: 'Bliss Balance',
-  openGraph: {
-    type: 'website',
-    locale: 'en_IN',
-    url: 'https://blissbalance.co',
-    siteName: 'Bliss Balance Footwear',
-    title: 'BLISS BALANCE | Walk in Bliss. Live in Balance.',
-    description: 'Everyday footwear made for comfort, style, lightweight feel and reliable grip.',
-  },
-  alternates: {
-    canonical: 'https://blissbalance.co',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
   },
 };
 
@@ -59,30 +51,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const jsonLdSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Brand',
-    name: 'Bliss Balance',
-    url: 'https://blissbalance.co',
-    logo: 'https://blissbalance.co/Logo.svg',
-    slogan: 'Walk in Bliss. Live in Balance.',
-    description: 'Modern footwear brand combining comfort, contemporary style, lightweight construction and dependable grip.',
-  };
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa';
 
   return (
-    <html lang="en" className="light scroll-smooth">
+    <html lang="en" className={`${outfit.variable} ${jakarta.variable} light`} style={{ colorScheme: 'light' }}>
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema) }}
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" sizes="any" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+        {/* Official Google reCAPTCHA v3 Script */}
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
+          strategy="afterInteractive"
         />
       </head>
-      <body
-        className={`${outfit.variable} ${jakartaSans.variable} font-body bg-white text-neutral-900 dark:bg-neutral-950 dark:text-white antialiased selection:bg-red-600 selection:text-white min-h-screen flex flex-col justify-between tracking-wide leading-relaxed`}
-      >
+      <body className="font-body antialiased bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white transition-colors duration-300">
         <ThemeProvider>
           {children}
-          <MobileBottomNav />
         </ThemeProvider>
       </body>
     </html>
