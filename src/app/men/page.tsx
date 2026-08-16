@@ -5,7 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { SkuCard } from '@/components/SkuCard';
 import { SearchModal } from '@/components/SearchModal';
-import { getStoredSKUs } from '@/lib/dataStore';
+import { getStoredSKUs, fetchCloudSKUs } from '@/lib/dataStore';
 import { FootwearSKU } from '@/lib/types';
 import Link from 'next/link';
 
@@ -29,6 +29,9 @@ export default function MenPage() {
 
   useEffect(() => {
     setSkus(getStoredSKUs().filter(s => s.gender === 'Men' || s.gender === 'Unisex'));
+    fetchCloudSKUs().then(cloudSkus => {
+      setSkus(cloudSkus.filter(s => s.gender === 'Men' || s.gender === 'Unisex'));
+    });
   }, []);
 
   const filtered = selectedCategory === 'All'

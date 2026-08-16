@@ -63,7 +63,6 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
   },
 ];
 
-// Zero demo/example SKUs
 export const INITIAL_SKUS: FootwearSKU[] = [];
 
 // Persistence Storage Keys
@@ -106,4 +105,43 @@ export function saveStoredSettings(settings: SiteSettings) {
   } catch (e) {
     console.error('Error saving settings:', e);
   }
+}
+
+/**
+ * Live Dynamic Cloud Fetch from Google Sheets AppsScript Endpoint
+ * Guarantees cross-device live sync between laptops, phones, and tablets!
+ */
+export async function fetchCloudSKUs(appScriptUrl?: string): Promise<FootwearSKU[]> {
+  const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
+  if (!url || url.includes('EXAMPLE')) return getStoredSKUs();
+
+  try {
+    const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
+    const data = await res.json();
+    if (data && data.products && Array.isArray(data.products)) {
+      saveStoredSKUs(data.products);
+      return data.products;
+    }
+  } catch (e) {
+    console.warn('Could not fetch live cloud products:', e);
+  }
+  return getStoredSKUs();
+}
+
+export async function fetchCloudSettings(appScriptUrl?: string): Promise<SiteSettings> {
+  const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
+  if (!url || url.includes('EXAMPLE')) return getStoredSettings();
+
+  try {
+    const res = await fetch(`${url}?action=getSettings`, { method: 'GET' });
+    const data = await res.json();
+    if (data && data.settings && typeof data.settings === 'object') {
+      const merged = { ...getStoredSettings(), ...data.settings };
+      saveStoredSettings(merged);
+      return merged;
+    }
+  } catch (e) {
+    console.warn('Could not fetch live cloud settings:', e);
+  }
+  return getStoredSettings();
 }

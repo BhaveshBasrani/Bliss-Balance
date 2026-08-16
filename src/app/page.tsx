@@ -12,7 +12,7 @@ import { BenefitsSection } from '@/components/BenefitsSection';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
 import { IntroLoader } from '@/components/IntroLoader';
-import { getStoredSKUs, getStoredSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
+import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
 import { ArrowRight, Plus } from 'lucide-react';
 import Link from 'next/link';
@@ -28,6 +28,10 @@ export default function HomePage() {
     setMounted(true);
     setSkus(getStoredSKUs());
     setSettings(getStoredSettings());
+
+    // Live Dynamic Cloud Fetch from Google Sheets
+    fetchCloudSKUs().then(cloudSkus => setSkus(cloudSkus));
+    fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings));
   }, []);
 
   const displayedSkus = skus.filter(s => {
@@ -96,7 +100,7 @@ export default function HomePage() {
                   NO PRODUCTS ADDED YET
                 </h3>
                 <p className="font-mono text-xs text-neutral-500 max-w-md mx-auto">
-                  Add footwear products, title, price, and Amazon/Myntra buy links in the Admin Control Panel.
+                  Add footwear products, title, price, and photo links in the Admin Control Panel.
                 </p>
                 <Link
                   href="/admin"

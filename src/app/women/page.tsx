@@ -5,7 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { SkuCard } from '@/components/SkuCard';
 import { SearchModal } from '@/components/SearchModal';
-import { getStoredSKUs } from '@/lib/dataStore';
+import { getStoredSKUs, fetchCloudSKUs } from '@/lib/dataStore';
 import { FootwearSKU } from '@/lib/types';
 
 export default function WomenPage() {
@@ -19,15 +19,19 @@ export default function WomenPage() {
     'Flip-Flops',
     'Slides',
     'Sandals',
-    'Flats',
+    'Clogs',
     'Casual Shoes',
     'Sneakers',
-    'Clogs',
+    'Flats',
     'Heels',
+    'Loafers',
   ];
 
   useEffect(() => {
     setSkus(getStoredSKUs().filter(s => s.gender === 'Women' || s.gender === 'Unisex'));
+    fetchCloudSKUs().then(cloudSkus => {
+      setSkus(cloudSkus.filter(s => s.gender === 'Women' || s.gender === 'Unisex'));
+    });
   }, []);
 
   const filtered = selectedCategory === 'All'
@@ -49,7 +53,7 @@ export default function WomenPage() {
             WOMEN'S <span className="text-red-600">FOOTWEAR</span>
           </h1>
           <p className="font-body text-neutral-600 dark:text-neutral-400 text-sm max-w-2xl">
-            Slippers, Flip-Flops, Slides, Sandals, Flats, Casual Shoes, Sneakers, Clogs & Heels. Thoughtfully designed with cushioned footbeds, supportive contours, and effortless style.
+            Slippers, Slides, Sandals, Clogs, Casual Shoes, Sneakers, Flats & Heels. Contemporary designs crafted with soft cushioning and dependable outer soles.
           </p>
         </div>
 
