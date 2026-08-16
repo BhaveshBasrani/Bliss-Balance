@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Search, X, ArrowRight, ExternalLink } from 'lucide-react';
 import { FootwearSKU } from '@/lib/types';
 
@@ -88,24 +89,38 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, skus 
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <a
-                    href={sku.amazonUrl || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black font-mono font-bold text-[10px] uppercase flex items-center gap-1"
+                  <Link
+                    href={`/product?id=${sku.id}`}
+                    onClick={onClose}
+                    className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-[10px] uppercase flex items-center gap-1"
                   >
-                    <span>Amazon</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                  <a
-                    href={sku.myntraUrl || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-mono font-bold text-[10px] uppercase flex items-center gap-1"
-                  >
-                    <span>Myntra</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                    <span>VIEW</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+
+                  {sku.amazonUrl && sku.amazonUrl.trim() !== '' && (
+                    <a
+                      href={sku.amazonUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black font-mono font-bold text-[10px] uppercase flex items-center gap-1"
+                    >
+                      <span>Amazon</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+
+                  {sku.myntraUrl && sku.myntraUrl.trim() !== '' && (
+                    <a
+                      href={sku.myntraUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-mono font-bold text-[10px] uppercase flex items-center gap-1"
+                    >
+                      <span>Myntra</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               </div>
             ))

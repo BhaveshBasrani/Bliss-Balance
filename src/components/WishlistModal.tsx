@@ -105,7 +105,7 @@ export const WishlistModal: React.FC<WishlistModalProps> = ({ isOpen, onClose })
 
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/product/${sku.id}`}
+                    href={`/product?id=${sku.id}`}
                     onClick={onClose}
                     className="p-2 rounded-xl bg-red-600 text-white font-bold text-xs flex items-center gap-1 hover:bg-red-500 transition-all"
                   >
