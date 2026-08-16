@@ -19,6 +19,7 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
     gender: 'Men',
     description: 'Soft cushioned slippers engineered for all-day indoor & relaxed wear.',
     imageDimensions: '600 x 800 px (3:4 Portrait Banner)',
+    imageUrl: '/collections/mens-slippers.jpg',
     slug: 'mens-slippers',
   },
   {
