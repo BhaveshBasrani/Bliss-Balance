@@ -27,6 +27,7 @@ import {
   Layers,
   Terminal,
   Mail,
+  Sparkles,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -41,9 +42,10 @@ export default function AdminPage() {
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
   const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs'>('skus');
 
-  // Status & Logs
+  // Status & Syncing State
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStepText, setSyncStepText] = useState('Saving to Google Sheets...');
   const [logs, setLogs] = useState<Array<{ time: string; msg: string; type: string }>>([
     { time: new Date().toLocaleTimeString(), msg: 'Admin Control Station Initialized', type: 'SYSTEM' },
   ]);
@@ -111,6 +113,7 @@ export default function AdminPage() {
     }
 
     setIsSyncing(true);
+    setSyncStepText('Syncing Product & Photo to Google Sheets...');
 
     const createdSku: FootwearSKU = {
       id: `sku-bb-${Date.now().toString().slice(-5)}`,
@@ -134,8 +137,10 @@ export default function AdminPage() {
     setSkus(updatedSkus);
     saveStoredSKUs(updatedSkus);
 
+    setSyncStepText('Generating reCAPTCHA v3 Security Token...');
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'add_sku');
 
+    setSyncStepText('Writing Record to Google Sheets & Dispatching HTML Email...');
     const syncRes = await syncWithAppsScript(settings.appScriptUrl, {
       action: 'ADD_SKU',
       skuData: createdSku,
@@ -145,8 +150,8 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    addLog(`Product "${createdSku.title}" created & synced`, 'ACTION');
-    showStatus('success', `Product "${createdSku.title}" created! ${syncRes.message}`);
+    addLog(`Product "${createdSku.title}" created & synced to Google Sheets`, 'ACTION');
+    showStatus('success', `Product "${createdSku.title}" saved to Google Sheets! ${syncRes.message}`);
 
     setNewSku({
       title: '',
@@ -169,6 +174,8 @@ export default function AdminPage() {
     if (!confirm(`Are you sure you want to delete product "${title}"?`)) return;
 
     setIsSyncing(true);
+    setSyncStepText(`Deleting "${title}" from Google Sheets...`);
+
     const updatedSkus = skus.filter(s => s.id !== id);
     setSkus(updatedSkus);
     saveStoredSKUs(updatedSkus);
@@ -183,13 +190,15 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    addLog(`Deleted product "${title}"`, 'ACTION');
+    addLog(`Deleted product "${title}" from Google Sheets`, 'ACTION');
     showStatus('info', `Deleted product "${title}". ${syncRes.message}`);
   };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSyncing(true);
+    setSyncStepText('Syncing Site Banner & Settings to Google Sheets...');
+
     saveStoredSettings(settings);
 
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'update_banner');
@@ -202,8 +211,8 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    addLog('Updated site settings & banner config', 'CONFIG');
-    showStatus('success', `Settings updated! ${syncRes.message}`);
+    addLog('Updated site settings & banner config in Google Sheets', 'CONFIG');
+    showStatus('success', `Settings saved to Google Sheets! ${syncRes.message}`);
   };
 
   const appScriptCode = `/**
@@ -265,7 +274,7 @@ function doPost(e) {
     setTimeout(() => setCopiedCode(false), 3000);
   };
 
-  // PASSWORD GATE OVERLAY (Light mode default matching store theme)
+  // PASSWORD GATE OVERLAY
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white flex flex-col justify-between font-mono p-4 transition-colors">
@@ -342,9 +351,45 @@ function doPost(e) {
     );
   }
 
-  // MERCHANT CONTROL STATION DASHBOARD (Clean Light Mode Default Theme)
+  // MERCHANT CONTROL STATION DASHBOARD
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors">
+    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors relative">
+      
+      {/* BEAUTIFUL APPSCRIPT SYNC LOADING MODAL */}
+      {isSyncing && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 max-w-sm w-full text-center space-y-6 shadow-2xl relative overflow-hidden">
+            
+            {/* Ambient Red Glow Filter */}
+            <div className="absolute inset-0 bg-red-600/10 rounded-3xl blur-xl pointer-events-none" />
+
+            {/* Spinner & Logo Emblem Wrapper */}
+            <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-red-600/20 border-t-red-600 animate-spin" />
+              <BrandLogo size="md" className="relative z-10" />
+            </div>
+
+            <div className="space-y-2 relative z-10">
+              <span className="text-[10px] text-red-500 font-extrabold uppercase tracking-widest flex items-center justify-center gap-1.5 animate-pulse">
+                <Sparkles className="w-3.5 h-3.5 text-red-500" /> SYNCING WITH GOOGLE APPSCRIPT
+              </span>
+              <h3 className="font-heading text-xl font-bold uppercase text-white tracking-wider">
+                SAVING TO GOOGLE SHEETS
+              </h3>
+              <p className="text-xs font-mono text-neutral-400 leading-relaxed">
+                {syncStepText}
+              </p>
+            </div>
+
+            <div className="pt-2 border-t border-neutral-800 text-[10px] text-neutral-500 font-mono flex items-center justify-center gap-2">
+              <RefreshCw className="w-3 h-3 text-red-500 animate-spin" />
+              <span>PLEASE DO NOT CLOSE THIS TAB...</span>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       <div>
         <div className="bg-neutral-50 dark:bg-black border-b border-neutral-200 dark:border-neutral-800 py-3 px-4 sm:px-8 flex items-center justify-between text-xs">
           <Link
@@ -417,7 +462,6 @@ function doPost(e) {
                 {statusMsg.type === 'info' && <Info className="w-5 h-5" />}
                 <span>{statusMsg.text}</span>
               </div>
-              {isSyncing && <RefreshCw className="w-4 h-4 animate-spin" />}
             </div>
           )}
 
@@ -601,8 +645,8 @@ function doPost(e) {
                     disabled={isSyncing}
                     className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:bg-neutral-400 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
                   >
-                    {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    <span>PUBLISH PRODUCT & SEND HTML EMAIL</span>
+                    <Save className="w-4 h-4" />
+                    <span>PUBLISH PRODUCT & SYNC TO GOOGLE SHEETS</span>
                   </button>
 
                 </form>
@@ -646,6 +690,7 @@ function doPost(e) {
 
                         <button
                           onClick={() => handleDeleteSku(sku.id, sku.title)}
+                          disabled={isSyncing}
                           className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-red-600 hover:border-red-600 transition-all"
                           title="Delete Product"
                         >
