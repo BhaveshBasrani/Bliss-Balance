@@ -28,6 +28,7 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
     gender: 'Men',
     description: 'Lightweight everyday slides and supportive sandals built for reliable grip.',
     imageDimensions: '600 x 800 px (3:4 Portrait Banner)',
+    imageUrl: '/collections/mens-slides-sandals.jpg',
     slug: 'mens-slides-sandals',
   },
   {
@@ -36,6 +37,7 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
     gender: 'Men',
     description: 'Contemporary silhouettes with cushioned soles for work, travel and outings.',
     imageDimensions: '600 x 800 px (3:4 Portrait Banner)',
+    imageUrl: '/collections/mens-casual-sneakers.jpg',
     slug: 'mens-casual-sneakers',
   },
   {
@@ -44,6 +46,7 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
     gender: 'Women',
     description: 'Ultra-lightweight everyday slippers and stylish slides designed for easy steps.',
     imageDimensions: '600 x 800 px (3:4 Portrait Banner)',
+    imageUrl: '/collections/womens-slippers-slides.jpg',
     slug: 'womens-slippers-slides',
   },
   {
@@ -52,6 +55,7 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
     gender: 'Women',
     description: 'Supportive contours and modern aesthetics for versatile daily wear.',
     imageDimensions: '600 x 800 px (3:4 Portrait Banner)',
+    imageUrl: '/collections/womens-sandals-flats.jpg',
     slug: 'womens-sandals-flats',
   },
   {
@@ -60,6 +64,7 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
     gender: 'Women',
     description: 'Cushioned everyday walking footwear designed for outdoor and casual life.',
     imageDimensions: '600 x 800 px (3:4 Portrait Banner)',
+    imageUrl: '/collections/womens-clogs-sneakers.jpg',
     slug: 'womens-clogs-sneakers',
   },
 ];

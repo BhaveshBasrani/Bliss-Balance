@@ -9,6 +9,7 @@ interface ImagePlaceholderProps {
   label?: string;
   imageUrl?: string;
   className?: string;
+  showDimensionBadge?: boolean;
   onImageUploaded?: (base64Url: string) => void;
 }
 
@@ -18,6 +19,7 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   label = 'PRODUCT PHOTO PLACEHOLDER',
   imageUrl,
   className = '',
+  showDimensionBadge = false,
   onImageUploaded,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +36,7 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
     }
   };
 
-  // If user provided a real image URL or Base64 string
+  // If real image URL or Base64 string is provided
   if (imageUrl && imageUrl.trim() !== '') {
     return (
       <div className={`relative overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 ${aspectRatio} ${className} group`}>
@@ -46,9 +48,13 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
             (e.target as HTMLElement).style.display = 'none';
           }}
         />
-        <div className="absolute top-2 right-2 bg-neutral-900/90 text-[10px] uppercase font-mono tracking-widest text-red-400 px-2 py-0.5 rounded shadow">
-          {dimensions}
-        </div>
+        
+        {/* Only show dimension badge if explicitly requested */}
+        {showDimensionBadge && (
+          <div className="absolute top-2 right-2 bg-neutral-900/90 text-[10px] uppercase font-mono tracking-widest text-red-400 px-2 py-0.5 rounded shadow">
+            {dimensions}
+          </div>
+        )}
 
         {onImageUploaded && (
           <button
@@ -71,6 +77,7 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
     );
   }
 
+  // Placeholder State when no image is present
   return (
     <div
       onClick={() => onImageUploaded && fileInputRef.current?.click()}
