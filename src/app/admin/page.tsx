@@ -6,7 +6,7 @@ import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
 import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings } from '@/lib/dataStore';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
-import { FootwearSKU, SiteSettings, FootwearCategory, Gender } from '@/lib/types';
+import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, SizeMarketplaceUrl } from '@/lib/types';
 import {
   Shield,
   Plus,
@@ -24,12 +24,14 @@ import {
   Check,
   ArrowLeft,
   Key,
-  Activity,
   Layers,
   Terminal,
   Mail,
   Sparkles,
   X,
+  Palette,
+  Image as ImageIcon,
+  Ruler,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -55,7 +57,7 @@ export default function AdminPage() {
     { time: new Date().toLocaleTimeString(), msg: 'Admin Control Station Initialized', type: 'SYSTEM' },
   ]);
 
-  // Form State for 2 Images (Primary + Hover), Sizes & Dynamic Platform Links
+  // Form State
   const [newSku, setNewSku] = useState<Partial<FootwearSKU>>({
     title: '',
     subtitle: '',
@@ -66,14 +68,26 @@ export default function AdminPage() {
     amazonUrl: '',
     myntraUrl: '',
     flipkartUrl: '',
-    officialUrl: '',
     imageUrl: '',
     hoverImageUrl: '',
+    galleryImages: ['', '', '', ''],
+    colorVariants: [],
+    sizeMarketplaceUrls: {},
     imageDimensions: '800 x 800 px (1:1 Product Square)',
     sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
     features: ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid Outsole'],
     isNewArrival: true,
     isBestseller: false,
+  });
+
+  // Color Variant Form State (Includes Specific Color Image Photo Dropzone)
+  const [colorInput, setColorInput] = useState<ColorVariant>({
+    name: '',
+    hex: '#000000',
+    imageUrl: '',
+    amazonUrl: '',
+    myntraUrl: '',
+    flipkartUrl: '',
   });
 
   const availableSizeOptions = ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11', 'UK 12'];
@@ -125,6 +139,43 @@ export default function AdminPage() {
     }
   };
 
+  const addColorVariant = () => {
+    if (!colorInput.name) return;
+    const updated = [...(newSku.colorVariants || []), colorInput];
+    setNewSku({ ...newSku, colorVariants: updated });
+    setColorInput({
+      name: '',
+      hex: '#000000',
+      imageUrl: '',
+      amazonUrl: '',
+      myntraUrl: '',
+      flipkartUrl: '',
+    });
+  };
+
+  const removeColorVariant = (index: number) => {
+    const updated = (newSku.colorVariants || []).filter((_, i) => i !== index);
+    setNewSku({ ...newSku, colorVariants: updated });
+  };
+
+  const setGalleryImage = (index: number, url: string) => {
+    const current = newSku.galleryImages ? [...newSku.galleryImages] : ['', '', '', ''];
+    current[index] = url;
+    setNewSku({ ...newSku, galleryImages: current });
+  };
+
+  const setSizeMarketplaceUrl = (size: string, field: 'amazonUrl' | 'myntraUrl' | 'flipkartUrl', val: string) => {
+    const current = { ...(newSku.sizeMarketplaceUrls || {}) };
+    if (!current[size]) {
+      current[size] = { size };
+    }
+    current[size] = {
+      ...current[size],
+      [field]: val,
+    };
+    setNewSku({ ...newSku, sizeMarketplaceUrls: current });
+  };
+
   const handleEditClick = (sku: FootwearSKU) => {
     setEditingSkuId(sku.id);
     setNewSku({
@@ -137,9 +188,11 @@ export default function AdminPage() {
       amazonUrl: sku.amazonUrl || '',
       myntraUrl: sku.myntraUrl || '',
       flipkartUrl: sku.flipkartUrl || '',
-      officialUrl: sku.officialUrl || '',
       imageUrl: sku.imageUrl || '',
       hoverImageUrl: sku.hoverImageUrl || '',
+      galleryImages: sku.galleryImages && sku.galleryImages.length > 0 ? sku.galleryImages : ['', '', '', ''],
+      colorVariants: sku.colorVariants || [],
+      sizeMarketplaceUrls: sku.sizeMarketplaceUrls || {},
       imageDimensions: '800 x 800 px (1:1 Product Square)',
       sizes: sku.sizes || ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
       features: sku.features || ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid Outsole'],
@@ -161,9 +214,11 @@ export default function AdminPage() {
       amazonUrl: '',
       myntraUrl: '',
       flipkartUrl: '',
-      officialUrl: '',
       imageUrl: '',
       hoverImageUrl: '',
+      galleryImages: ['', '', '', ''],
+      colorVariants: [],
+      sizeMarketplaceUrls: {},
       imageDimensions: '800 x 800 px (1:1 Product Square)',
       sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
       features: ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid Outsole'],
@@ -184,6 +239,8 @@ export default function AdminPage() {
 
     const targetId = editingSkuId || `sku-bb-${Date.now().toString().slice(-5)}`;
 
+    const filteredGallery = (newSku.galleryImages || []).filter(img => img && img.trim() !== '');
+
     const savedSku: FootwearSKU = {
       id: targetId,
       title: newSku.title,
@@ -195,14 +252,16 @@ export default function AdminPage() {
       amazonUrl: newSku.amazonUrl || '',
       myntraUrl: newSku.myntraUrl || '',
       flipkartUrl: newSku.flipkartUrl || '',
-      officialUrl: newSku.officialUrl || '',
       imageUrl: newSku.imageUrl || '',
       hoverImageUrl: newSku.hoverImageUrl || '',
+      galleryImages: filteredGallery,
+      colorVariants: newSku.colorVariants || [],
+      sizeMarketplaceUrls: newSku.sizeMarketplaceUrls || {},
       imageDimensions: '800 x 800 px (1:1 Product Square)',
       sizes: newSku.sizes && newSku.sizes.length > 0 ? newSku.sizes : ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
       features: newSku.features && newSku.features.length > 0 ? newSku.features : ['Cushioned Footwear', 'Lightweight Feel', 'Anti-Skid'],
       rating: 5.0,
-      reviewCount: 2,
+      reviewCount: 0,
       isNewArrival: !!newSku.isNewArrival,
       isBestseller: !!newSku.isBestseller,
       createdAt: new Date().toISOString(),
@@ -329,7 +388,7 @@ function doPost(e) {
 
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
-  } font-mono {
+  } finally {
     lock.releaseLock();
   }
 }`;
@@ -599,14 +658,14 @@ function doPost(e) {
                   
                   <div>
                     <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
-                      Product Title *
+                      Product Title / SKU Code *
                     </label>
                     <input
                       type="text"
                       required
                       value={newSku.title}
                       onChange={(e) => setNewSku({ ...newSku, title: e.target.value })}
-                      placeholder="e.g. Bliss X-Lines Chestnut Sneaker"
+                      placeholder="e.g. BB158 (Bliss Sneaker)"
                       className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
@@ -619,7 +678,7 @@ function doPost(e) {
                       type="text"
                       value={newSku.subtitle}
                       onChange={(e) => setNewSku({ ...newSku, subtitle: e.target.value })}
-                      placeholder="e.g. Wide and roomy toe box, cushioned daily walking shoes"
+                      placeholder="e.g. All-Day Perfect Comfort for Active Lifestyles"
                       className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
@@ -674,7 +733,7 @@ function doPost(e) {
                         required
                         value={newSku.price}
                         onChange={(e) => setNewSku({ ...newSku, price: Number(e.target.value) })}
-                        placeholder="3599"
+                        placeholder="1675"
                         className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
@@ -687,7 +746,7 @@ function doPost(e) {
                         type="number"
                         value={newSku.originalPrice || ''}
                         onChange={(e) => setNewSku({ ...newSku, originalPrice: Number(e.target.value) })}
-                        placeholder="4599"
+                        placeholder="4499"
                         className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
@@ -719,7 +778,7 @@ function doPost(e) {
                     </div>
                   </div>
 
-                  {/* DUAL IMAGE UPLOAD: Primary Image & Hover Image */}
+                  {/* PRIMARY & HOVER PHOTOS */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-2">
                       <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
@@ -748,26 +807,204 @@ function doPost(e) {
                     </div>
                   </div>
 
-                  {/* Dynamic External Buy Links */}
-                  <div className="space-y-3 pt-2">
+                  {/* ADDITIONAL CATALOG / GALLERY PHOTOS */}
+                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-red-600" />
+                      <span>CATALOG & GALLERY PHOTOS (UP TO 4 EXTRA ANGLE PHOTOS)</span>
+                    </label>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {[0, 1, 2, 3].map((idx) => (
+                        <div key={idx} className="space-y-1">
+                          <span className="block text-[9px] font-bold text-neutral-400">Photo {idx + 1}</span>
+                          <ImagePlaceholder
+                            dimensions="800 x 800 px"
+                            aspectRatio="aspect-square"
+                            label={`GALLERY ${idx + 1}`}
+                            imageUrl={newSku.galleryImages ? newSku.galleryImages[idx] : ''}
+                            onImageUploaded={(base64) => setGalleryImage(idx, base64)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* COLOR VARIANTS WITH SPECIFIC PHOTOS & BUY LINKS */}
+                  <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                      <Palette className="w-4 h-4 text-red-600" />
+                      <span>COLOR VARIANTS (PHOTOS, SWATCHES & SPECIFIC LINKS)</span>
+                    </label>
+
+                    {/* Added Colors Pill List */}
+                    <div className="flex flex-wrap gap-2">
+                      {newSku.colorVariants?.map((cv, idx) => (
+                        <div key={idx} className="px-3 py-2 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center gap-3 text-xs font-bold">
+                          {cv.imageUrl ? (
+                            <img src={cv.imageUrl} alt={cv.name} className="w-6 h-6 rounded-lg object-cover border" />
+                          ) : (
+                            <span className="w-3.5 h-3.5 rounded-full border" style={{ backgroundColor: cv.hex }} />
+                          )}
+                          <span>{cv.name}</span>
+                          <button type="button" onClick={() => removeColorVariant(idx)} className="text-neutral-400 hover:text-red-600">
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Color Variant Add Card with Dedicated Image Dropzone */}
+                    <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                        
+                        {/* Specific Photo for this Color Variant */}
+                        <div className="sm:col-span-4 space-y-1">
+                          <label className="block text-[10px] font-bold uppercase text-red-600">
+                            Photo For This Color *
+                          </label>
+                          <ImagePlaceholder
+                            dimensions="800 x 800 px"
+                            aspectRatio="aspect-square"
+                            label="COLOR PHOTO DROPZONE"
+                            imageUrl={colorInput.imageUrl}
+                            onImageUploaded={(base64) => setColorInput({ ...colorInput, imageUrl: base64 })}
+                          />
+                        </div>
+
+                        {/* Name & Hex */}
+                        <div className="sm:col-span-8 space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Color Name (e.g. Navy Blue)</label>
+                              <input
+                                type="text"
+                                value={colorInput.name}
+                                onChange={(e) => setColorInput({ ...colorInput, name: e.target.value })}
+                                placeholder="Navy Blue"
+                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-1.5 text-xs"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Color Swatch Hex</label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="color"
+                                  value={colorInput.hex}
+                                  onChange={(e) => setColorInput({ ...colorInput, hex: e.target.value })}
+                                  className="w-8 h-8 rounded border-none cursor-pointer bg-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  value={colorInput.hex}
+                                  onChange={(e) => setColorInput({ ...colorInput, hex: e.target.value })}
+                                  className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-1.5 text-xs font-mono"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Specific Marketplace Links */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input
+                              type="url"
+                              value={colorInput.amazonUrl || ''}
+                              onChange={(e) => setColorInput({ ...colorInput, amazonUrl: e.target.value })}
+                              placeholder="Amazon Link for this color"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                            />
+                            <input
+                              type="url"
+                              value={colorInput.myntraUrl || ''}
+                              onChange={(e) => setColorInput({ ...colorInput, myntraUrl: e.target.value })}
+                              placeholder="Myntra Link for this color"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                            />
+                            <input
+                              type="url"
+                              value={colorInput.flipkartUrl || ''}
+                              onChange={(e) => setColorInput({ ...colorInput, flipkartUrl: e.target.value })}
+                              placeholder="Flipkart Link for this color"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                            />
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={addColorVariant}
+                            className="w-full py-2 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 text-xs font-bold uppercase hover:bg-red-600 dark:hover:bg-red-600 dark:hover:text-white transition-all"
+                          >
+                            + ADD COLOR VARIANT WITH PHOTO & LINKS
+                          </button>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SIZE-SPECIFIC AMAZON / MARKETPLACE LINKS */}
+                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                      <Ruler className="w-4 h-4 text-red-600" />
+                      <span>SIZE-SPECIFIC BUY LINKS (e.g. UK 8 Amazon ASIN Link)</span>
+                    </label>
+
+                    <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                      {(newSku.sizes || []).map((size) => {
+                        const sizeLink = newSku.sizeMarketplaceUrls ? newSku.sizeMarketplaceUrls[size] : undefined;
+                        return (
+                          <div key={size} className="p-3 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-2">
+                            <span className="text-xs font-bold text-red-600 uppercase">{size} SPECIFIC LINKS:</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                              <input
+                                type="url"
+                                value={sizeLink?.amazonUrl || ''}
+                                onChange={(e) => setSizeMarketplaceUrl(size, 'amazonUrl', e.target.value)}
+                                placeholder={`Amazon Link for ${size} (e.g. ...dp/B0H9B2DYS7?th=1&psc=1)`}
+                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                              />
+                              <input
+                                type="url"
+                                value={sizeLink?.myntraUrl || ''}
+                                onChange={(e) => setSizeMarketplaceUrl(size, 'myntraUrl', e.target.value)}
+                                placeholder={`Myntra Link for ${size}`}
+                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                              />
+                              <input
+                                type="url"
+                                value={sizeLink?.flipkartUrl || ''}
+                                onChange={(e) => setSizeMarketplaceUrl(size, 'flipkartUrl', e.target.value)}
+                                placeholder={`Flipkart Link for ${size}`}
+                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* BASE MARKETPLACE LINKS */}
+                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                     <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
-                      DYNAMIC BUYING LINKS (Leave empty if not listed)
+                      DEFAULT BASE MARKETPLACE LINKS
                     </label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <span className="block text-[10px] text-amber-600 font-bold uppercase mb-1">Amazon Link</span>
+                        <span className="block text-[10px] text-amber-600 font-bold uppercase mb-1">Default Amazon Link</span>
                         <input
                           type="url"
                           value={newSku.amazonUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, amazonUrl: e.target.value })}
-                          placeholder="https://amazon.in/dp/..."
+                          placeholder="https://www.amazon.in/dp/B0H9B2DYS7..."
                           className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <span className="block text-[10px] text-red-600 font-bold uppercase mb-1">Myntra Link</span>
+                        <span className="block text-[10px] text-red-600 font-bold uppercase mb-1">Default Myntra Link</span>
                         <input
                           type="url"
                           value={newSku.myntraUrl || ''}
@@ -778,7 +1015,7 @@ function doPost(e) {
                       </div>
 
                       <div>
-                        <span className="block text-[10px] text-blue-600 font-bold uppercase mb-1">Flipkart Link</span>
+                        <span className="block text-[10px] text-blue-600 font-bold uppercase mb-1">Default Flipkart Link</span>
                         <input
                           type="url"
                           value={newSku.flipkartUrl || ''}
@@ -802,7 +1039,7 @@ function doPost(e) {
                 </form>
               </div>
 
-              {/* Active Products List (With Edit Button) */}
+              {/* Active Products List */}
               <div className="lg:col-span-5 space-y-4">
                 <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                   <span>ACTIVE PRODUCTS</span>

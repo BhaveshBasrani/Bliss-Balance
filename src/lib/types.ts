@@ -17,6 +17,16 @@ export interface ColorVariant {
   name: string;
   hex: string;
   imageUrl?: string;
+  amazonUrl?: string;
+  myntraUrl?: string;
+  flipkartUrl?: string;
+}
+
+export interface SizeMarketplaceUrl {
+  size: string;
+  amazonUrl?: string;
+  myntraUrl?: string;
+  flipkartUrl?: string;
 }
 
 export interface FootwearSKU {
@@ -33,10 +43,12 @@ export interface FootwearSKU {
   officialUrl?: string;
   imageUrl?: string;
   hoverImageUrl?: string;
+  galleryImages?: string[];
   imageDimensions: string;
   features: string[];
   sizes?: string[];
   colorVariants?: ColorVariant[];
+  sizeMarketplaceUrls?: Record<string, SizeMarketplaceUrl>;
   rating?: number;
   reviewCount?: number;
   isNewArrival?: boolean;
