@@ -45,7 +45,7 @@ jobs:
           NEXT_PUBLIC_APPSCRIPT_URL: 'https://script.google.com/macros/s/AKfycbykDG_64LHgNhlS6gu-TowyNkTAC2Qfl3ohBoKmzQaub5oD0jj8Ah2Ow227lLG4D45ZzA/exec'
 
       - name: Disable Jekyll on GitHub Pages (.nojekyll)
-        run: touch out/.nojekyll
+        run: mkdir -p ./out && touch ./out/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
