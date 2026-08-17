@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FootwearSKU } from '@/lib/types';
-import { Heart, Star, ExternalLink, ArrowRight } from 'lucide-react';
+import { FootwearSKU, ColorVariant } from '@/lib/types';
+import { Heart, Star, ArrowRight } from 'lucide-react';
 
 interface SkuCardProps {
   sku: FootwearSKU;
@@ -12,6 +12,9 @@ interface SkuCardProps {
 export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [activeColor, setActiveColor] = useState<ColorVariant | null>(
+    sku.colorVariants && sku.colorVariants.length > 0 ? sku.colorVariants[0] : null
+  );
 
   useEffect(() => {
     try {
@@ -45,6 +48,11 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
     ? Math.round(((sku.originalPrice - sku.price) / sku.originalPrice) * 100)
     : 0;
 
+  // Resolve Card Image (Active Color Image OR Primary Image OR Hover Image)
+  const currentImage = activeColor && activeColor.imageUrl
+    ? activeColor.imageUrl
+    : sku.imageUrl;
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -53,16 +61,16 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
     >
       <Link href={`/product?id=${sku.id}`} className="block flex-1 flex flex-col">
         
-        {/* Product Image Container with Dual-Image Smooth Crossfade Hover */}
+        {/* Product Image Container with Dual-Image & Swatch Swap */}
         <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950 p-4">
           
-          {/* Primary Image */}
-          {sku.imageUrl ? (
+          {/* Active / Primary Image */}
+          {currentImage ? (
             <img
-              src={sku.imageUrl}
+              src={currentImage}
               alt={sku.title}
               className={`w-full h-full object-cover rounded-xl transition-all duration-500 ${
-                isHovered && sku.hoverImageUrl ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                isHovered && sku.hoverImageUrl && !activeColor?.imageUrl ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
               }`}
             />
           ) : (
@@ -72,7 +80,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
           )}
 
           {/* Secondary Hover Image (Comet Style) */}
-          {sku.hoverImageUrl && (
+          {sku.hoverImageUrl && !activeColor?.imageUrl && (
             <img
               src={sku.hoverImageUrl}
               alt={`${sku.title} detail`}
@@ -110,9 +118,9 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
           </div>
         </div>
 
-        {/* Product Details & Price */}
+        {/* Product Details, Color Swatches & Price */}
         <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono font-bold text-red-600 uppercase">
                 {sku.category}
@@ -132,6 +140,33 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             <p className="font-body text-xs text-neutral-500 line-clamp-1">
               {sku.subtitle}
             </p>
+
+            {/* INTERACTIVE COLOR SWATCHES BAR ON CATALOG CARD */}
+            {sku.colorVariants && sku.colorVariants.length > 0 && (
+              <div className="flex items-center gap-1.5 pt-1" onClick={(e) => e.preventDefault()}>
+                {sku.colorVariants.map((cv) => (
+                  <button
+                    key={cv.name}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setActiveColor(cv);
+                    }}
+                    onMouseEnter={() => setActiveColor(cv)}
+                    className={`w-4 h-4 rounded-full border transition-all ${
+                      activeColor?.name === cv.name
+                        ? 'ring-2 ring-red-600 ring-offset-1 border-white scale-110'
+                        : 'border-neutral-300 dark:border-neutral-700 opacity-80 hover:opacity-100'
+                    }`}
+                    style={{ backgroundColor: cv.hex }}
+                    title={cv.name}
+                  />
+                ))}
+                <span className="text-[9px] font-mono text-neutral-400 ml-1 uppercase">
+                  {sku.colorVariants.length} COLORS
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">

@@ -23,6 +23,8 @@ import {
   ArrowLeft,
   MessageSquare,
   ChevronRight,
+  RefreshCw,
+  Zap,
 } from 'lucide-react';
 
 const REVIEWS_STORAGE_KEY = 'bliss_balance_reviews_v2';
@@ -39,8 +41,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   const [allSkus, setAllSkus] = useState<FootwearSKU[]>([]);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('UK 8');
-  const [selectedColor, setSelectedColor] = useState<string>('Navy & White');
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Modals & Search
   const [searchOpen, setSearchOpen] = useState(false);
@@ -67,6 +70,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       }
     } catch (e) {}
 
+    // INSTANT LOCAL CACHE HYDRATION (0ms Load)
     const loadedSkus = getStoredSKUs();
     setAllSkus(loadedSkus);
     const found = loadedSkus.find(s => s.id === productId);
@@ -76,9 +80,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       setSelectedImage(found.imageUrl || '');
       if (found.colorVariants && found.colorVariants.length > 0) {
         setSelectedColor(found.colorVariants[0].name);
+        if (found.colorVariants[0].imageUrl) {
+          setSelectedImage(found.colorVariants[0].imageUrl);
+        }
       }
+      setIsLoading(false);
     }
 
+    // NON-BLOCKING LIVE CLOUD REFRESH (Background Fetch from Google Sheets)
     fetchCloudSKUs().then(cloudSkus => {
       setAllSkus(cloudSkus);
       const cloudFound = cloudSkus.find(s => s.id === productId);
@@ -87,7 +96,16 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         if (!selectedImage && cloudFound.imageUrl) {
           setSelectedImage(cloudFound.imageUrl);
         }
+        if (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && !selectedColor) {
+          setSelectedColor(cloudFound.colorVariants[0].name);
+          if (cloudFound.colorVariants[0].imageUrl) {
+            setSelectedImage(cloudFound.colorVariants[0].imageUrl);
+          }
+        }
       }
+      setIsLoading(false);
+    }).catch(() => {
+      setIsLoading(false);
     });
 
     // Check Wishlist
@@ -194,6 +212,41 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     setNewReview({ authorName: '', rating: 5, headline: '', comment: '' });
   };
 
+  // UIVERSE.IO SPEEDER HIGH-SPEED RUNNER FULL-VIEWPORT RED SCREEN OVERLAY
+  if (isLoading && !sku) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#FF0000] text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
+        
+        <div className="speeder-loader-wrapper scale-110 sm:scale-125">
+          <div className="speeder-loader text-black">
+            <span>
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+            <div className="speeder-base">
+              <span />
+            </div>
+            <div className="speeder-face" />
+          </div>
+          <div className="speeder-longfazers">
+            <span style={{ background: '#ffffff' }} />
+            <span style={{ background: '#ffffff' }} />
+            <span style={{ background: '#ffffff' }} />
+            <span style={{ background: '#ffffff' }} />
+          </div>
+        </div>
+
+        <div className="absolute bottom-10 inset-x-4 max-w-xs mx-auto flex items-center justify-center gap-2 text-xs font-black text-black tracking-widest uppercase animate-pulse z-10 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-full border border-black/20 shadow-xl text-center">
+          <Zap className="w-4 h-4 fill-black text-black shrink-0" />
+          <span>FEEL THE BLISS • LOADING PRODUCT...</span>
+        </div>
+
+      </div>
+    );
+  }
+
   if (!sku) {
     return (
       <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white flex flex-col justify-between">
@@ -224,38 +277,24 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
     : '5.0';
 
-  // COMET STYLE COLOR VARIANTS LIST (FALLBACK IF NONE SPECIFIED)
-  const displayColorVariants: ColorVariant[] = (sku.colorVariants && sku.colorVariants.length > 0)
-    ? sku.colorVariants
-    : [
-        {
-          name: 'Navy & White',
-          hex: '#1E293B',
-          imageUrl: sku.imageUrl || '',
-          amazonUrl: sku.amazonUrl,
-          myntraUrl: sku.myntraUrl,
-          flipkartUrl: sku.flipkartUrl,
-        },
-        {
-          name: 'Chestnut & White',
-          hex: '#451A03',
-          imageUrl: sku.hoverImageUrl || sku.imageUrl || '',
-          amazonUrl: sku.amazonUrl,
-          myntraUrl: sku.myntraUrl,
-          flipkartUrl: sku.flipkartUrl,
-        },
-      ];
+  // REAL COLOR VARIANTS
+  const displayColorVariants: ColorVariant[] = sku.colorVariants || [];
 
   // DYNAMIC VARIANT-SPECIFIC MARKETPLACE BUY LINKS RESOLUTION ENGINE
   const activeColorObj = displayColorVariants.find(cv => cv.name === selectedColor);
   const activeSizeLinkObj = sku.sizeMarketplaceUrls ? sku.sizeMarketplaceUrls[selectedSize] : undefined;
 
   // Resolve Amazon URL for selected size & color
-  const resolvedAmazonUrl = (activeSizeLinkObj && activeSizeLinkObj.amazonUrl && activeSizeLinkObj.amazonUrl.trim() !== '')
+  let resolvedAmazonUrl = (activeSizeLinkObj && activeSizeLinkObj.amazonUrl && activeSizeLinkObj.amazonUrl.trim() !== '')
     ? activeSizeLinkObj.amazonUrl
     : (activeColorObj && activeColorObj.amazonUrl && activeColorObj.amazonUrl.trim() !== '')
       ? activeColorObj.amazonUrl
       : sku.amazonUrl;
+
+  if (resolvedAmazonUrl && resolvedAmazonUrl.includes('amazon.in') && !resolvedAmazonUrl.includes('th=1')) {
+    const separator = resolvedAmazonUrl.includes('?') ? '&' : '?';
+    resolvedAmazonUrl = `${resolvedAmazonUrl}${separator}th=1&psc=1`;
+  }
 
   // Resolve Myntra URL for selected size & color
   const resolvedMyntraUrl = (activeSizeLinkObj && activeSizeLinkObj.myntraUrl && activeSizeLinkObj.myntraUrl.trim() !== '')
@@ -275,19 +314,32 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     (resolvedMyntraUrl && resolvedMyntraUrl.trim() !== '') ||
     (resolvedFlipkartUrl && resolvedFlipkartUrl.trim() !== '');
 
-  // Consolidate gallery thumbnails: Primary + Hover + GalleryImages + ColorVariant images
+  // GALLERY THUMBNAILS UPDATE ENGINE: DYNAMICALLY REFLECTS THE SELECTED COLOR VARIANT'S IMAGES!
   const allGalleryThumbnails: Array<{ url: string; label: string }> = [];
-  if (sku.imageUrl) allGalleryThumbnails.push({ url: sku.imageUrl, label: 'Primary' });
+  
+  if (activeColorObj && activeColorObj.imageUrl && activeColorObj.imageUrl.trim() !== '') {
+    allGalleryThumbnails.push({ url: activeColorObj.imageUrl, label: activeColorObj.name });
+  } else if (sku.imageUrl) {
+    allGalleryThumbnails.push({ url: sku.imageUrl, label: 'Primary' });
+  }
+
   if (sku.hoverImageUrl) allGalleryThumbnails.push({ url: sku.hoverImageUrl, label: 'Angle 2' });
+  
   sku.galleryImages?.forEach((img, i) => {
     if (img && img.trim() !== '') allGalleryThumbnails.push({ url: img, label: `Catalog ${i + 1}` });
+  });
+
+  sku.colorVariants?.forEach((cv) => {
+    if (cv.imageUrl && cv.imageUrl.trim() !== '' && cv.name !== selectedColor) {
+      allGalleryThumbnails.push({ url: cv.imageUrl, label: cv.name });
+    }
   });
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white transition-colors">
       <Navbar onOpenSearch={() => setSearchOpen(true)} />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-12">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 w-full space-y-8 sm:space-y-12">
         
         {/* Back Link */}
         <button
@@ -298,13 +350,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         </button>
 
         {/* Top Product Section: Dual Image Gallery & Product Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
           
           {/* Left Column: Multi-Photo Gallery Stage */}
           <div className="lg:col-span-7 space-y-4">
             
             {/* Main Stage Image */}
-            <div className="relative aspect-square w-full rounded-3xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-6 shadow-xl">
+            <div className="relative aspect-square w-full rounded-3xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 shadow-xl">
               {selectedImage ? (
                 <img
                   src={selectedImage}
@@ -320,21 +372,21 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {/* Wishlist Floating Button */}
               <button
                 onClick={toggleWishlist}
-                className={`absolute top-6 right-6 p-3 rounded-full backdrop-blur-md transition-all shadow-xl ${
+                className={`absolute top-4 right-4 sm:top-6 sm:right-6 p-2.5 sm:p-3 rounded-full backdrop-blur-md transition-all shadow-xl ${
                   isWishlisted ? 'bg-red-600 text-white scale-110' : 'bg-white/80 dark:bg-black/80 text-neutral-600 dark:text-neutral-300 hover:text-red-600'
                 }`}
               >
-                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-white' : ''}`} />
+                <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? 'fill-white' : ''}`} />
               </button>
             </div>
 
-            {/* Catalog & Color Gallery Thumbnails Strip */}
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
+            {/* Catalog & Color Gallery Thumbnails Strip (UPDATES ACCORDING TO SELECTED COLOR) */}
+            <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-2 no-scrollbar">
               {allGalleryThumbnails.map((item, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(item.url)}
-                  className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all shrink-0 p-1 bg-neutral-100 dark:bg-neutral-900 ${
+                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 transition-all shrink-0 p-1 bg-neutral-100 dark:bg-neutral-900 ${
                     selectedImage === item.url ? 'border-red-600 ring-2 ring-red-600/40' : 'border-transparent opacity-70 hover:opacity-100'
                   }`}
                   title={item.label}
@@ -350,7 +402,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           <div className="lg:col-span-5 space-y-6 font-mono">
             
             <div className="space-y-2 border-b border-neutral-200 dark:border-neutral-800 pb-6">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-extrabold uppercase tracking-widest bg-red-600 text-white px-2.5 py-0.5 rounded">
                   {sku.gender} • {sku.category}
                 </span>
@@ -362,7 +414,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 )}
               </div>
 
-              <h1 className="font-heading text-3xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+              <h1 className="font-heading text-2xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                 {sku.title}
               </h1>
 
@@ -373,18 +425,18 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {/* Price & Rating */}
               <div className="flex items-baseline justify-between pt-2">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-black text-neutral-950 dark:text-white">
+                  <span className="text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
                     ₹{sku.price.toLocaleString('en-IN')}
                   </span>
                   {sku.originalPrice && (
-                    <span className="text-sm text-neutral-400 line-through">
+                    <span className="text-xs sm:text-sm text-neutral-400 line-through">
                       ₹{sku.originalPrice.toLocaleString('en-IN')}
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-1 text-sm font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-xl border border-amber-200 dark:border-amber-800">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-xl border border-amber-200 dark:border-amber-800">
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                   <span>{avgRating}</span>
                   <span className="text-[10px] text-neutral-400">({reviews.length})</span>
                 </div>
@@ -392,49 +444,51 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             </div>
 
             {/* COMET STYLE COLOR SELECTOR (SIDE-BY-SIDE SHOE PHOTO CARDS) */}
-            <div className="space-y-3 pt-2 border-b border-neutral-200 dark:border-neutral-800 pb-6">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 tracking-wider">
-                  COLOR: <span className="text-neutral-950 dark:text-white font-extrabold">{selectedColor}</span>
-                </label>
-                <span className="text-[10px] text-neutral-400 font-bold uppercase flex items-center gap-1">
-                  <span>{displayColorVariants.length} VARIANTS</span>
-                  <ChevronRight className="w-3 h-3" />
-                </span>
-              </div>
+            {displayColorVariants.length > 0 && (
+              <div className="space-y-3 pt-2 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 tracking-wider">
+                    COLOR: <span className="text-neutral-950 dark:text-white font-extrabold">{selectedColor || displayColorVariants[0].name}</span>
+                  </label>
+                  <span className="text-[10px] text-neutral-400 font-bold uppercase flex items-center gap-1">
+                    <span>{displayColorVariants.length} VARIANTS</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
 
-              {/* Side-by-Side Comet Style Shoe Photo Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {displayColorVariants.map((cv) => {
-                  const isSelected = selectedColor === cv.name;
-                  return (
-                    <button
-                      key={cv.name}
-                      onClick={() => {
-                        setSelectedColor(cv.name);
-                        if (cv.imageUrl) setSelectedImage(cv.imageUrl);
-                      }}
-                      className={`relative rounded-2xl overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-neutral-50 dark:bg-neutral-900 border-2 ${
-                        isSelected
-                          ? 'border-red-600 ring-2 ring-red-600/30 scale-102 shadow-lg'
-                          : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
-                      }`}
-                    >
-                      <div className="w-full aspect-square rounded-xl overflow-hidden bg-white dark:bg-black p-1 flex items-center justify-center">
-                        {cv.imageUrl ? (
-                          <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-lg" />
-                        ) : (
-                          <div className="w-full h-full rounded-lg flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
-                        )}
-                      </div>
-                      <span className="text-[10px] font-heading font-extrabold uppercase text-neutral-950 dark:text-white truncate max-w-full">
-                        {cv.name}
-                      </span>
-                    </button>
-                  );
-                })}
+                {/* Side-by-Side Comet Style Shoe Photo Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                  {displayColorVariants.map((cv) => {
+                    const isSelected = (selectedColor || displayColorVariants[0].name) === cv.name;
+                    return (
+                      <button
+                        key={cv.name}
+                        onClick={() => {
+                          setSelectedColor(cv.name);
+                          if (cv.imageUrl) setSelectedImage(cv.imageUrl);
+                        }}
+                        className={`relative rounded-2xl overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-neutral-50 dark:bg-neutral-900 border-2 ${
+                          isSelected
+                            ? 'border-red-600 ring-2 ring-red-600/30 scale-102 shadow-lg'
+                            : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
+                        }`}
+                      >
+                        <div className="w-full aspect-square rounded-xl overflow-hidden bg-white dark:bg-black p-1 flex items-center justify-center">
+                          {cv.imageUrl ? (
+                            <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <div className="w-full h-full rounded-lg flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
+                          )}
+                        </div>
+                        <span className="text-[10px] font-heading font-extrabold uppercase text-neutral-950 dark:text-white truncate max-w-full">
+                          {cv.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Size Selector (Saves preferred size persistently) */}
             <div className="space-y-2">
@@ -471,11 +525,11 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
             {/* DYNAMIC MARKETPLACE BUYING BUTTONS RESOLVED FOR SELECTED SIZE & COLOR */}
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                 <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
                   BUY ON OFFICIAL MARKETPLACES:
                 </span>
-                <span className="text-[9px] font-bold text-red-600 uppercase bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-800">
+                <span className="text-[9px] font-bold text-red-600 uppercase bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-800 self-start sm:self-auto break-words">
                   RESOLVED FOR {selectedSize} {selectedColor ? `• ${selectedColor}` : ''}
                 </span>
               </div>
@@ -485,10 +539,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedAmazonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-2xl bg-[#FF9900] hover:bg-[#e68a00] text-black font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[#FF9900] hover:bg-[#e68a00] text-black font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON AMAZON INDIA ({selectedSize})</span>
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-4 h-4 shrink-0" />
                 </a>
               )}
 
@@ -497,10 +551,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedMyntraUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-2xl bg-[#E42529] hover:bg-[#c91e22] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[#E42529] hover:bg-[#c91e22] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON MYNTRA ({selectedSize})</span>
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-4 h-4 shrink-0" />
                 </a>
               )}
 
@@ -509,10 +563,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedFlipkartUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-2xl bg-[#2874F0] hover:bg-[#1a62d6] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-2xl bg-[#2874F0] hover:bg-[#1a62d6] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON FLIPKART ({selectedSize})</span>
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-4 h-4 shrink-0" />
                 </a>
               )}
 
@@ -525,17 +579,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
             {/* Service & Assurance Badges */}
             <div className="grid grid-cols-3 gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-800 text-[10px] font-bold text-center text-neutral-600 dark:text-neutral-400">
-              <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <Truck className="w-4 h-4 text-red-600 mx-auto" />
                 <span>FREE SHIPPING</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <RotateCcw className="w-4 h-4 text-red-600 mx-auto" />
                 <span>7-DAY RETURNS</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <ShieldCheck className="w-4 h-4 text-red-600 mx-auto" />
                 <span>100% ORIGINAL</span>
               </div>
@@ -553,7 +607,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               <span className="text-xs font-bold text-red-600 uppercase flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" /> VERIFIED CUSTOMER REVIEWS
               </span>
-              <h2 className="font-heading text-3xl font-black uppercase text-neutral-950 dark:text-white">
+              <h2 className="font-heading text-2xl sm:text-3xl font-black uppercase text-neutral-950 dark:text-white">
                 RATINGS & REVIEWS ({reviews.length})
               </h2>
             </div>

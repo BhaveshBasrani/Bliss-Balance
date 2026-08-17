@@ -44,7 +44,7 @@ export interface FootwearSKU {
   imageUrl?: string;
   hoverImageUrl?: string;
   galleryImages?: string[];
-  imageDimensions: string;
+  imageDimensions?: string;
   features: string[];
   sizes?: string[];
   colorVariants?: ColorVariant[];

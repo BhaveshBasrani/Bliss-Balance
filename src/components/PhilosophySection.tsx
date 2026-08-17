@@ -34,7 +34,7 @@ export const PhilosophySection: React.FC = () => {
             BLISS BALANCE
           </span>
           <span className="block font-mono text-xs text-red-600 font-bold uppercase tracking-widest mt-0.5">
-            Walk in Bliss. Live in Balance.
+            FEEL THE BLISS
           </span>
         </div>
 

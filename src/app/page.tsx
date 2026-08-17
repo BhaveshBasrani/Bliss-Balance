@@ -23,14 +23,24 @@ export default function HomePage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'All' | 'Men' | 'Women'>('All');
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
-    setSkus(getStoredSKUs());
+    const local = getStoredSKUs();
+    setSkus(local);
+    if (local && local.length > 0) {
+      setLoading(false);
+    }
+
     setSettings(getStoredSettings());
 
     // Live Dynamic Cloud Fetch from Google Sheets
-    fetchCloudSKUs().then(cloudSkus => setSkus(cloudSkus));
+    fetchCloudSKUs().then(cloudSkus => {
+      setSkus(cloudSkus);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+
     fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings));
   }, []);
 
@@ -90,8 +100,19 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Product Cards Grid */}
-            {!mounted || displayedSkus.length === 0 ? (
+            {/* Product Cards Grid with Sleek Skeleton Loader */}
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 space-y-4">
+                    <div className="aspect-square w-full rounded-xl bg-neutral-200 dark:bg-neutral-800" />
+                    <div className="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded" />
+                    <div className="h-6 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
+                    <div className="h-4 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : displayedSkus.length === 0 ? (
               <div className="text-center py-16 bg-neutral-50 dark:bg-neutral-900/60 rounded-3xl border border-neutral-200 dark:border-neutral-800 p-8 space-y-4 max-w-xl mx-auto">
                 <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950 text-red-600 flex items-center justify-center mx-auto">
                   <Plus className="w-6 h-6" />

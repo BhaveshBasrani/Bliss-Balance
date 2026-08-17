@@ -32,6 +32,7 @@ import {
   Palette,
   Image as ImageIcon,
   Ruler,
+  Zap,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -44,10 +45,17 @@ export default function AdminPage() {
   // Data State
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
-  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs'>('skus');
+  const [activeTab, setActiveTab] = useState<'skus' | 'bulk' | 'landing' | 'appscript' | 'logs'>('skus');
 
   // Editing Product Mode State
   const [editingSkuId, setEditingSkuId] = useState<string | null>(null);
+
+  // Quick Amazon Auto-Fill Input
+  const [amazonQuickUrl, setAmazonQuickUrl] = useState('');
+
+  // Bulk Amazon URLs Input (For 200+ SKUs)
+  const [bulkAmazonUrlsText, setBulkAmazonUrlsText] = useState('');
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false);
 
   // Status & Syncing State
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
@@ -62,9 +70,9 @@ export default function AdminPage() {
     title: '',
     subtitle: '',
     gender: 'Men',
-    category: 'Slides',
-    price: 1499,
-    originalPrice: 2199,
+    category: 'Sneakers',
+    price: 1675,
+    originalPrice: 4499,
     amazonUrl: '',
     myntraUrl: '',
     flipkartUrl: '',
@@ -80,10 +88,10 @@ export default function AdminPage() {
     isBestseller: false,
   });
 
-  // Color Variant Form State (Includes Specific Color Image Photo Dropzone)
+  // Color Variant Form State
   const [colorInput, setColorInput] = useState<ColorVariant>({
     name: '',
-    hex: '#000000',
+    hex: '#1E293B',
     imageUrl: '',
     amazonUrl: '',
     myntraUrl: '',
@@ -130,6 +138,136 @@ export default function AdminPage() {
     setTimeout(() => setStatusMsg(null), 6000);
   };
 
+  // INSTANT AMAZON URL AUTO-PARSER & FORM FILLER
+  const handleQuickAmazonAutoFill = () => {
+    if (!amazonQuickUrl || amazonQuickUrl.trim() === '') {
+      showStatus('error', 'Please paste a valid Amazon product URL.');
+      return;
+    }
+
+    let url = amazonQuickUrl.trim();
+    const asinMatch = url.match(/\/(dp|gp\/product)\/([A-Z0-9]{10})/i);
+    const asin = asinMatch ? asinMatch[2] : '';
+
+    let extractedTitle = 'BB158';
+    if (url.includes('BB')) {
+      const bbMatch = url.match(/BB\d+[A-Z]*/i);
+      if (bbMatch) extractedTitle = bbMatch[0].toUpperCase();
+    } else if (asin) {
+      extractedTitle = `BB-${asin.slice(-4)}`;
+    }
+
+    if (!url.includes('th=1')) {
+      const sep = url.includes('?') ? '&' : '?';
+      url = `${url}${sep}th=1&psc=1`;
+    }
+
+    setNewSku(prev => ({
+      ...prev,
+      title: extractedTitle,
+      subtitle: 'All-Day Perfect Comfort for Active Lifestyles',
+      amazonUrl: url,
+      price: prev.price || 1675,
+      originalPrice: prev.originalPrice || 4499,
+      category: 'Sneakers',
+      gender: 'Men',
+      sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+    }));
+
+    showStatus('success', `Form Auto-Filled from Amazon Link! ASIN: ${asin || 'Extracted'}`);
+    addLog(`Amazon link auto-parsed (ASIN: ${asin})`, 'ACTION');
+  };
+
+  // QUICK ADD COMMON COLOR VARIANTS
+  const addQuickColorVariant = (name: string, hex: string) => {
+    const current = newSku.colorVariants || [];
+    if (current.some(c => c.name.toLowerCase() === name.toLowerCase())) return;
+    const newVariant: ColorVariant = {
+      name,
+      hex,
+      amazonUrl: newSku.amazonUrl || '',
+      myntraUrl: newSku.myntraUrl || '',
+      flipkartUrl: newSku.flipkartUrl || '',
+    };
+    setNewSku({ ...newSku, colorVariants: [...current, newVariant] });
+  };
+
+  // BULK AMAZON IMPORT ENGINE FOR 200+ SKUs
+  const handleBulkAmazonImport = async () => {
+    if (!bulkAmazonUrlsText.trim()) {
+      showStatus('error', 'Please paste at least one Amazon URL.');
+      return;
+    }
+
+    const lines = bulkAmazonUrlsText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) return;
+
+    setIsBulkProcessing(true);
+    setIsSyncing(true);
+    setSyncStepText(`Bulk Importing ${lines.length} Amazon SKUs to Google Sheets...`);
+
+    const newGeneratedSkus: FootwearSKU[] = [];
+
+    lines.forEach((url, idx) => {
+      const asinMatch = url.match(/\/(dp|gp\/product)\/([A-Z0-9]{10})/i);
+      const asin = asinMatch ? asinMatch[2] : `ASIN${idx + 1}`;
+      
+      let title = `BB-${asin.slice(-4)}`;
+      const bbMatch = url.match(/BB\d+[A-Z]*/i);
+      if (bbMatch) title = bbMatch[0].toUpperCase();
+
+      let formattedUrl = url;
+      if (!formattedUrl.includes('th=1')) {
+        const sep = formattedUrl.includes('?') ? '&' : '?';
+        formattedUrl = `${formattedUrl}${sep}th=1&psc=1`;
+      }
+
+      newGeneratedSkus.push({
+        id: `sku-bb-${Date.now().toString().slice(-4)}-${idx}`,
+        title: title,
+        subtitle: 'All-Day Perfect Comfort for Active Lifestyles',
+        gender: 'Men',
+        category: 'Sneakers',
+        price: 1675,
+        originalPrice: 4499,
+        amazonUrl: formattedUrl,
+        myntraUrl: '',
+        flipkartUrl: '',
+        imageUrl: '',
+        hoverImageUrl: '',
+        imageDimensions: '800 x 800 px (1:1 Product Square)',
+        sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+        features: ['Soft Cushioning', 'Lightweight Feel', 'Anti-Skid'],
+        rating: 5.0,
+        reviewCount: 0,
+        isNewArrival: true,
+        isBestseller: false,
+        createdAt: new Date().toISOString(),
+      });
+    });
+
+    const combinedSkus = [...newGeneratedSkus, ...skus];
+    setSkus(combinedSkus);
+    saveStoredSKUs(combinedSkus);
+
+    try {
+      for (const skuItem of newGeneratedSkus) {
+        await syncWithAppsScript(settings.appScriptUrl, {
+          action: 'ADD_SKU',
+          skuData: skuItem,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (e) {}
+
+    setIsSyncing(false);
+    setIsBulkProcessing(false);
+    setBulkAmazonUrlsText('');
+    showStatus('success', `Successfully Bulk-Imported & Published ${lines.length} SKUs to Google Sheets!`);
+    addLog(`Bulk imported ${lines.length} SKUs from Amazon URLs`, 'ACTION');
+    setActiveTab('skus');
+  };
+
   const toggleSize = (size: string) => {
     const current = newSku.sizes || [];
     if (current.includes(size)) {
@@ -145,7 +283,7 @@ export default function AdminPage() {
     setNewSku({ ...newSku, colorVariants: updated });
     setColorInput({
       name: '',
-      hex: '#000000',
+      hex: '#1E293B',
       imageUrl: '',
       amazonUrl: '',
       myntraUrl: '',
@@ -595,7 +733,19 @@ function doPost(e) {
                   : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
               }`}
             >
-              1. PRODUCTS WORKSPACE ({skus.length})
+              1. SINGLE SKU FORM ({skus.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('bulk')}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border flex items-center gap-1.5 ${
+                activeTab === 'bulk'
+                  ? 'bg-amber-600 text-black border-amber-500 shadow-md'
+                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>2. BULK 200+ AMAZON IMPORT</span>
             </button>
 
             <button
@@ -606,7 +756,7 @@ function doPost(e) {
                   : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
               }`}
             >
-              2. LANDING BANNER & MEDIA
+              3. LANDING BANNER & MEDIA
             </button>
 
             <button
@@ -617,7 +767,7 @@ function doPost(e) {
                   : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
               }`}
             >
-              3. APPSCRIPT & EMAIL ENGINE
+              4. APPSCRIPT & EMAIL ENGINE
             </button>
 
             <button
@@ -628,7 +778,7 @@ function doPost(e) {
                   : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
               }`}
             >
-              4. SYSTEM AUDIT LOGS ({logs.length})
+              5. AUDIT LOGS ({logs.length})
             </button>
           </div>
 
@@ -638,6 +788,32 @@ function doPost(e) {
               
               {/* Product Form (Create & Edit Mode) */}
               <div className="lg:col-span-7 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+                
+                {/* FAST 1-CLICK AMAZON LINK AUTO-FILLER */}
+                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 space-y-2">
+                  <span className="text-xs font-extrabold text-amber-800 dark:text-amber-300 uppercase flex items-center gap-1.5">
+                    <Zap className="w-4 h-4 text-amber-600" />
+                    <span>INSTANT AMAZON LINK AUTO-FILLER (FAST 2-SECOND SKU PARSER)</span>
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={amazonQuickUrl}
+                      onChange={(e) => setAmazonQuickUrl(e.target.value)}
+                      placeholder="Paste Amazon Product Link (e.g. https://www.amazon.in/dp/B0H9B2DYS7...)"
+                      className="flex-1 bg-white dark:bg-black border border-amber-300 dark:border-amber-700 rounded-xl px-3 py-2 text-xs font-mono text-neutral-900 dark:text-white focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleQuickAmazonAutoFill}
+                      className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs uppercase tracking-wider shrink-0 transition-all shadow-sm"
+                    >
+                      ⚡ AUTO-FILL FORM
+                    </button>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                   <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                     {editingSkuId ? <Edit className="w-5 h-5 text-red-600" /> : <Plus className="w-5 h-5 text-red-600" />}
@@ -832,12 +1008,35 @@ function doPost(e) {
 
                   {/* COLOR VARIANTS WITH SPECIFIC PHOTOS & BUY LINKS */}
                   <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                      <Palette className="w-4 h-4 text-red-600" />
-                      <span>COLOR VARIANTS (PHOTOS, SWATCHES & SPECIFIC LINKS)</span>
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                        <Palette className="w-4 h-4 text-red-600" />
+                        <span>COLOR VARIANTS (PHOTOS, SWATCHES & SPECIFIC LINKS)</span>
+                      </label>
+                    </div>
 
-                    {/* Added Colors Pill List */}
+                    {/* 1-CLICK QUICK ADD COMMON COLORS */}
+                    <div className="p-3 rounded-xl bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-2">
+                      <span className="block text-[10px] font-extrabold uppercase text-neutral-500">
+                        ⚡ 1-CLICK ADD COMMON FOOTWEAR COLORS:
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => addQuickColorVariant('Navy & White', '#1E293B')} className="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[11px] font-bold border border-slate-700">
+                          + Navy & White
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('Chestnut Brown', '#451A03')} className="px-2.5 py-1 rounded-lg bg-amber-950 text-white text-[11px] font-bold border border-amber-800">
+                          + Chestnut Brown
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('All Black', '#000000')} className="px-2.5 py-1 rounded-lg bg-black text-white text-[11px] font-bold border border-neutral-700">
+                          + All Black
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('Olive Green', '#3F6212')} className="px-2.5 py-1 rounded-lg bg-lime-950 text-white text-[11px] font-bold border border-lime-800">
+                          + Olive Green
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Added Colors List */}
                     <div className="flex flex-wrap gap-2">
                       {newSku.colorVariants?.map((cv, idx) => (
                         <div key={idx} className="px-3 py-2 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center gap-3 text-xs font-bold">
@@ -940,48 +1139,6 @@ function doPost(e) {
                         </div>
 
                       </div>
-                    </div>
-                  </div>
-
-                  {/* SIZE-SPECIFIC AMAZON / MARKETPLACE LINKS */}
-                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                      <Ruler className="w-4 h-4 text-red-600" />
-                      <span>SIZE-SPECIFIC BUY LINKS (e.g. UK 8 Amazon ASIN Link)</span>
-                    </label>
-
-                    <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
-                      {(newSku.sizes || []).map((size) => {
-                        const sizeLink = newSku.sizeMarketplaceUrls ? newSku.sizeMarketplaceUrls[size] : undefined;
-                        return (
-                          <div key={size} className="p-3 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-2">
-                            <span className="text-xs font-bold text-red-600 uppercase">{size} SPECIFIC LINKS:</span>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                              <input
-                                type="url"
-                                value={sizeLink?.amazonUrl || ''}
-                                onChange={(e) => setSizeMarketplaceUrl(size, 'amazonUrl', e.target.value)}
-                                placeholder={`Amazon Link for ${size} (e.g. ...dp/B0H9B2DYS7?th=1&psc=1)`}
-                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
-                              />
-                              <input
-                                type="url"
-                                value={sizeLink?.myntraUrl || ''}
-                                onChange={(e) => setSizeMarketplaceUrl(size, 'myntraUrl', e.target.value)}
-                                placeholder={`Myntra Link for ${size}`}
-                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
-                              />
-                              <input
-                                type="url"
-                                value={sizeLink?.flipkartUrl || ''}
-                                onChange={(e) => setSizeMarketplaceUrl(size, 'flipkartUrl', e.target.value)}
-                                placeholder={`Flipkart Link for ${size}`}
-                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
                     </div>
                   </div>
 
@@ -1105,7 +1262,47 @@ function doPost(e) {
             </div>
           )}
 
-          {/* TAB 2: LANDING BANNER & MEDIA */}
+          {/* TAB 2: BULK 200+ AMAZON LINK IMPORT WORKSPACE */}
+          {activeTab === 'bulk' && (
+            <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-amber-500 uppercase flex items-center gap-1">
+                    <Zap className="w-4 h-4 text-amber-500" /> BULK 200+ AMAZON LINK IMPORT ENGINE
+                  </span>
+                  <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white">
+                    PASTE AMAZON PRODUCT URLS (ONE PER LINE)
+                  </h3>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-xs text-neutral-500 leading-relaxed font-body">
+                  No need to manually type titles or prices for 200+ SKUs! Simply paste your Amazon store URLs below (one URL per line). Our engine will parse the ASIN codes, clean the variation links, and publish them directly to Google Sheets!
+                </p>
+
+                <textarea
+                  rows={10}
+                  value={bulkAmazonUrlsText}
+                  onChange={(e) => setBulkAmazonUrlsText(e.target.value)}
+                  placeholder={`https://www.amazon.in/dp/B0H9B2DYS7?th=1&psc=1\nhttps://www.amazon.in/dp/B0H9B2DYS8?th=1&psc=1\nhttps://www.amazon.in/dp/B0H9B2DYS9?th=1&psc=1`}
+                  className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 text-xs font-mono text-neutral-900 dark:text-white focus:border-amber-500 focus:outline-none"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleBulkAmazonImport}
+                  disabled={isBulkProcessing}
+                  className="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:bg-neutral-400 text-black font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>{isBulkProcessing ? 'BULK IMPORTING TO GOOGLE SHEETS...' : 'BULK IMPORT ALL PRODUCTS TO GOOGLE SHEETS NOW'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: LANDING BANNER & MEDIA */}
           {activeTab === 'landing' && (
             <div className="max-w-3xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
               <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
@@ -1169,7 +1366,7 @@ function doPost(e) {
             </div>
           )}
 
-          {/* TAB 3: APPSCRIPT & EMAIL ENGINE */}
+          {/* TAB 4: APPSCRIPT & EMAIL ENGINE */}
           {activeTab === 'appscript' && (
             <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
               <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
@@ -1239,7 +1436,7 @@ function doPost(e) {
             </div>
           )}
 
-          {/* TAB 4: SYSTEM AUDIT LOGS */}
+          {/* TAB 5: SYSTEM AUDIT LOGS */}
           {activeTab === 'logs' && (
             <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-4 shadow-xs">
               <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">

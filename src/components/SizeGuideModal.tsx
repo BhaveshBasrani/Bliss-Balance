@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Ruler, CheckCircle } from 'lucide-react';
+import { X, Ruler } from 'lucide-react';
 
 interface SizeGuideModalProps {
   isOpen: boolean;
@@ -45,34 +45,13 @@ export const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ isOpen, onClose 
           </button>
         </div>
 
-        {/* Diagram & Recommendation Box */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center bg-neutral-50 dark:bg-neutral-950 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800">
-          <div className="text-center space-y-2">
-            <div className="w-32 h-32 mx-auto flex items-center justify-center p-3 border-2 border-dashed border-red-500/40 rounded-2xl bg-white dark:bg-neutral-900">
-              <svg viewBox="0 0 100 100" className="w-full h-full stroke-neutral-800 dark:stroke-neutral-200 fill-none stroke-[2]">
-                <path d="M40 10 C60 10 75 30 75 60 C75 85 60 90 40 90 C25 90 25 80 25 60 C25 30 30 10 40 10 Z" />
-                <line x1="15" y1="15" x2="15" y2="85" stroke="#E50914" strokeDasharray="3 3" />
-                <path d="M12 20 L15 15 L18 20 M12 80 L15 85 L18 80" stroke="#E50914" />
-              </svg>
-            </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-red-600 block">
-              HEEL TO TOE LENGTH (CM)
-            </span>
-          </div>
-
-          <div className="space-y-3 font-sans text-xs text-neutral-700 dark:text-neutral-300">
-            <div className="p-3 bg-red-50 dark:bg-red-950/60 rounded-xl border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 font-mono font-bold space-y-1">
-              <span className="flex items-center gap-1.5 uppercase text-[11px]">
-                <CheckCircle className="w-4 h-4 text-red-600" /> SIZING RECOMMENDATION:
-              </span>
-              <p className="text-[11px] font-normal leading-relaxed">
-                For Women, we recommend sizing down (e.g. if you are a UK 6, consider UK 5).
-              </p>
-            </div>
-            <p className="text-[11px] leading-relaxed">
-              Measure from the back of your heel to the tip of your longest toe for exact fit accuracy.
-            </p>
-          </div>
+        {/* Official Size Chart Banner Image */}
+        <div className="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950 p-2 shadow-xs">
+          <img
+            src="https://cdn.shopify.com/s/files/1/0738/5559/8899/files/size_chart_xlows_desktop.jpg?v=1780652343"
+            alt="Official Footwear Size Measurement Guide"
+            className="w-full h-auto rounded-xl object-cover"
+          />
         </div>
 
         {/* Size Chart Table */}
@@ -99,9 +78,9 @@ export const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ isOpen, onClose 
 
         <button
           onClick={onClose}
-          className="w-full py-3.5 rounded-xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-bold text-xs uppercase tracking-widest hover:bg-red-600 dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-md"
+          className="w-full py-3.5 rounded-2xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-bold text-xs uppercase tracking-widest hover:bg-red-600 dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-md"
         >
-          GOT IT, CLOSE SIZE GUIDE
+          CLOSE SIZE GUIDE
         </button>
 
       </div>

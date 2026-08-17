@@ -7,7 +7,7 @@ node_modules/
 .next/
 out/
 build/
-
+Chat with client/
 # Debug Logs
 *.log
 npm-debug.log*
