@@ -61,7 +61,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
               {/* Category Image Spec Banner */}
               <div className="p-3">
                 <ImagePlaceholder
-                  dimensions={item.imageDimensions || "600 x 800 px (3:4 Portrait)"}
+                  dimensions={item.imageDimensions || "800 x 600 px (4:3 Horizontal)"}
                   aspectRatio="aspect-[4/3]"
                   label={`${item.title} BANNER`}
                   imageUrl={item.imageUrl}
