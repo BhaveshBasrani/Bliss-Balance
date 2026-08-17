@@ -61,10 +61,10 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
   {
     id: 'col-6',
     title: 'Kids\' Crocs & Clogs',
-    gender: 'Unisex',
+    gender: 'Kids',
     description: 'Durable anti-skid lightweight clogs & crocs for kids active playtime.',
     imageDimensions: '800 x 600 px (4:3 Horizontal Banner)',
-    imageUrl: '/collections/kids-crocs.jpg',
+    imageUrl: '/collections/kids.jpg',
     slug: 'kids-crocs',
   },
 ];

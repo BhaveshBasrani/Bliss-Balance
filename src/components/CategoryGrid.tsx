@@ -11,11 +11,14 @@ interface CategoryGridProps {
 }
 
 export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
-  const [activeGender, setActiveGender] = useState<'All' | 'Men' | 'Women'>('All');
+  const [activeGender, setActiveGender] = useState<'All' | 'Men' | 'Women' | 'Kids'>('All');
 
   const filteredCollections = collections.filter(col => {
     if (activeGender === 'All') return true;
-    return col.gender === activeGender || col.gender === 'Unisex';
+    if (activeGender === 'Kids') {
+      return col.gender === 'Kids' || col.gender === 'Unisex' || col.title.toLowerCase().includes('kids');
+    }
+    return col.gender === activeGender;
   });
 
   return (
@@ -33,13 +36,13 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
             </h2>
           </div>
 
-          {/* Gender Filter Tabs */}
-          <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-900 p-1.5 rounded-xl border border-neutral-200 dark:border-neutral-800">
-            {(['All', 'Men', 'Women'] as const).map((gender) => (
+          {/* Gender Filter Tabs (ALL COLLECTIONS | MEN | WOMEN | KIDS) */}
+          <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-900 p-1.5 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-x-auto no-scrollbar">
+            {(['All', 'Men', 'Women', 'Kids'] as const).map((gender) => (
               <button
                 key={gender}
                 onClick={() => setActiveGender(gender)}
-                className={`px-4 py-2 rounded-lg font-mono text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`whitespace-nowrap px-4 py-2 rounded-lg font-mono text-xs font-bold uppercase tracking-wider transition-all ${
                   activeGender === gender
                     ? 'bg-red-600 text-white shadow-md'
                     : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'

@@ -11,7 +11,7 @@ export type FootwearCategory =
   | 'Flats'
   | 'Heels';
 
-export type Gender = 'Men' | 'Women' | 'Unisex';
+export type Gender = 'Men' | 'Women' | 'Kids' | 'Unisex';
 
 export interface ColorVariant {
   name: string;
@@ -61,31 +61,30 @@ export interface CollectionItem {
   title: string;
   gender: Gender;
   description: string;
-  imageDimensions: string;
-  imageUrl?: string;
+  imageDimensions?: string;
+  imageUrl: string;
   slug: string;
-}
-
-export interface ProductReview {
-  id: string;
-  productId: string;
-  authorName: string;
-  location?: string;
-  rating: number;
-  headline: string;
-  comment: string;
-  verified: boolean;
-  date: string;
 }
 
 export interface SiteSettings {
   announcementText: string;
   heroHeadline: string;
   heroSubheadline: string;
-  heroImageUrl?: string;
   heroImageDimensions: string;
+  heroImageUrl: string;
   appScriptUrl: string;
   googleDriveFolderId: string;
   recaptchaSiteKey: string;
   adminEmail: string;
+}
+
+export interface ProductReview {
+  id: string;
+  productId: string;
+  authorName: string;
+  rating: number;
+  headline: string;
+  comment: string;
+  verified: boolean;
+  date: string;
 }
