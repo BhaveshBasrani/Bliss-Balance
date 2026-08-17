@@ -39,11 +39,11 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   // If real image URL or Base64 string is provided
   if (imageUrl && imageUrl.trim() !== '') {
     return (
-      <div className={`relative overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 ${aspectRatio} ${className} group`}>
+      <div className={`relative overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 ${aspectRatio} ${className} group p-1`}>
         <img
           src={imageUrl}
           alt={label}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover object-top rounded-lg transition-transform duration-500 group-hover:scale-102"
           onError={(e) => {
             (e.target as HTMLElement).style.display = 'none';
           }}
@@ -51,7 +51,7 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
         
         {/* Only show dimension badge if explicitly requested */}
         {showDimensionBadge && (
-          <div className="absolute top-2 right-2 bg-neutral-900/90 text-[10px] uppercase font-mono tracking-widest text-red-400 px-2 py-0.5 rounded shadow">
+          <div className="absolute top-3 right-3 bg-neutral-900/90 text-[10px] uppercase font-mono tracking-widest text-red-400 px-2 py-0.5 rounded shadow">
             {dimensions}
           </div>
         )}
@@ -60,60 +60,57 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="absolute inset-0 bg-black/60 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white font-mono text-xs font-bold gap-2"
+            className="absolute bottom-3 right-3 bg-neutral-900/80 hover:bg-red-600 text-white p-2 rounded-lg text-xs font-mono font-bold flex items-center gap-1 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all shadow-lg"
           >
-            <Upload className="w-4 h-4" /> CHANGE PHOTO
+            <Upload className="w-3.5 h-3.5" />
+            <span>CHANGE IMAGE</span>
           </button>
         )}
 
         <input
-          ref={fileInputRef}
           type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
           accept="image/*"
           className="hidden"
-          onChange={handleFileChange}
         />
       </div>
     );
   }
 
-  // Placeholder State when no image is present
+  // Placeholder State when no image is uploaded
   return (
     <div
       onClick={() => onImageUploaded && fileInputRef.current?.click()}
-      className={`relative group overflow-hidden rounded-xl border-2 border-dashed border-red-500/40 bg-neutral-50 dark:bg-neutral-900 p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-red-600 hover:shadow-md ${aspectRatio} ${className} ${onImageUploaded ? 'cursor-pointer' : ''}`}
+      className={`relative rounded-xl border-2 border-dashed border-neutral-300 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 flex flex-col items-center justify-center p-6 text-center transition-all ${
+        onImageUploaded ? 'cursor-pointer hover:border-red-500 hover:bg-neutral-100 dark:hover:bg-neutral-900' : ''
+      } ${aspectRatio} ${className}`}
     >
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-
-      {/* Tech Grid Pattern Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5091408_1px,transparent_1px),linear-gradient(to_bottom,#e5091408_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
-
-      {/* Icon */}
-      <div className="relative z-10 w-12 h-12 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 flex items-center justify-center mb-3 text-red-600 group-hover:scale-110 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+      <div className="p-3 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 mb-2">
         <ImageIcon className="w-6 h-6" />
       </div>
 
-      {/* Text Info */}
-      <div className="relative z-10 space-y-1 max-w-[85%] font-mono">
-        <p className="text-xs uppercase font-bold tracking-widest text-neutral-800 dark:text-neutral-200">
-          {label}
-        </p>
+      <span className="font-heading font-bold text-xs uppercase tracking-wider text-neutral-800 dark:text-neutral-200 mb-1">
+        {label}
+      </span>
 
-        <div className="inline-block bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 font-mono text-[11px] font-extrabold px-3 py-1 rounded-md shadow-xs">
-          EXACT SIZE: {dimensions}
-        </div>
+      <span className="font-mono text-[10px] text-red-600 font-bold bg-red-50 dark:bg-red-950/60 px-2 py-0.5 rounded border border-red-200 dark:border-red-900">
+        REQUIRED: {dimensions}
+      </span>
 
-        <p className="text-[10px] text-neutral-500 dark:text-neutral-400 flex items-center justify-center gap-1 pt-1">
-          <Upload className="w-3 h-3 text-red-600 inline" />
-          <span>Click to upload image directly</span>
-        </p>
-      </div>
+      {onImageUploaded && (
+        <span className="font-mono text-[10px] text-neutral-400 mt-2 flex items-center gap-1">
+          <Upload className="w-3 h-3" /> CLICK TO UPLOAD IMAGE
+        </span>
+      )}
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        className="hidden"
+      />
     </div>
   );
 };
