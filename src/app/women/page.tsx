@@ -29,16 +29,23 @@ export default function WomenPage() {
   ];
 
   useEffect(() => {
-    const local = getStoredSKUs().filter(s => s.gender === 'Women' || s.gender === 'Unisex');
-    setSkus(local);
-    if (local && local.length > 0) {
-      setLoading(false);
-    }
+    const loadSkus = () => {
+      const local = getStoredSKUs().filter(s => s.gender === 'Women' || s.gender === 'Unisex');
+      setSkus(local);
+      if (local && local.length > 0) {
+        setLoading(false);
+      }
+    };
+
+    loadSkus();
 
     fetchCloudSKUs().then(cloudSkus => {
       setSkus(cloudSkus.filter(s => s.gender === 'Women' || s.gender === 'Unisex'));
       setLoading(false);
     }).catch(() => setLoading(false));
+
+    window.addEventListener('skus-updated', loadSkus);
+    return () => window.removeEventListener('skus-updated', loadSkus);
   }, []);
 
   const filtered = selectedCategory === 'All'

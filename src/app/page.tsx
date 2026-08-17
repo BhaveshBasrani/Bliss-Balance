@@ -6,12 +6,13 @@ import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { SkuCard } from '@/components/SkuCard';
+import { ProductSlider } from '@/components/ProductSlider';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
 import { IntroLoader } from '@/components/IntroLoader';
 import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
-import { ArrowRight, Zap, Star, Plus } from 'lucide-react';
+import { ArrowRight, Zap, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -22,12 +23,15 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const local = getStoredSKUs();
-    setSkus(local);
-    if (local && local.length > 0) {
-      setLoading(false);
-    }
+    const loadData = () => {
+      const local = getStoredSKUs();
+      setSkus(local);
+      if (local && local.length > 0) {
+        setLoading(false);
+      }
+    };
 
+    loadData();
     setSettings(getStoredSettings());
 
     // Live Dynamic Cloud Fetch from Google Sheets
@@ -37,6 +41,9 @@ export default function HomePage() {
     }).catch(() => setLoading(false));
 
     fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings));
+
+    window.addEventListener('skus-updated', loadData);
+    return () => window.removeEventListener('skus-updated', loadData);
   }, []);
 
   const displayedSkus = skus.filter(s => {
@@ -61,7 +68,7 @@ export default function HomePage() {
 
         {/* 1. FOOTWEAR SHOWCASE (SHIFTED UP DIRECLY BELOW HERO) */}
         <section className="py-14 bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800 font-mono">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             
             {/* Brutalist Header & Gender Tabs */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
@@ -117,10 +124,24 @@ export default function HomePage() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {displayedSkus.slice(0, 8).map((sku) => (
-                  <SkuCard key={sku.id} sku={sku} />
-                ))}
+              <div className="space-y-12">
+                {/* Standard Responsive Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {displayedSkus.slice(0, 4).map((sku) => (
+                    <SkuCard key={sku.id} sku={sku} />
+                  ))}
+                </div>
+
+                {/* ONE8 STYLE HORIZONTAL SLIDER WITH PROGRESS TRACK & ARROWS (IMAGE 1) */}
+                {displayedSkus.length > 4 && (
+                  <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800">
+                    <ProductSlider
+                      skus={displayedSkus.slice(4)}
+                      title="EXPLORE TRENDING DROPS"
+                      subtitle="SLIDER SHOWCASE • FEEL THE BLISS"
+                    />
+                  </div>
+                )}
               </div>
             )}
 

@@ -42,14 +42,21 @@ function CollectionsContent() {
   const allColors = ['All', 'Navy', 'Black', 'Brown', 'Beige', 'White', 'Olive', 'Red'];
 
   useEffect(() => {
-    const local = getStoredSKUs();
-    setSkus(local);
-    if (local && local.length > 0) setLoading(false);
+    const loadSkus = () => {
+      const local = getStoredSKUs();
+      setSkus(local);
+      if (local && local.length > 0) setLoading(false);
+    };
+
+    loadSkus();
 
     fetchCloudSKUs().then(cloudSkus => {
       setSkus(cloudSkus);
       setLoading(false);
     }).catch(() => setLoading(false));
+
+    window.addEventListener('skus-updated', loadSkus);
+    return () => window.removeEventListener('skus-updated', loadSkus);
   }, []);
 
   useEffect(() => {

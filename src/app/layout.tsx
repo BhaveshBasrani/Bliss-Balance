@@ -27,34 +27,34 @@ const siteUrl = 'https://blissbalance.co';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Bliss Balance • Premium Cushioned Footwear India | Feel The Bliss',
-    template: '%s | Bliss Balance • Official Store',
+    default: 'BLISS BALANCE® Official Store | Premium Cushioned Footwear India | Feel The Bliss',
+    template: '%s | Bliss Balance® Official Store',
   },
   description:
-    'Bliss Balance is a modern Indian footwear brand crafting premium cushioned slippers, slides, sandals, clogs, sneakers & daily footwear. Soft comfort, lightweight feel, anti-skid grip, and free shipping across India.',
+    'Bliss Balance® is India\'s premier cushioned footwear brand crafting soft slippers, slides, sandals, clogs, sneakers & daily shoes. Anti-skid grip, lightweight feel, 7-day easy returns & free shipping across India.',
   keywords: [
     'Bliss Balance',
+    'Bliss Balance Shoes',
+    'Bliss Balance Slippers',
+    'Bliss Balance Slides',
+    'Bliss Balance Sandals',
+    'Bliss Balance Clogs',
     'Bliss Balance Footwear',
+    'Bliss Balance India',
+    'Bliss Balance Hyderabad',
+    'Bliss Balance Official Website',
+    'Bliss Balance Amazon Store',
     'blissbalance.co',
     'Feel The Bliss',
     'Cushioned Slippers India',
-    'Men Footwear',
-    'Women Footwear',
-    'Kids Footwear',
-    'Slippers',
-    'Flip-Flops',
-    'Slides',
-    'Sandals',
-    'Clogs',
-    'Casual Shoes',
-    'Sneakers',
-    'Loafers',
-    'Anti-Skid Footwear',
-    'Comfort Footwear India',
+    'Anti Skid Footwear',
+    'Men Footwear Bliss Balance',
+    'Women Footwear Bliss Balance',
+    'Kids Footwear Bliss Balance',
   ],
-  authors: [{ name: 'Bliss Balance' }],
-  creator: 'Bliss Balance',
-  publisher: 'Bliss Balance',
+  authors: [{ name: 'Bliss Balance Footwear' }],
+  creator: 'Bliss Balance Footwear',
+  publisher: 'Bliss Balance Footwear',
   alternates: {
     canonical: siteUrl,
   },
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: siteUrl,
-    title: 'Bliss Balance • Premium Cushioned Footwear | Feel The Bliss',
+    title: 'BLISS BALANCE® Official Store | Premium Cushioned Footwear India | Feel The Bliss',
     description:
       'Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.',
     siteName: 'Bliss Balance',
@@ -77,11 +77,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bliss Balance • Premium Cushioned Footwear India',
+    title: 'BLISS BALANCE® Official Store | Premium Cushioned Footwear India',
     description:
       'Soft cushioned slippers, slides, sandals, clogs, & sneakers crafted for everyday life. Feel The Bliss.',
     images: [`${siteUrl}/hero-banner.png`],
-    creator: '@blissbalance',
+    creator: '@blissbalance_',
   },
   icons: {
     icon: '/favicon.svg',
@@ -110,12 +110,15 @@ export default function RootLayout({
   const jsonLdOrganization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${siteUrl}/#organization`,
     name: 'Bliss Balance',
+    alternateName: ['Bliss Balance Footwear', 'Bliss Balance India'],
     url: siteUrl,
     logo: `${siteUrl}/Logo.svg`,
+    image: `${siteUrl}/hero-banner.png`,
     slogan: 'Feel The Bliss',
     description:
-      'Modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip.',
+      'Bliss Balance is an official Indian cushioned footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.',
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+919440961776',
@@ -140,11 +143,37 @@ export default function RootLayout({
     ],
   };
 
+  const jsonLdStore = {
+    '@context': 'https://schema.org',
+    '@type': 'Store',
+    '@id': `${siteUrl}/#store`,
+    name: 'Bliss Balance Official Store',
+    url: siteUrl,
+    image: `${siteUrl}/hero-banner.png`,
+    telephone: '+919440961776',
+    priceRange: '₹799 - ₹4999',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Novel House, Iskon Temple, Road No. 1, Muralidhar Bagh, Abids',
+      addressLocality: 'Hyderabad',
+      addressRegion: 'Telangana',
+      postalCode: '500012',
+      addressCountry: 'IN',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 17.3850,
+      longitude: 78.4867,
+    },
+  };
+
   const jsonLdWebSite = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
     name: 'Bliss Balance',
     url: siteUrl,
+    publisher: { '@id': `${siteUrl}/#organization` },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -155,18 +184,84 @@ export default function RootLayout({
     },
   };
 
+  const jsonLdBrand = {
+    '@context': 'https://schema.org',
+    '@type': 'Brand',
+    '@id': `${siteUrl}/#brand`,
+    name: 'Bliss Balance',
+    alternateName: 'Bliss Balance Footwear',
+    url: siteUrl,
+    logo: `${siteUrl}/Logo.svg`,
+    slogan: 'Feel The Bliss',
+    description: 'Bliss Balance is a modern Indian footwear brand specializing in cushioned slippers, slides, sandals, clogs, and sneakers for everyday comfort.',
+  };
+
+  const jsonLdFAQ = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is Bliss Balance?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Bliss Balance is an official Indian cushioned footwear brand offering soft, anti-skid slippers, slides, sandals, clogs, and sneakers for everyday comfort.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Where can I buy official Bliss Balance footwear?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'You can buy official Bliss Balance footwear online at https://blissbalance.co or on the official Amazon India Brand Store at https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Where is Bliss Balance headquartered?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Bliss Balance is headquartered at Novel House, Iskon Temple, Road No. 1, Muralidhar Bagh, Abids, Hyderabad, Telangana 500012, India.',
+        },
+      },
+    ],
+  };
+
   return (
     <html lang="en" suppressHydrationWarning className={`${outfit.variable} ${jakarta.variable}`}>
       <head>
+        <link rel="canonical" href="https://blissbalance.co/" />
+        <meta name="theme-color" content="#DC2626" />
+        <meta name="apple-mobile-web-app-title" content="Bliss Balance" />
         <Script
           id="schema-org-organization"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
         />
         <Script
+          id="schema-org-store"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdStore) }}
+        />
+        <Script
           id="schema-org-website"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+        />
+        <Script
+          id="schema-org-brand"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBrand) }}
+        />
+        <Script
+          id="schema-org-faq"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFAQ) }}
+        />
+        <Script
+          id="google-recaptcha"
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa'}`}
+          strategy="afterInteractive"
         />
       </head>
       <body className="min-h-screen bg-white dark:bg-neutral-950 font-body text-neutral-900 dark:text-white antialiased selection:bg-red-600 selection:text-white transition-colors duration-300">

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { X, Heart, Trash2, ArrowRight } from 'lucide-react';
 import { FootwearSKU } from '@/lib/types';
 import { getStoredSKUs } from '@/lib/dataStore';
+import { EmptyShoeBoxSvg } from './EmptyShoeBoxSvg';
 
 interface WishlistModalProps {
   isOpen: boolean;
@@ -72,16 +73,26 @@ export const WishlistModal: React.FC<WishlistModalProps> = ({ isOpen, onClose })
           </button>
         </div>
 
-        {/* Wishlist Items List */}
+        {/* Empty Wishlist View featuring Shoe Box with Logo Emblem Inside */}
         {wishlistSkus.length === 0 ? (
-          <div className="text-center py-12 space-y-3">
-            <Heart className="w-12 h-12 text-neutral-300 dark:text-neutral-700 mx-auto" />
-            <p className="text-xs text-neutral-500 font-bold uppercase">
-              YOUR WISHLIST IS EMPTY
-            </p>
-            <p className="text-[11px] text-neutral-400 max-w-xs mx-auto">
-              Save your favorite slippers, slides, sandals, and sneakers by clicking the heart button!
-            </p>
+          <div className="text-center py-8 space-y-4">
+            <EmptyShoeBoxSvg className="w-48 h-48 mx-auto" />
+            
+            <div className="space-y-1">
+              <p className="text-xs text-neutral-900 dark:text-white font-black uppercase tracking-wider">
+                YOUR WISHLIST IS EMPTY
+              </p>
+              <p className="text-[11px] text-neutral-500 max-w-xs mx-auto">
+                Save your favorite slippers, slides, sandals, and sneakers by clicking the heart button!
+              </p>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="px-6 py-3 rounded-2xl bg-red-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-red-500 transition-all shadow-md"
+            >
+              EXPLORE FOOTWEAR
+            </button>
           </div>
         ) : (
           <div className="space-y-3">

@@ -85,7 +85,7 @@ let memorySettingsCache: SiteSettings | null = null;
 let lastSettingsFetchTime = 0;
 let inFlightSettingsPromise: Promise<SiteSettings> | null = null;
 
-const CACHE_TTL_MS = 3 * 60 * 1000; // 3-minute high-speed in-memory TTL
+const CACHE_TTL_MS = 2 * 60 * 1000; // 2-minute high-speed in-memory TTL
 
 export function getStoredSKUs(): FootwearSKU[] {
   if (typeof window === 'undefined') return [];
@@ -93,11 +93,14 @@ export function getStoredSKUs(): FootwearSKU[] {
     const data = localStorage.getItem(SKUS_STORAGE_KEY);
     if (data) {
       const parsed = JSON.parse(data);
-      return Array.isArray(parsed) ? parsed : [];
+      if (Array.isArray(parsed)) {
+        memorySkusCache = parsed;
+        return parsed;
+      }
     }
-    return [];
+    return memorySkusCache || [];
   } catch (e) {
-    return [];
+    return memorySkusCache || [];
   }
 }
 
@@ -107,6 +110,7 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
     memorySkusCache = skus;
     lastSkusFetchTime = Date.now();
     localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(skus));
+    window.dispatchEvent(new Event('skus-updated'));
   } catch (e) {
     console.error('Error saving SKUs:', e);
   }
@@ -132,14 +136,16 @@ export function saveStoredSettings(settings: SiteSettings) {
     memorySettingsCache = settings;
     lastSettingsFetchTime = Date.now();
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+    window.dispatchEvent(new Event('settings-updated'));
   } catch (e) {
     console.error('Error saving settings:', e);
   }
 }
 
 /**
- * ⚡ TURBO SPEED DYNAMIC CLOUD FETCH WITH IN-MEMORY PROMISE DEDUPLICATION
- * Loads in 0 MILLISECONDS for cached requests!
+ * ⚡ BULLETPROOF NO-DATA-LOSS PRODUCT SYNC & FETCH ENGINE
+ * Seamlessly merges live Google Sheets products with local storage.
+ * Prevents cold-start empty responses from wiping uploaded products!
  */
 export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false): Promise<FootwearSKU[]> {
   const local = getStoredSKUs();
@@ -151,7 +157,7 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
   }
 
   // 2. DEDUPLICATED IN-FLIGHT PROMISE: Re-use network request if already in progress
-  if (inFlightSkusPromise) {
+  if (inFlightSkusPromise && !forceRefresh) {
     return inFlightSkusPromise;
   }
 
@@ -165,11 +171,32 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
     try {
       const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
       const data = await res.json();
+      
       if (data && data.products && Array.isArray(data.products)) {
-        memorySkusCache = data.products;
+        const cloudProducts: FootwearSKU[] = data.products;
+
+        // If cloud returns empty list but local has uploaded products, do NOT wipe local products!
+        if (cloudProducts.length === 0 && local.length > 0) {
+          memorySkusCache = local;
+          return local;
+        }
+
+        // NO-DATA-LOSS MERGE: Combine local products & cloud products using a Map by SKU ID
+        const mergedMap = new Map<string, FootwearSKU>();
+        
+        // Put local SKUs into map first
+        local.forEach(sku => mergedMap.set(sku.id, sku));
+        
+        // Merge cloud SKUs into map (cloud updates existing or adds new)
+        cloudProducts.forEach(sku => mergedMap.set(sku.id, sku));
+
+        const mergedSkus = Array.from(mergedMap.values());
+
+        memorySkusCache = mergedSkus;
         lastSkusFetchTime = Date.now();
-        saveStoredSKUs(data.products);
-        return data.products;
+        localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(mergedSkus));
+        window.dispatchEvent(new Event('skus-updated'));
+        return mergedSkus;
       }
     } catch (e) {
       console.warn('Could not fetch live cloud products:', e);
@@ -191,7 +218,7 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
     return memorySettingsCache;
   }
 
-  if (inFlightSettingsPromise) {
+  if (inFlightSettingsPromise && !forceRefresh) {
     return inFlightSettingsPromise;
   }
 
