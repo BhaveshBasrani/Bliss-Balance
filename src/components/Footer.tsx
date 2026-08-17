@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
-import { Truck, ShieldCheck, RefreshCw, Mail, ArrowUpRight } from 'lucide-react';
+import { Truck, ShieldCheck, RefreshCw, Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -64,7 +64,7 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
           
-          {/* Brand Info */}
+          {/* Brand Info & Address Details */}
           <div className="md:col-span-5 space-y-4">
             <Link href="/" className="flex items-center gap-3 group">
               <BrandLogo size="md" />
@@ -78,23 +78,55 @@ export const Footer: React.FC = () => {
               </div>
             </Link>
 
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm">
+            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm font-body">
               Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.
             </p>
 
-            <div className="pt-2">
-              <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-neutral-500 block mb-2">
-                JOIN THE BLISS CLUB
+            {/* Detailed Head Office Address Card */}
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1.5 font-mono text-[11px]">
+              <span className="text-[10px] font-bold text-red-600 uppercase flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-red-600" /> REGISTERED HEAD OFFICE ADDRESS
               </span>
-              <div className="flex items-center gap-2 max-w-sm">
-                <input
-                  type="email"
-                  placeholder="Enter email for newsletter..."
-                  className="w-full bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 rounded-xl px-3.5 py-2.5 text-xs text-neutral-900 dark:text-white focus:outline-none focus:border-red-600"
-                />
-                <button className="px-4 py-2.5 rounded-xl bg-[#E50914] hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-wider shrink-0 transition-all">
-                  JOIN
-                </button>
+              <p className="text-neutral-800 dark:text-neutral-200 leading-relaxed font-semibold">
+                Novel House, Iskon Temple, Road No. 1,<br />
+                Muralidhar Bagh, Abids, Hyderabad,<br />
+                Telangana 500012, India
+              </p>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="pt-1 space-y-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-500 block">
+                OFFICIAL SOCIAL CHANNELS
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://www.facebook.com/share/1Bhmz8KL1w/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                  aria-label="Facebook Page"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://x.com/blissbalance_"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                  aria-label="Twitter X Profile"
+                >
+                  <Twitter className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                  aria-label="YouTube Channel"
+                >
+                  <Youtube className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>
@@ -114,7 +146,7 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Customer Care */}
+          {/* Customer Help */}
           <div className="md:col-span-2 space-y-3 font-mono text-xs">
             <span className="font-bold text-neutral-950 dark:text-white uppercase tracking-widest block text-[11px]">
               CUSTOMER HELP
@@ -123,29 +155,56 @@ export const Footer: React.FC = () => {
               <li><Link href="/account" className="hover:text-red-600 transition-colors">Track Order</Link></li>
               <li><Link href="/faq" className="hover:text-red-600 transition-colors">FAQ & Support</Link></li>
               <li><Link href="/about" className="hover:text-red-600 transition-colors">About Us</Link></li>
-              <li><Link href="/admin" className="hover:text-red-600 transition-colors">Admin Panel</Link></li>
             </ul>
           </div>
 
-          {/* Contact Details */}
+          {/* Official Contact & Amazon Store Details */}
           <div className="md:col-span-3 space-y-3 font-mono text-xs">
             <span className="font-bold text-neutral-950 dark:text-white uppercase tracking-widest block text-[11px]">
-              OFFICIAL STORE
+              OFFICIAL CHANNELS
             </span>
-            <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-[11px]">
-              Bliss Balance Head Office<br />
-              New Delhi, India
-            </p>
-            <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
-              <Mail className="w-4 h-4 text-red-600" />
-              <span>support@blissbalance.co</span>
-            </div>
+
+            {/* Official Amazon Brand Store Badge Link */}
+            <a
+              href="https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3?lp_asin=B0GV6T919J&ref_=cm_sw_r_apann_ast_store_DTJ19G6CEXMFCXTTDYBR"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-3 rounded-xl bg-amber-50 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 hover:bg-amber-500 hover:text-black transition-all group"
+            >
+              <div className="flex items-center gap-2">
+                <span className="font-black text-xs uppercase">AMAZON BRAND STORE</span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </a>
+
+            {/* WhatsApp Direct Chat */}
+            <a
+              href="https://wa.me/919440961776?text=Hi%20Bliss%20Balance%20Team%2C%20I%20have%20a%20query"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition-all group"
+            >
+              <MessageSquare className="w-4 h-4 text-emerald-600 group-hover:text-white shrink-0" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold uppercase">WhatsApp Support</span>
+                <span className="text-xs font-mono font-black">+91 9440961776</span>
+              </div>
+            </a>
+
+            {/* Official Gmail */}
+            <a
+              href="mailto:blissbalance.in@gmail.com"
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 hover:border-red-600 hover:text-red-600 transition-all"
+            >
+              <Mail className="w-4 h-4 text-red-600 shrink-0" />
+              <span className="text-xs font-mono font-bold">blissbalance.in@gmail.com</span>
+            </a>
           </div>
 
         </div>
 
         <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px] text-neutral-500">
-          <p>© {new Date().getFullYear()} BLISS BALANCE FOOTWEAR. ALL RIGHTS RESERVED.</p>
+          <p>© {new Date().getFullYear()} BLISS BALANCE FOOTWEAR. HYDERABAD, TELANGANA 500012. ALL RIGHTS RESERVED.</p>
           <div className="flex items-center gap-4">
             <Link href="/faq" className="hover:text-red-600 transition-colors">Terms of Service</Link>
             <Link href="/faq" className="hover:text-red-600 transition-colors">Privacy Policy</Link>

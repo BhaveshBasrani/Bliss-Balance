@@ -215,9 +215,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   // UIVERSE.IO SPEEDER HIGH-SPEED RUNNER FULL-VIEWPORT RED SCREEN OVERLAY
   if (isLoading && !sku) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#FF0000] text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
+      <div className="fixed inset-0 z-[99999] bg-[#FF0000] text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
         
-        <div className="speeder-loader-wrapper scale-110 sm:scale-125">
+        <div className="speeder-loader-wrapper scale-125 sm:scale-150">
           <div className="speeder-loader text-black">
             <span>
               <span />

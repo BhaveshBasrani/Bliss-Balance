@@ -7,22 +7,14 @@ export const IntroLoader: React.FC = () => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Check if user already saw intro loader in this browser session
-    const hasSeenIntro = sessionStorage.getItem('bliss_balance_intro_seen');
-    if (hasSeenIntro) {
-      setVisible(false);
-      return;
-    }
-
-    // Fast crisp flicker timer sequence
+    // Crisp 0.9s flicker sequence on fresh page entry
     const fadeTimer = setTimeout(() => {
       setFadeOut(true);
-    }, 1000);
+    }, 900);
 
     const unmountTimer = setTimeout(() => {
       setVisible(false);
-      sessionStorage.setItem('bliss_balance_intro_seen', 'true');
-    }, 1300);
+    }, 1200);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -34,16 +26,16 @@ export const IntroLoader: React.FC = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-black flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
+      className={`fixed inset-0 z-[99999] bg-black flex items-center justify-center transition-opacity duration-300 pointer-events-none ${
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      {/* Pure White Logo Emblem with Crisp Opacity Flicker (No red bg, no glow, no scaling) */}
+      {/* Pure White Logo Emblem (200% BIGGER & BOLDER) */}
       <div className="animate-[pureFlicker_0.3s_ease-in-out_infinite]">
         <img
           src="/Logo.svg"
           alt="Bliss Balance Intro Emblem"
-          className="w-24 h-24 sm:w-28 sm:h-28 object-contain filter brightness-0 invert"
+          className="w-36 h-36 sm:w-48 sm:h-48 object-contain filter brightness-0 invert scale-125 sm:scale-150"
         />
       </div>
 
@@ -59,13 +51,13 @@ export const IntroLoader: React.FC = () => {
             opacity: 1;
           }
           60% {
-            opacity: 0.15;
+            opacity: 0.2;
           }
           80% {
             opacity: 1;
           }
           100% {
-            opacity: 0;
+            opacity: 1;
           }
         }
       `}</style>

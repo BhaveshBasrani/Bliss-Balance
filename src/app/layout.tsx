@@ -118,17 +118,25 @@ export default function RootLayout({
       'Modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip.',
     contactPoint: {
       '@type': 'ContactPoint',
+      telephone: '+919440961776',
       email: 'blissbalance.in@gmail.com',
       contactType: 'customer support',
       areaServed: 'IN',
       availableLanguage: ['English', 'Hindi'],
     },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Novel House, Iskon Temple, Road No. 1, Muralidhar Bagh, Abids',
+      addressLocality: 'Hyderabad',
+      addressRegion: 'Telangana',
+      postalCode: '500012',
+      addressCountry: 'IN',
+    },
     sameAs: [
-      'https://instagram.com',
-      'https://facebook.com',
-      'https://twitter.com',
-      'https://linkedin.com',
-      'https://youtube.com',
+      'https://www.facebook.com/share/1Bhmz8KL1w/',
+      'https://x.com/blissbalance_',
+      'https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9',
+      'https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3?lp_asin=B0GV6T919J&ref_=cm_sw_r_apann_ast_store_DTJ19G6CEXMFCXTTDYBR',
     ],
   };
 

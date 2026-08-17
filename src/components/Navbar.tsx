@@ -483,19 +483,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               </p>
 
               <div className="flex items-center gap-3">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800">
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800">
+                <a href="https://www.facebook.com/share/1Bhmz8KL1w/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800" aria-label="Facebook Page">
                   <Facebook className="w-4 h-4" />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800">
+                <a href="https://x.com/blissbalance_" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800" aria-label="Twitter X Profile">
                   <Twitter className="w-4 h-4" />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800">
-                  <Linkedin className="w-4 h-4" />
-                </a>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800">
+                <a href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800" aria-label="YouTube Channel">
                   <Youtube className="w-4 h-4" />
                 </a>
               </div>
