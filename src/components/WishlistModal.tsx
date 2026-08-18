@@ -27,7 +27,7 @@ export const WishlistModal: React.FC<WishlistModalProps> = ({ isOpen, onClose })
       if (storedIds) {
         const ids: string[] = JSON.parse(storedIds);
         const allSkus = getStoredSKUs();
-        const filtered = allSkus.filter(s => ids.includes(s.id));
+        const filtered = allSkus.filter(s => ids.some(id => id.toLowerCase() === s.id.toLowerCase()));
         setWishlistSkus(filtered);
       } else {
         setWishlistSkus([]);

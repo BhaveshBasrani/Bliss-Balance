@@ -1,5 +1,5 @@
 import { FootwearSKU, CollectionItem, SiteSettings } from './types';
-import { fetchSupabaseSKUs, upsertSupabaseSKU, deleteSupabaseSKU } from './supabaseClient';
+import { fetchSupabaseSKUs, upsertSupabaseSKU } from './supabaseClient';
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   announcementText: 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL STORE',
@@ -85,7 +85,31 @@ let memorySettingsCache: SiteSettings | null = null;
 let lastSettingsFetchTime = 0;
 let inFlightSettingsPromise: Promise<SiteSettings> | null = null;
 
-const CACHE_TTL_MS = 2 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 1000; // Reduced to 30s for rapid sync
+
+export function mergeSKUArrays(primary: FootwearSKU[], secondary: FootwearSKU[]): FootwearSKU[] {
+  const map = new Map<string, FootwearSKU>();
+  
+  // 1. Load primary list
+  (primary || []).forEach(item => {
+    if (item && item.id) map.set(item.id.toLowerCase(), item);
+  });
+
+  // 2. Merge secondary list (updating or appending)
+  (secondary || []).forEach(item => {
+    if (item && item.id) {
+      const key = item.id.toLowerCase();
+      const existing = map.get(key);
+      if (existing) {
+        map.set(key, { ...existing, ...item });
+      } else {
+        map.set(key, item);
+      }
+    }
+  });
+
+  return Array.from(map.values());
+}
 
 export function getStoredSKUs(): FootwearSKU[] {
   if (typeof window === 'undefined') return [];
@@ -93,7 +117,7 @@ export function getStoredSKUs(): FootwearSKU[] {
     const data = localStorage.getItem(SKUS_STORAGE_KEY);
     if (data) {
       const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
+      if (Array.isArray(parsed) && parsed.length > 0) {
         memorySkusCache = parsed;
         return parsed;
       }
@@ -143,7 +167,7 @@ export function saveStoredSettings(settings: SiteSettings) {
 }
 
 /**
- * ⚡ SUPABASE DATABASE HIGH-SPEED FETCH ENGINE WITH NO-DATA-LOSS FALLBACK
+ * ⚡ SUPABASE DATABASE & APPSCRIPT SMART SYNC ENGINE (PREVENTS DATA LOSS & OVERWRITES)
  */
 export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false): Promise<FootwearSKU[]> {
   const local = getStoredSKUs();
@@ -159,14 +183,16 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
 
   inFlightSkusPromise = (async () => {
     try {
-      // 1. PRIMARY FETCH FROM SUPABASE DATABASE
+      // 1. FETCH FROM SUPABASE DATABASE
       const supabaseProducts = await fetchSupabaseSKUs();
 
       if (supabaseProducts && supabaseProducts.length > 0) {
-        memorySkusCache = supabaseProducts;
+        // SMART MERGE: Combine local SKUs with Supabase SKUs so newly added items are never lost!
+        const merged = mergeSKUArrays(local, supabaseProducts);
+        memorySkusCache = merged;
         lastSkusFetchTime = Date.now();
-        saveStoredSKUs(supabaseProducts);
-        return supabaseProducts;
+        saveStoredSKUs(merged);
+        return merged;
       }
 
       // 2. FALLBACK FETCH FROM GOOGLE APPSCRIPT IF SUPABASE IS EMPTY
@@ -177,13 +203,14 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
         if (data && data.products && Array.isArray(data.products) && data.products.length > 0) {
           const cloudProducts: FootwearSKU[] = data.products;
           
-          // Sync Apps Script products to Supabase in background
+          // Background sync to Supabase
           cloudProducts.forEach(sku => upsertSupabaseSKU(sku));
 
-          memorySkusCache = cloudProducts;
+          const merged = mergeSKUArrays(local, cloudProducts);
+          memorySkusCache = merged;
           lastSkusFetchTime = Date.now();
-          saveStoredSKUs(cloudProducts);
-          return cloudProducts;
+          saveStoredSKUs(merged);
+          return merged;
         }
       }
     } catch (e) {

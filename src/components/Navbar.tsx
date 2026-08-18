@@ -25,6 +25,8 @@ import { CustomerAuthModal } from './CustomerAuthModal';
 import { WishlistModal } from './WishlistModal';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
+import { getStoredSKUs } from '@/lib/dataStore';
+import { FootwearSKU } from '@/lib/types';
 
 interface NavbarProps {
   onOpenSearch: () => void;
@@ -72,11 +74,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
     try {
       const stored = localStorage.getItem('bliss_balance_wishlist');
       if (stored) {
-        const ids: string[] = JSON.parse(stored);
-        setWishlistCount(ids.length);
-      } else {
-        setWishlistCount(0);
+        const ids = JSON.parse(stored);
+        if (Array.isArray(ids)) {
+          const validSkus = getStoredSKUs();
+          const validIds = ids.filter((id: string) =>
+            typeof id === 'string' &&
+            id.trim().length > 0 &&
+            validSkus.some((s: FootwearSKU) => s.id.toLowerCase() === id.toLowerCase())
+          );
+
+          if (validIds.length !== ids.length) {
+            localStorage.setItem('bliss_balance_wishlist', JSON.stringify(validIds));
+          }
+
+          setWishlistCount(validIds.length);
+          return;
+        }
       }
+      setWishlistCount(0);
     } catch (e) {
       setWishlistCount(0);
     }
@@ -228,14 +243,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                         >
                           SIGN IN / REGISTER
                         </button>
-
-                        <Link
-                          href="/account"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="block text-center text-[10px] font-bold text-neutral-400 hover:text-neutral-950 dark:hover:text-white uppercase pt-1"
-                        >
-                          GUEST ORDER TRACKING
-                        </Link>
                       </>
                     )}
                   </div>

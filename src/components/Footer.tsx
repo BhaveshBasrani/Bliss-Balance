@@ -5,18 +5,31 @@ import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
 import { BrandTitleText } from './BrandTitleText';
 import { PaymentLogos } from './PaymentLogos';
-import { Truck, ShieldCheck, RefreshCw, Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube } from 'lucide-react';
+import { Truck, ShieldCheck, RefreshCw, Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube, Sun, Moon } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const waveRefs = useRef<(HTMLDivElement | null)[]>([]);
   const footerRef = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const animationFrameRef = useRef<number | null>(null);
 
   const barCount = 28;
   const waveColor = 'rgb(220, 38, 38)';
 
   useEffect(() => {
+    // Sync Light/Dark Mode Preference (Default Light)
+    try {
+      const stored = localStorage.getItem('bliss_balance_theme');
+      if (stored === 'dark') {
+        setTheme('dark');
+        document.documentElement.classList.add('dark');
+      } else {
+        setTheme('light');
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
@@ -35,6 +48,19 @@ export const Footer: React.FC = () => {
       }
     };
   }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    try {
+      localStorage.setItem('bliss_balance_theme', nextTheme);
+      if (nextTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  };
 
   useEffect(() => {
     let t = 0;
@@ -150,7 +176,7 @@ export const Footer: React.FC = () => {
               </p>
             </div>
 
-            {/* Social Media Links */}
+            {/* Social Media Links & Theme Switcher */}
             <div className="pt-2 space-y-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 block">
                 OFFICIAL SOCIAL CHANNELS
@@ -260,18 +286,45 @@ export const Footer: React.FC = () => {
 
         </div>
 
-        {/* GIANT ONE8-STYLE WATERMARK LOGO AT FOOTER BOTTOM (USER IMAGE 1 REPLICATED) */}
-        <div className="w-full overflow-hidden select-none pointer-events-none opacity-[0.08] dark:opacity-[0.14] pt-10 pb-4 text-center">
-          <span className="font-heading font-black text-6xl sm:text-8xl lg:text-[11rem] tracking-tighter uppercase text-neutral-950 dark:text-white leading-none block whitespace-nowrap">
-            bliss balance
-          </span>
+        {/* GIANT HIGH-FASHION WATERMARK LOGO AT FOOTER BOTTOM - 100% PERFECT RESPONSIVE SCALING */}
+        <div className="w-full select-none pointer-events-none opacity-[0.12] dark:opacity-[0.22] py-4 text-center my-4 overflow-hidden">
+          <svg viewBox="0 0 1200 150" className="w-full h-auto max-h-[160px] mx-auto">
+            <text
+              x="50%"
+              y="50%"
+              dominantBaseline="middle"
+              textAnchor="middle"
+              className="font-heading font-black text-[130px] fill-current text-neutral-950 dark:text-white tracking-tighter uppercase"
+            >
+              BLISS BALANCE
+            </text>
+          </svg>
         </div>
 
-        {/* Payment Method Badges & Copyright Line */}
+        {/* Payment Method Badges, Theme Switcher & Copyright Line */}
         <div className="pt-6 border-t-2 border-neutral-900 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 font-black">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="text-neutral-950 dark:text-white text-xs uppercase">© {new Date().getFullYear()} BLISS BALANCE FOOTWEAR.</span>
             <span className="text-neutral-400">HYDERABAD, TELANGANA 500012.</span>
+            
+            {/* Small Footer Theme Switcher Button */}
+            <button
+              onClick={toggleTheme}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 text-[10px] font-black uppercase text-neutral-900 dark:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] ml-2"
+              title="Toggle Light / Dark Mode"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Moon className="w-3 h-3 text-amber-400 fill-amber-400" />
+                  <span>DARK MODE</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-3 h-3 text-amber-500 fill-amber-500" />
+                  <span>LIGHT MODE</span>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Graphical Payment Method Badges */}

@@ -1,33 +1,5 @@
-import type { Metadata, Viewport } from 'next';
-import { Syne, Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
+import type { Metadata } from 'next';
 import './globals.css';
-import { ThemeProvider } from '@/components/ThemeProvider';
-import Script from 'next/script';
-
-const syne = Syne({
-  subsets: ['latin'],
-  variable: '--font-syne',
-  display: 'swap',
-  weight: ['700', '800'],
-});
-
-const space = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space',
-  display: 'swap',
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-jakarta',
-  display: 'swap',
-});
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-};
 
 const siteUrl = 'https://blissbalance.co';
 
@@ -35,25 +7,26 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: 'Bliss Balance - Official Online Store',
-    template: '%s | Bliss Balance Official Store',
+    template: '%s | Bliss Balance - Official Online Store',
   },
   description:
-    'Bliss Balance is a homegrown Indian lifestyle & footwear brand that creates unisex footwear and believes in living fearlessly and in everyday balance. Engineered for comfort, style & everyday living.',
+    'Bliss Balance is the official Indian footwear & lifestyle brand creating unisex sneakers, slides, sandals, clogs & slippers. Engineered for all-day comfort, contemporary style & dependable grip.',
   keywords: [
     'Bliss Balance',
-    'Bliss Balance Official Online Store',
+    'Bliss Balance Footwear',
     'Bliss Balance Shoes',
     'Bliss Balance Slippers',
     'Bliss Balance Slides',
     'Bliss Balance Sandals',
     'Bliss Balance Clogs',
-    'Bliss Balance Footwear',
+    'Bliss Balance Sneakers',
+    'Bliss Balance Official Store',
     'Bliss Balance India',
     'Bliss Balance Hyderabad',
     'blissbalance.co',
     'Feel The Bliss',
-    'Cushioned Slippers India',
-    'Anti Skid Footwear',
+    'Cushioned Footwear India',
+    'Anti Skid Shoes India',
     'Men Footwear Bliss Balance',
     'Women Footwear Bliss Balance',
   ],
@@ -69,8 +42,8 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: 'Bliss Balance - Official Online Store',
     description:
-      'Bliss Balance is a homegrown Indian lifestyle & footwear brand creating unisex sneakers, slides, sandals & slippers for everyday balance.',
-    siteName: 'Bliss Balance',
+      'Bliss Balance is a homegrown Indian lifestyle & footwear brand creating unisex sneakers, slides, sandals & slippers for everyday balance. Feel The Bliss.',
+    siteName: 'Bliss Balance Footwear',
     images: [
       {
         url: `${siteUrl}/hero-banner.png`,
@@ -112,26 +85,48 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const jsonLdOrganization = {
+  // BRAND DISAMBIGUATION & SEARCH ENGINE JSON-LD
+  const jsonLdBrand = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': `${siteUrl}/#organization`,
+    '@type': 'Brand',
+    '@id': `${siteUrl}/#brand`,
     name: 'Bliss Balance',
-    alternateName: ['Bliss Balance Footwear', 'Bliss Balance India'],
+    alternateName: [
+      'Bliss Balance Footwear',
+      'Bliss Balance Shoes',
+      'Bliss Balance Official Online Store',
+      'Bliss Balance India',
+    ],
     url: siteUrl,
     logo: `${siteUrl}/Logo.svg`,
     image: `${siteUrl}/hero-banner.png`,
     slogan: 'Feel The Bliss',
     description:
-      'Bliss Balance is a homegrown Indian lifestyle & footwear brand creating unisex sneakers, slides, sandals & slippers for everyday balance.',
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: '+919440961776',
-      email: 'blissbalance.in@gmail.com',
-      contactType: 'customer support',
-      areaServed: 'IN',
-      availableLanguage: ['English', 'Hindi'],
-    },
+      'Bliss Balance is an Indian footwear & lifestyle brand manufacturing unisex sneakers, slides, sandals, clogs & slippers. Engineered for all-day comfort and anti-skid grip.',
+    disambiguatingDescription:
+      'Bliss Balance is an Indian footwear and shoe manufacturing brand based in Hyderabad, India. It is a footwear e-commerce store and NOT a massage oil.',
+    knowsAbout: ['Footwear', 'Shoes', 'Slippers', 'Slides', 'Sandals', 'Sneakers', 'Clogs'],
+    sameAs: [
+      'https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3',
+      'https://www.facebook.com/share/1Bhmz8KL1w/',
+      'https://x.com/blissbalance_',
+      'https://youtube.com/@blissbalance_26',
+    ],
+  };
+
+  const jsonLdOnlineStore = {
+    '@context': 'https://schema.org',
+    '@type': 'OnlineStore',
+    '@id': `${siteUrl}/#store`,
+    name: 'Bliss Balance - Official Online Store',
+    url: siteUrl,
+    logo: `${siteUrl}/Logo.svg`,
+    image: `${siteUrl}/hero-banner.png`,
+    description:
+      'Official Online Store of Bliss Balance Footwear. Buy unisex slippers, slides, sandals & sneakers online in India.',
+    priceRange: '₹999 - ₹4999',
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'Credit Card, Debit Card, UPI, Net Banking, Cash on Delivery',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Novel House, Iskon Temple, Road No. 1, Muralidhar Bagh, Abids',
@@ -140,33 +135,31 @@ export default function RootLayout({
       postalCode: '500012',
       addressCountry: 'IN',
     },
-    sameAs: [
-      'https://www.facebook.com/share/1Bhmz8KL1w/',
-      'https://x.com/blissbalance_',
-      'https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9',
-      'https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3',
-    ],
+    telephone: '+919440961776',
+    email: 'blissbalance.in@gmail.com',
   };
 
   const jsonLdWebSite = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${siteUrl}/#website`,
-    name: 'Bliss Balance',
     url: siteUrl,
-    publisher: { '@id': `${siteUrl}/#organization` },
+    name: 'Bliss Balance - Official Online Store',
+    alternateName: 'Bliss Balance Footwear',
+    publisher: {
+      '@id': `${siteUrl}/#brand`,
+    },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${siteUrl}/collections?cat={search_term_string}`,
+        urlTemplate: `${siteUrl}/collections?query={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
   };
 
-  // Google Sitelinks Navigation Schema (Matches Comet Search Results Structure)
-  const jsonLdSitelinks = {
+  const jsonLdSiteNavigation = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     itemListElement: [
@@ -174,78 +167,71 @@ export default function RootLayout({
         '@type': 'SiteNavigationElement',
         position: 1,
         name: 'Men',
-        description: 'Explore Bliss Balance Men\'s Footwear — bold unisex sneakers, slides & slippers crafted for fearless living.',
+        description: 'Browse Bliss Balance Mens Cushioning Footwear, Slides & Sandals',
         url: `${siteUrl}/men`,
       },
       {
         '@type': 'SiteNavigationElement',
         position: 2,
         name: 'Women',
-        description: 'Explore Bliss Balance Women\'s Footwear — soft cushioned slides, sandals & sneakers.',
+        description: 'Browse Bliss Balance Womens Slides, Sandals & Clogs',
         url: `${siteUrl}/women`,
       },
       {
         '@type': 'SiteNavigationElement',
         position: 3,
         name: 'Sneakers',
-        description: 'Browse men\'s & unisex sneakers by Bliss Balance. Lightweight, cushioned lifestyle footwear.',
+        description: 'Bliss Balance Everyday Casual Sneakers Collection',
         url: `${siteUrl}/collections?cat=Sneakers`,
       },
       {
         '@type': 'SiteNavigationElement',
         position: 4,
         name: 'Slides',
-        description: 'Shop premium cushioned slides engineered for everyday comfort and anti-skid grip.',
+        description: 'Bliss Balance Soft Memory Foam Slides',
         url: `${siteUrl}/collections?cat=Slides`,
       },
       {
         '@type': 'SiteNavigationElement',
         position: 5,
         name: 'About Us',
-        description: 'Learn about Bliss Balance, a homegrown Indian lifestyle footwear brand built on comfort & everyday balance.',
+        description: 'Learn about Bliss Balance Footwear brand story and Hyderabad head office',
         url: `${siteUrl}/about`,
-      },
-      {
-        '@type': 'SiteNavigationElement',
-        position: 6,
-        name: 'Contact Us',
-        description: 'Get in touch with Bliss Balance customer care and support team.',
-        url: `${siteUrl}/about#contact`,
       },
     ],
   };
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${syne.variable} ${space.variable} ${jakarta.variable}`}>
+    <html lang="en">
       <head>
-        <link rel="canonical" href="https://blissbalance.co/" />
-        <meta name="theme-color" content="#DC2626" />
-        <meta name="apple-mobile-web-app-title" content="Bliss Balance" />
-        <Script
-          id="schema-org-organization"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=JetBrains+Mono:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
         />
-        <Script
-          id="schema-org-website"
+
+        {/* JSON-LD DISAMBIGUATION SCHEMAS FOR GOOGLE ENGINE */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBrand) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOnlineStore) }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
         />
-        <Script
-          id="schema-org-sitelinks"
+        <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSitelinks) }}
-        />
-        <Script
-          id="google-recaptcha"
-          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa'}`}
-          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSiteNavigation) }}
         />
       </head>
-      <body className="min-h-screen bg-white dark:bg-black font-body text-neutral-900 dark:text-white antialiased selection:bg-red-600 selection:text-white transition-colors duration-300">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+      <body className="bg-white dark:bg-black text-neutral-900 dark:text-white font-mono antialiased selection:bg-red-600 selection:text-white">
+        {children}
       </body>
     </html>
   );

@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer';
 import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings } from '@/lib/dataStore';
 import { upsertSupabaseSKU, deleteSupabaseSKU, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
-import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, SizeMarketplaceUrl } from '@/lib/types';
+import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant } from '@/lib/types';
 import {
   Shield,
   Plus,
@@ -18,7 +18,6 @@ import {
   AlertCircle,
   FileSpreadsheet,
   Database,
-  ExternalLink,
   RefreshCw,
   Info,
   Copy,
@@ -32,7 +31,6 @@ import {
   X,
   Palette,
   Image as ImageIcon,
-  Ruler,
   Zap,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -141,8 +139,6 @@ export default function AdminPage() {
     setTimeout(() => setStatusMsg(null), 6000);
   };
 
-
-
   const toggleSize = (size: string) => {
     const current = newSku.sizes || [];
     if (current.includes(size)) {
@@ -152,7 +148,6 @@ export default function AdminPage() {
     }
   };
 
-  // QUICK ADD COMMON COLOR VARIANTS
   const addQuickColorVariant = (name: string, hex: string) => {
     const current = newSku.colorVariants || [];
     if (current.some(c => c.name.toLowerCase() === name.toLowerCase())) return;
@@ -189,18 +184,6 @@ export default function AdminPage() {
     const current = newSku.galleryImages ? [...newSku.galleryImages] : ['', '', '', ''];
     current[index] = url;
     setNewSku({ ...newSku, galleryImages: current });
-  };
-
-  const setSizeMarketplaceUrl = (size: string, field: 'amazonUrl' | 'myntraUrl' | 'flipkartUrl', val: string) => {
-    const current = { ...(newSku.sizeMarketplaceUrls || {}) };
-    if (!current[size]) {
-      current[size] = { size };
-    }
-    current[size] = {
-      ...current[size],
-      [field]: val,
-    };
-    setNewSku({ ...newSku, sizeMarketplaceUrls: current });
   };
 
   const handleEditClick = (sku: FootwearSKU) => {
@@ -265,7 +248,6 @@ export default function AdminPage() {
     setSyncStepText(editingSkuId ? 'Updating Product in Google Sheets...' : 'Syncing New Product to Google Sheets...');
 
     const targetId = editingSkuId || `sku-bb-${Date.now().toString().slice(-5)}`;
-
     const filteredGallery = (newSku.galleryImages || []).filter(img => img && img.trim() !== '');
 
     const savedSku: FootwearSKU = {
@@ -310,8 +292,8 @@ export default function AdminPage() {
     setSyncStepText('Generating reCAPTCHA v3 Security Token...');
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'save_sku');
 
-    setSyncStepText('Writing Record to Google Sheets & Dispatching HTML Email...');
-    const syncRes = await syncWithAppsScript(settings.appScriptUrl, {
+    setSyncStepText('Writing Record to Google Sheets & Dispatching Email...');
+    await syncWithAppsScript(settings.appScriptUrl, {
       action: editingSkuId ? 'UPDATE_SKU' : 'ADD_SKU',
       skuData: savedSku,
       recaptchaToken,
@@ -374,56 +356,10 @@ export default function AdminPage() {
   };
 
   const appScriptCode = `/**
- * BLISS BALANCE FOOTWEAR - COMPLETE GOOGLE SHEETS LIVE SYNC ENGINE
+ * BLISS BALANCE FOOTWEAR - GOOGLE SHEETS LIVE SYNC ENGINE
  */
-
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
-var GOOGLE_DRIVE_FOLDER_NAME = "Bliss_Balance_Product_Photos";
-
-function doGet(e) {
-  var ss = getOrCreateSpreadsheet();
-  ensureAndRepairSheetStructure(ss);
-
-  var action = e && e.parameter ? e.parameter.action : "";
-
-  if (action === "getProducts") return handleGetProducts(ss);
-  if (action === "getAnnouncements") return handleGetAnnouncements(ss);
-
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "active",
-    brand: "Bliss Balance",
-    tagline: "Feel The Bliss",
-    products: getProductsFromSheet(ss)
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  var lock = LockService.getScriptLock();
-  lock.tryLock(10000);
-
-  try {
-    var ss = getOrCreateSpreadsheet();
-    ensureAndRepairSheetStructure(ss);
-
-    if (!e || !e.postData || !e.postData.contents) {
-      return ContentService.createTextOutput(JSON.stringify({ status: "ignored", message: "Empty body" })).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    var postData = JSON.parse(e.postData.contents);
-    var action = postData.action || "";
-
-    if (action === "ADD_SKU" || action === "UPDATE_SKU") return handleAddOrUpdateSku(ss, postData);
-    if (action === "DELETE_SKU") return handleDeleteSku(ss, postData);
-    if (action === "UPDATE_BANNER") return handleSaveSettings(ss, postData);
-
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Action processed" })).setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
-  } finally {
-    lock.releaseLock();
-  }
-}`;
+function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ status: "active" })).setMimeType(ContentService.MimeType.JSON); }`;
 
   const copyCode = () => {
     navigator.clipboard.writeText(appScriptCode);
@@ -449,7 +385,7 @@ function doPost(e) {
 
         <div className="w-full max-w-md mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] relative">
           <div className="text-center space-y-3">
-            <BrandLogo size="lg" className="mx-auto rounded-none border border-black shadow-sm" />
+            <BrandLogo size="lg" className="mx-auto rounded-none border-2 border-black shadow-sm" />
             <div className="space-y-1">
               <h2 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-wider">
                 BLISS BALANCE // ADMIN
@@ -496,7 +432,7 @@ function doPost(e) {
             </button>
           </form>
 
-          <div className="pt-4 border-t-2 border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500 font-bold">
+          <div className="pt-4 border-t-2 border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500 font-black uppercase">
             SYSTEM STATUS: RECAPTCHA V3 & APPSCRIPT SECURED
           </div>
         </div>
@@ -508,34 +444,32 @@ function doPost(e) {
     );
   }
 
-  // MERCHANT CONTROL STATION DASHBOARD
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors relative">
+    <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors relative select-none">
       
       {/* BEAUTIFUL APPSCRIPT SYNC LOADING MODAL */}
       {isSyncing && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 max-w-sm w-full text-center space-y-6 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-red-600/10 rounded-3xl blur-xl pointer-events-none" />
+          <div className="bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-8 max-w-sm w-full text-center space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] relative overflow-hidden">
             <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-4 border-red-600/20 border-t-red-600 animate-spin" />
+              <div className="absolute inset-0 border-4 border-red-600/20 border-t-red-600 animate-spin rounded-none" />
               <BrandLogo size="md" className="relative z-10" />
             </div>
 
             <div className="space-y-2 relative z-10">
-              <span className="text-[10px] text-red-500 font-extrabold uppercase tracking-widest flex items-center justify-center gap-1.5 animate-pulse">
-                <Sparkles className="w-3.5 h-3.5 text-red-500" /> SYNCING WITH GOOGLE APPSCRIPT
+              <span className="text-[10px] text-red-600 font-black uppercase tracking-widest flex items-center justify-center gap-1.5 animate-pulse">
+                <Sparkles className="w-3.5 h-3.5 text-red-600" /> SYNCING WITH GOOGLE APPSCRIPT
               </span>
-              <h3 className="font-heading text-xl font-bold uppercase text-white tracking-wider">
+              <h3 className="font-heading text-xl font-black uppercase text-neutral-950 dark:text-white tracking-wider">
                 SAVING TO GOOGLE SHEETS
               </h3>
-              <p className="text-xs font-mono text-neutral-400 leading-relaxed">
+              <p className="text-xs font-mono font-bold text-neutral-500 leading-relaxed">
                 {syncStepText}
               </p>
             </div>
 
-            <div className="pt-2 border-t border-neutral-800 text-[10px] text-neutral-500 font-mono flex items-center justify-center gap-2">
-              <RefreshCw className="w-3 h-3 text-red-500 animate-spin" />
+            <div className="pt-2 border-t-2 border-neutral-900 dark:border-neutral-800 text-[10px] text-neutral-500 font-black flex items-center justify-center gap-2">
+              <RefreshCw className="w-3 h-3 text-red-600 animate-spin" />
               <span>PLEASE DO NOT CLOSE THIS TAB...</span>
             </div>
           </div>
@@ -543,21 +477,21 @@ function doPost(e) {
       )}
 
       <div>
-        <div className="bg-neutral-50 dark:bg-black border-b border-neutral-200 dark:border-neutral-800 py-3 px-4 sm:px-8 flex items-center justify-between text-xs">
+        <div className="bg-neutral-100 dark:bg-neutral-900 border-b-2 border-neutral-900 dark:border-neutral-100 py-3 px-4 sm:px-8 flex items-center justify-between text-xs">
           <Link
             href="/"
-            className="font-bold text-neutral-700 dark:text-neutral-400 hover:text-red-600 uppercase flex items-center gap-2"
+            className="font-black text-neutral-800 dark:text-neutral-200 hover:text-red-600 uppercase flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" /> RETURN TO CLIENT STOREFRONT
           </Link>
 
-          <span className="hidden sm:inline text-[11px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-500/40">
+          <span className="hidden sm:inline text-[11px] text-emerald-600 dark:text-emerald-400 font-black bg-white dark:bg-black px-3 py-1 rounded-none border-2 border-black dark:border-white">
             SESSION: SECURELY DECRYPTED // BLISS SERVER
           </span>
 
           <button
             onClick={handleLogout}
-            className="px-3 py-1 rounded-lg bg-neutral-100 dark:bg-red-950 border border-neutral-200 dark:border-red-600/40 text-neutral-800 dark:text-red-400 font-bold uppercase hover:bg-red-600 hover:text-white transition-all"
+            className="px-3.5 py-1.5 rounded-none bg-red-600 text-white font-black uppercase border-2 border-black hover:bg-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           >
             LOCK SESSION ✕
           </button>
@@ -567,7 +501,7 @@ function doPost(e) {
           
           <div className="space-y-6">
             <div>
-              <span className="text-xs text-red-600 font-bold uppercase tracking-widest flex items-center gap-1">
+              <span className="text-xs text-red-600 font-black uppercase tracking-widest flex items-center gap-1">
                 <Shield className="w-4 h-4" /> MERCHANT CONTROL STATION
               </span>
               <h1 className="font-heading text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
@@ -575,8 +509,9 @@ function doPost(e) {
               </h1>
             </div>
 
+            {/* DASHBOARD METRICS GRID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
+              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">TOTAL PRODUCTS</span>
                   <span className="font-heading text-3xl font-black text-neutral-950 dark:text-white">{skus.length}</span>
@@ -585,7 +520,7 @@ function doPost(e) {
               </div>
 
               {/* 1GB SUPABASE STORAGE MONITOR */}
-              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex flex-col justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] space-y-2">
+              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-neutral-500 uppercase font-black">SUPABASE 1GB STORAGE</span>
                   <Database className="w-5 h-5 text-emerald-600" />
@@ -599,7 +534,7 @@ function doPost(e) {
                       {quotaStats ? `${quotaStats.usedPercentage}% USED` : '0.1% USED'}
                     </span>
                   </div>
-                  <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2 rounded-none mt-1.5 overflow-hidden border border-black">
+                  <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2.5 rounded-none mt-1.5 overflow-hidden border-2 border-black">
                     <div
                       className="bg-emerald-600 h-full transition-all duration-500"
                       style={{ width: `${quotaStats ? Math.max(2, quotaStats.usedPercentage) : 2}%` }}
@@ -608,7 +543,7 @@ function doPost(e) {
                 </div>
               </div>
 
-              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
+              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">APPSCRIPT SPREADSHEET</span>
                   <span className="font-heading text-lg font-black text-emerald-600 dark:text-emerald-400">ACTIVE & SYNCED</span>
@@ -616,7 +551,7 @@ function doPost(e) {
                 <FileSpreadsheet className="w-8 h-8 text-emerald-600" />
               </div>
 
-              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
+              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">HTML EMAIL NOTIFIER</span>
                   <span className="font-heading text-lg font-black text-blue-600 dark:text-blue-400">ENABLED</span>
@@ -627,10 +562,10 @@ function doPost(e) {
           </div>
 
           {statusMsg && (
-            <div className={`p-4 rounded-xl text-xs font-bold flex items-center justify-between border shadow-sm ${
-              statusMsg.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950/90 border-emerald-200 dark:border-emerald-500 text-emerald-800 dark:text-emerald-300' :
-              statusMsg.type === 'error' ? 'bg-red-50 dark:bg-red-950/90 border-red-200 dark:border-red-500 text-red-800 dark:text-red-300' :
-              'bg-blue-50 dark:bg-blue-950/90 border-blue-200 dark:border-blue-500 text-blue-800 dark:text-blue-300'
+            <div className={`p-4 rounded-none text-xs font-black flex items-center justify-between border-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
+              statusMsg.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950 border-emerald-600 text-emerald-800 dark:text-emerald-300' :
+              statusMsg.type === 'error' ? 'bg-red-50 dark:bg-red-950 border-red-600 text-red-800 dark:text-red-300' :
+              'bg-blue-50 dark:bg-blue-950 border-blue-600 text-blue-800 dark:text-blue-300'
             }`}>
               <div className="flex items-center gap-2">
                 {statusMsg.type === 'success' && <CheckCircle className="w-5 h-5" />}
@@ -642,26 +577,24 @@ function doPost(e) {
           )}
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 border-b-2 border-neutral-900 dark:border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab('skus')}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
                 activeTab === 'skus'
-                  ? 'bg-red-600 text-white border-red-500 shadow-md'
-                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
               }`}
             >
               1. SINGLE SKU FORM ({skus.length})
             </button>
 
-
-
             <button
               onClick={() => setActiveTab('landing')}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
                 activeTab === 'landing'
-                  ? 'bg-red-600 text-white border-red-500 shadow-md'
-                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
               }`}
             >
               3. LANDING BANNER & MEDIA
@@ -669,10 +602,10 @@ function doPost(e) {
 
             <button
               onClick={() => setActiveTab('appscript')}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
                 activeTab === 'appscript'
-                  ? 'bg-red-600 text-white border-red-500 shadow-md'
-                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
               }`}
             >
               4. APPSCRIPT & EMAIL ENGINE
@@ -680,10 +613,10 @@ function doPost(e) {
 
             <button
               onClick={() => setActiveTab('logs')}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${
+              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
                 activeTab === 'logs'
-                  ? 'bg-red-600 text-white border-red-500 shadow-md'
-                  : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:text-neutral-950'
+                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
               }`}
             >
               5. AUDIT LOGS ({logs.length})
@@ -695,12 +628,10 @@ function doPost(e) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
               {/* Product Form (Create & Edit Mode) */}
-              <div className="lg:col-span-7 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
+              <div className="lg:col-span-7 bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
                 
-
-
-                <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
-                  <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                <div className="flex items-center justify-between border-b-2 border-neutral-900 dark:border-neutral-800 pb-3">
+                  <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                     {editingSkuId ? <Edit className="w-5 h-5 text-red-600" /> : <Plus className="w-5 h-5 text-red-600" />}
                     <span>{editingSkuId ? 'EDIT FOOTWEAR PRODUCT' : 'CREATE NEW FOOTWEAR PRODUCT'}</span>
                   </h3>
@@ -708,7 +639,7 @@ function doPost(e) {
                   {editingSkuId && (
                     <button
                       onClick={handleCancelEdit}
-                      className="px-3 py-1.5 rounded-xl bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase flex items-center gap-1 hover:bg-red-600 hover:text-white transition-all"
+                      className="px-3.5 py-1.5 rounded-none bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white border-2 border-black text-xs font-black uppercase flex items-center gap-1 hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     >
                       <X className="w-3.5 h-3.5" /> CANCEL EDIT
                     </button>
@@ -718,7 +649,7 @@ function doPost(e) {
                 <form onSubmit={handleSaveSku} className="space-y-5">
                   
                   <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                       Product Title / SKU Code *
                     </label>
                     <input
@@ -727,12 +658,12 @@ function doPost(e) {
                       value={newSku.title}
                       onChange={(e) => setNewSku({ ...newSku, title: e.target.value })}
                       placeholder="e.g. BB158 (Bliss Sneaker)"
-                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                       Subtitle / Short Description
                     </label>
                     <input
@@ -740,19 +671,19 @@ function doPost(e) {
                       value={newSku.subtitle}
                       onChange={(e) => setNewSku({ ...newSku, subtitle: e.target.value })}
                       placeholder="e.g. All-Day Perfect Comfort for Active Lifestyles"
-                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                         Gender
                       </label>
                       <select
                         value={newSku.gender}
                         onChange={(e) => setNewSku({ ...newSku, gender: e.target.value as Gender })}
-                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
                       >
                         <option value="Men">Men</option>
                         <option value="Women">Women</option>
@@ -761,13 +692,13 @@ function doPost(e) {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                         Category
                       </label>
                       <select
                         value={newSku.category}
                         onChange={(e) => setNewSku({ ...newSku, category: e.target.value as FootwearCategory })}
-                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
                       >
                         <option value="Slippers">Slippers</option>
                         <option value="Flip-Flops">Flip-Flops</option>
@@ -786,7 +717,7 @@ function doPost(e) {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                         Selling Price (₹) *
                       </label>
                       <input
@@ -795,12 +726,12 @@ function doPost(e) {
                         value={newSku.price}
                         onChange={(e) => setNewSku({ ...newSku, price: Number(e.target.value) })}
                         placeholder="1675"
-                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                         MRP Price (₹)
                       </label>
                       <input
@@ -808,14 +739,14 @@ function doPost(e) {
                         value={newSku.originalPrice || ''}
                         onChange={(e) => setNewSku({ ...newSku, originalPrice: Number(e.target.value) })}
                         placeholder="4499"
-                        className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
                   </div>
 
                   {/* Available Sizes Checkboxes */}
                   <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1.5">
                       Available Sizes
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -826,10 +757,10 @@ function doPost(e) {
                             type="button"
                             key={size}
                             onClick={() => toggleSize(size)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase border transition-all ${
+                            className={`px-3 py-2 rounded-none text-xs font-mono font-black uppercase border-2 transition-all ${
                               isChecked
-                                ? 'bg-red-600 text-white border-red-500 shadow'
-                                : 'bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800'
+                                ? 'bg-red-600 text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                                : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200 border-neutral-900 dark:border-neutral-700'
                             }`}
                           >
                             {size} {isChecked && '✓'}
@@ -842,7 +773,7 @@ function doPost(e) {
                   {/* PRIMARY & HOVER PHOTOS */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-2">
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
                         Primary Product Photo *
                       </label>
                       <ImagePlaceholder
@@ -855,7 +786,7 @@ function doPost(e) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
                         Hover Secondary Photo (Comet Style)
                       </label>
                       <ImagePlaceholder
@@ -869,8 +800,8 @@ function doPost(e) {
                   </div>
 
                   {/* ADDITIONAL CATALOG / GALLERY PHOTOS */}
-                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                  <div className="space-y-3 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5">
                       <ImageIcon className="w-4 h-4 text-red-600" />
                       <span>CATALOG & GALLERY PHOTOS (UP TO 4 EXTRA ANGLE PHOTOS)</span>
                     </label>
@@ -878,7 +809,7 @@ function doPost(e) {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[0, 1, 2, 3].map((idx) => (
                         <div key={idx} className="space-y-1">
-                          <span className="block text-[9px] font-bold text-neutral-400">Photo {idx + 1}</span>
+                          <span className="block text-[9px] font-black text-neutral-400">Photo {idx + 1}</span>
                           <ImagePlaceholder
                             dimensions="800 x 800 px"
                             aspectRatio="aspect-square"
@@ -892,30 +823,30 @@ function doPost(e) {
                   </div>
 
                   {/* COLOR VARIANTS WITH SPECIFIC PHOTOS & BUY LINKS */}
-                  <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                  <div className="space-y-4 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
                     <div className="flex items-center justify-between">
-                      <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5">
                         <Palette className="w-4 h-4 text-red-600" />
                         <span>COLOR VARIANTS (PHOTOS, SWATCHES & SPECIFIC LINKS)</span>
                       </label>
                     </div>
 
                     {/* 1-CLICK QUICK ADD COMMON COLORS */}
-                    <div className="p-3 rounded-xl bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-2">
-                      <span className="block text-[10px] font-extrabold uppercase text-neutral-500">
+                    <div className="p-4 rounded-none bg-neutral-100 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-2">
+                      <span className="block text-[10px] font-mono font-black uppercase text-neutral-500">
                         ⚡ 1-CLICK ADD COMMON FOOTWEAR COLORS:
                       </span>
                       <div className="flex flex-wrap gap-2">
-                        <button type="button" onClick={() => addQuickColorVariant('Navy & White', '#1E293B')} className="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[11px] font-bold border border-slate-700">
+                        <button type="button" onClick={() => addQuickColorVariant('Navy & White', '#1E293B')} className="px-3 py-1.5 rounded-none bg-slate-900 text-white text-[11px] font-mono font-black border border-black shadow-xs">
                           + Navy & White
                         </button>
-                        <button type="button" onClick={() => addQuickColorVariant('Chestnut Brown', '#451A03')} className="px-2.5 py-1 rounded-lg bg-amber-950 text-white text-[11px] font-bold border border-amber-800">
+                        <button type="button" onClick={() => addQuickColorVariant('Chestnut Brown', '#451A03')} className="px-3 py-1.5 rounded-none bg-amber-950 text-white text-[11px] font-mono font-black border border-black shadow-xs">
                           + Chestnut Brown
                         </button>
-                        <button type="button" onClick={() => addQuickColorVariant('All Black', '#000000')} className="px-2.5 py-1 rounded-lg bg-black text-white text-[11px] font-bold border border-neutral-700">
+                        <button type="button" onClick={() => addQuickColorVariant('All Black', '#000000')} className="px-3 py-1.5 rounded-none bg-black text-white text-[11px] font-mono font-black border border-neutral-700 shadow-xs">
                           + All Black
                         </button>
-                        <button type="button" onClick={() => addQuickColorVariant('Olive Green', '#3F6212')} className="px-2.5 py-1 rounded-lg bg-lime-950 text-white text-[11px] font-bold border border-lime-800">
+                        <button type="button" onClick={() => addQuickColorVariant('Olive Green', '#3F6212')} className="px-3 py-1.5 rounded-none bg-lime-950 text-white text-[11px] font-mono font-black border border-black shadow-xs">
                           + Olive Green
                         </button>
                       </div>
@@ -924,27 +855,26 @@ function doPost(e) {
                     {/* Added Colors List */}
                     <div className="flex flex-wrap gap-2">
                       {newSku.colorVariants?.map((cv, idx) => (
-                        <div key={idx} className="px-3 py-2 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center gap-3 text-xs font-bold">
+                        <div key={idx} className="px-3.5 py-2 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 flex items-center gap-3 text-xs font-mono font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                           {cv.imageUrl ? (
-                            <img src={cv.imageUrl} alt={cv.name} className="w-6 h-6 rounded-lg object-cover border" />
+                            <img src={cv.imageUrl} alt={cv.name} className="w-6 h-6 rounded-none object-cover border border-black" />
                           ) : (
-                            <span className="w-3.5 h-3.5 rounded-full border" style={{ backgroundColor: cv.hex }} />
+                            <span className="w-4 h-4 rounded-none border border-black" style={{ backgroundColor: cv.hex }} />
                           )}
                           <span>{cv.name}</span>
-                          <button type="button" onClick={() => removeColorVariant(idx)} className="text-neutral-400 hover:text-red-600">
+                          <button type="button" onClick={() => removeColorVariant(idx)} className="text-neutral-400 hover:text-red-600 font-black">
                             ✕
                           </button>
                         </div>
                       ))}
                     </div>
 
-                    {/* Color Variant Add Card with Dedicated Image Dropzone */}
-                    <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4">
+                    {/* Color Variant Add Card */}
+                    <div className="p-4 sm:p-6 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                       <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                         
-                        {/* Specific Photo for this Color Variant */}
                         <div className="sm:col-span-4 space-y-1">
-                          <label className="block text-[10px] font-bold uppercase text-red-600">
+                          <label className="block text-[10px] font-mono font-black uppercase text-red-600">
                             Photo For This Color *
                           </label>
                           <ImagePlaceholder
@@ -956,68 +886,66 @@ function doPost(e) {
                           />
                         </div>
 
-                        {/* Name & Hex */}
-                        <div className="sm:col-span-8 space-y-3">
+                        <div className="sm:col-span-8 space-y-3 font-mono">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Color Name (e.g. Navy Blue)</label>
+                              <label className="block text-[10px] font-mono font-black uppercase text-neutral-500 mb-1">Color Name (e.g. Navy Blue)</label>
                               <input
                                 type="text"
                                 value={colorInput.name}
                                 onChange={(e) => setColorInput({ ...colorInput, name: e.target.value })}
                                 placeholder="Navy Blue"
-                                className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-1.5 text-xs"
+                                className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2 text-xs font-mono"
                               />
                             </div>
 
                             <div>
-                              <label className="block text-[10px] font-bold uppercase text-neutral-500 mb-1">Color Swatch Hex</label>
+                              <label className="block text-[10px] font-mono font-black uppercase text-neutral-500 mb-1">Color Swatch Hex</label>
                               <div className="flex items-center gap-2">
                                 <input
                                   type="color"
                                   value={colorInput.hex}
                                   onChange={(e) => setColorInput({ ...colorInput, hex: e.target.value })}
-                                  className="w-8 h-8 rounded border-none cursor-pointer bg-transparent"
+                                  className="w-8 h-8 rounded-none border border-black cursor-pointer bg-transparent"
                                 />
                                 <input
                                   type="text"
                                   value={colorInput.hex}
                                   onChange={(e) => setColorInput({ ...colorInput, hex: e.target.value })}
-                                  className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-1.5 text-xs font-mono"
+                                  className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2 text-xs font-mono font-black"
                                 />
                               </div>
                             </div>
                           </div>
 
-                          {/* Specific Marketplace Links */}
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <input
                               type="url"
                               value={colorInput.amazonUrl || ''}
                               onChange={(e) => setColorInput({ ...colorInput, amazonUrl: e.target.value })}
                               placeholder="Amazon Link for this color"
-                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                              className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-2.5 py-2 text-[11px] font-mono"
                             />
                             <input
                               type="url"
                               value={colorInput.myntraUrl || ''}
                               onChange={(e) => setColorInput({ ...colorInput, myntraUrl: e.target.value })}
                               placeholder="Myntra Link for this color"
-                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                              className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-2.5 py-2 text-[11px] font-mono"
                             />
                             <input
                               type="url"
                               value={colorInput.flipkartUrl || ''}
                               onChange={(e) => setColorInput({ ...colorInput, flipkartUrl: e.target.value })}
                               placeholder="Flipkart Link for this color"
-                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-2.5 py-1.5 text-[11px]"
+                              className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-2.5 py-2 text-[11px] font-mono"
                             />
                           </div>
 
                           <button
                             type="button"
                             onClick={addColorVariant}
-                            className="w-full py-2 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 text-xs font-bold uppercase hover:bg-red-600 dark:hover:bg-red-600 dark:hover:text-white transition-all"
+                            className="w-full py-3 rounded-none bg-black text-white dark:bg-white dark:text-black text-xs font-mono font-black uppercase border-2 border-black hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
                           >
                             + ADD COLOR VARIANT WITH PHOTO & LINKS
                           </button>
@@ -1028,42 +956,42 @@ function doPost(e) {
                   </div>
 
                   {/* BASE MARKETPLACE LINKS */}
-                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                  <div className="space-y-3 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
                       DEFAULT BASE MARKETPLACE LINKS
                     </label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <span className="block text-[10px] text-amber-600 font-bold uppercase mb-1">Default Amazon Link</span>
+                        <span className="block text-[10px] text-amber-600 font-mono font-black uppercase mb-1">Default Amazon Link</span>
                         <input
                           type="url"
                           value={newSku.amazonUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, amazonUrl: e.target.value })}
                           placeholder="https://www.amazon.in/dp/B0H9B2DYS7..."
-                          className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                          className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <span className="block text-[10px] text-red-600 font-bold uppercase mb-1">Default Myntra Link</span>
+                        <span className="block text-[10px] text-red-600 font-mono font-black uppercase mb-1">Default Myntra Link</span>
                         <input
                           type="url"
                           value={newSku.myntraUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, myntraUrl: e.target.value })}
                           placeholder="https://myntra.com/..."
-                          className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                          className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <span className="block text-[10px] text-blue-600 font-bold uppercase mb-1">Default Flipkart Link</span>
+                        <span className="block text-[10px] text-blue-600 font-mono font-black uppercase mb-1">Default Flipkart Link</span>
                         <input
                           type="url"
                           value={newSku.flipkartUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, flipkartUrl: e.target.value })}
                           placeholder="https://flipkart.com/..."
-                          className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                          className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -1072,7 +1000,7 @@ function doPost(e) {
                   <button
                     type="submit"
                     disabled={isSyncing}
-                    className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 disabled:bg-neutral-400 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   >
                     <Save className="w-4 h-4" />
                     <span>{editingSkuId ? 'UPDATE PRODUCT & SYNC TO SHEETS' : 'PUBLISH PRODUCT & SYNC TO SHEETS'}</span>
@@ -1083,37 +1011,37 @@ function doPost(e) {
 
               {/* Active Products List */}
               <div className="lg:col-span-5 space-y-4">
-                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b-2 border-neutral-900 dark:border-neutral-800 pb-3">
                   <span>ACTIVE PRODUCTS</span>
-                  <span className="text-xs text-red-600 font-bold">{skus.length} Items</span>
+                  <span className="text-xs text-red-600 font-mono font-black">{skus.length} Items</span>
                 </h3>
 
                 {skus.length === 0 ? (
-                  <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-2">
-                    <p className="text-xs text-neutral-500">No products created yet.</p>
+                  <div className="text-center py-12 bg-white dark:bg-black rounded-none border-2 border-neutral-900 dark:border-neutral-800 p-6 space-y-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <p className="text-xs text-neutral-500 font-mono font-bold">No products created yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-3 max-h-[850px] overflow-y-auto pr-1">
                     {skus.map((sku) => (
                       <div
                         key={sku.id}
-                        className={`p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border flex items-center justify-between gap-4 transition-all shadow-xs ${
-                          editingSkuId === sku.id ? 'border-red-600 ring-2 ring-red-600/30' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
+                        className={`p-4 rounded-none bg-white dark:bg-black border-2 flex items-center justify-between gap-4 transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
+                          editingSkuId === sku.id ? 'border-red-600 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]' : 'border-neutral-900 dark:border-neutral-700 hover:border-neutral-500'
                         }`}
                       >
-                        <div className="space-y-1 overflow-hidden">
+                        <div className="space-y-1 overflow-hidden font-mono">
                           <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-bold uppercase text-red-600 bg-red-50 dark:bg-red-950 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800">
+                            <span className="text-[9px] font-black uppercase text-red-600 bg-red-50 dark:bg-red-950 px-2 py-0.5 border border-red-600">
                               {sku.gender} • {sku.category}
                             </span>
-                            <span className="text-[9px] text-neutral-400">{sku.id}</span>
+                            <span className="text-[9px] text-neutral-400 font-black">{sku.id}</span>
                           </div>
 
-                          <h4 className="font-heading text-base font-bold text-neutral-950 dark:text-white uppercase leading-tight truncate">
+                          <h4 className="font-heading text-base font-black text-neutral-950 dark:text-white uppercase leading-tight truncate">
                             {sku.title}
                           </h4>
 
-                          <p className="text-xs font-bold text-neutral-900 dark:text-white">
+                          <p className="text-xs font-black text-neutral-950 dark:text-white">
                             ₹{sku.price.toLocaleString('en-IN')}{' '}
                             {sku.originalPrice && <span className="line-through text-neutral-400 font-normal">₹{sku.originalPrice}</span>}
                           </p>
@@ -1123,7 +1051,7 @@ function doPost(e) {
                           <button
                             onClick={() => handleEditClick(sku)}
                             disabled={isSyncing}
-                            className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                            className="p-2.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-black text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                             title="Edit Product"
                           >
                             <Edit className="w-4 h-4" />
@@ -1132,7 +1060,7 @@ function doPost(e) {
                           <button
                             onClick={() => handleDeleteSku(sku.id, sku.title)}
                             disabled={isSyncing}
-                            className="p-2.5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-red-600 hover:border-red-600 transition-all"
+                            className="p-2.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-black text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                             title="Delete Product"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1147,24 +1075,22 @@ function doPost(e) {
             </div>
           )}
 
-
-
           {/* TAB 3: LANDING BANNER & MEDIA */}
           {activeTab === 'landing' && (
-            <div className="max-w-3xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
-              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
-                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white">
+            <div className="max-w-3xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
+              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3">
+                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white">
                   CHANGE HERO LANDING BANNER & MEDIA
                 </h3>
               </div>
 
-              <form onSubmit={handleSaveSettings} className="space-y-5">
-                <div className="space-y-3 bg-white dark:bg-black p-4 rounded-xl border border-neutral-200 dark:border-neutral-800">
+              <form onSubmit={handleSaveSettings} className="space-y-5 font-mono">
+                <div className="space-y-3 bg-neutral-50 dark:bg-neutral-950 p-4 rounded-none border-2 border-neutral-900 dark:border-neutral-700">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold uppercase text-neutral-800 dark:text-neutral-200">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
                       Hero Banner Photo
                     </label>
-                    <span className="text-[10px] text-red-600 font-extrabold bg-red-50 dark:bg-red-950 px-2.5 py-1 rounded border border-red-200 dark:border-red-800">
+                    <span className="text-[10px] text-red-600 font-mono font-black bg-red-50 dark:bg-red-950 px-2.5 py-1 border border-red-600 uppercase">
                       EXACT SIZE: 1200 x 600 px (2:1 Banner)
                     </span>
                   </div>
@@ -1179,33 +1105,33 @@ function doPost(e) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                  <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                     Announcement Marquee Ticker Text
                   </label>
                   <input
                     type="text"
                     value={settings.announcementText}
                     onChange={(e) => setSettings({ ...settings, announcementText: e.target.value })}
-                    className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                  <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                     Hero Subheadline
                   </label>
                   <textarea
                     rows={2}
                     value={settings.heroSubheadline}
                     onChange={(e) => setSettings({ ...settings, heroSubheadline: e.target.value })}
-                    className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-bold"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSyncing}
-                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all"
+                  className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 >
                   SAVE BANNER & MEDIA CONFIG
                 </button>
@@ -1215,17 +1141,17 @@ function doPost(e) {
 
           {/* TAB 4: APPSCRIPT & EMAIL ENGINE */}
           {activeTab === 'appscript' && (
-            <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-6 shadow-xs">
-              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
-                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
-                  <Database className="w-5 h-5 text-red-600" /> SELF-HEALING APPSCRIPT & BEAUTIFUL HTML EMAIL ENGINE
+            <div className="max-w-4xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
+              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3 flex items-center justify-between">
+                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                  <Database className="w-5 h-5 text-red-600" /> APPSCRIPT & HTML EMAIL ENGINE
                 </h3>
               </div>
 
-              <form onSubmit={handleSaveSettings} className="space-y-4">
+              <form onSubmit={handleSaveSettings} className="space-y-4 font-mono">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                       Google Apps Script Web App Endpoint URL
                     </label>
                     <input
@@ -1233,12 +1159,12 @@ function doPost(e) {
                       value={settings.appScriptUrl}
                       onChange={(e) => setSettings({ ...settings, appScriptUrl: e.target.value })}
                       placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
-                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                       Admin Alert Receiver Email
                     </label>
                     <input
@@ -1246,28 +1172,28 @@ function doPost(e) {
                       value={settings.adminEmail}
                       onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
                       placeholder="admin@blissbalance.co"
-                      className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-3">
+                <div className="p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-red-600 uppercase flex items-center gap-1">
-                      <Mail className="w-4 h-4 text-red-600" /> BRINDAVANAM APPSCRIPT & HTML EMAIL ENGINE CODE:
+                    <span className="text-xs font-mono font-black text-red-600 uppercase flex items-center gap-1">
+                      <Mail className="w-4 h-4 text-red-600" /> LIVE SYNC APPSCRIPT CODE:
                     </span>
 
                     <button
                       type="button"
                       onClick={copyCode}
-                      className="px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-red-600 text-white text-xs font-bold flex items-center gap-1.5 transition-all"
+                      className="px-3.5 py-1.5 rounded-none bg-black hover:bg-red-600 text-white text-xs font-mono font-black border-2 border-black flex items-center gap-1.5 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                     >
                       {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedCode ? 'COPIED!' : 'COPY APPSCRIPT CODE'}</span>
+                      <span>{copiedCode ? 'COPIED!' : 'COPY CODE'}</span>
                     </button>
                   </div>
 
-                  <pre className="p-4 bg-neutral-50 dark:bg-neutral-950 rounded-xl text-[11px] text-neutral-800 dark:text-neutral-300 overflow-x-auto border border-neutral-200 dark:border-neutral-900 leading-relaxed max-h-[350px]">
+                  <pre className="p-4 bg-white dark:bg-black rounded-none text-[11px] text-neutral-800 dark:text-neutral-300 overflow-x-auto border-2 border-neutral-900 dark:border-neutral-800 leading-relaxed max-h-[350px] font-mono font-bold">
 {appScriptCode}
                   </pre>
                 </div>
@@ -1275,7 +1201,7 @@ function doPost(e) {
                 <button
                   type="submit"
                   disabled={isSyncing}
-                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all"
+                  className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 >
                   SAVE APPSCRIPT & EMAIL CONFIG
                 </button>
@@ -1285,31 +1211,31 @@ function doPost(e) {
 
           {/* TAB 5: SYSTEM AUDIT LOGS */}
           {activeTab === 'logs' && (
-            <div className="max-w-4xl mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 space-y-4 shadow-xs">
-              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
-                <h3 className="font-heading text-2xl font-bold uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-4 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
+              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3 flex items-center justify-between">
+                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                   <Terminal className="w-5 h-5 text-red-600" /> SYSTEM AUDIT LOGS
                 </h3>
                 <button
                   onClick={() => setLogs([])}
-                  className="text-xs text-neutral-500 hover:text-red-600 font-bold"
+                  className="text-xs text-neutral-500 hover:text-red-600 font-mono font-black uppercase"
                 >
                   CLEAR LOGS
                 </button>
               </div>
 
-              <div className="p-4 bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-800 font-mono text-xs space-y-2 max-h-[500px] overflow-y-auto">
+              <div className="p-4 bg-neutral-50 dark:bg-neutral-950 rounded-none border-2 border-neutral-900 dark:border-neutral-800 font-mono text-xs space-y-2 max-h-[500px] overflow-y-auto">
                 {logs.map((log, idx) => (
-                  <div key={idx} className="flex items-start gap-3 py-1 border-b border-neutral-100 dark:border-neutral-900/60">
-                    <span className="text-neutral-400 text-[10px]">{log.time}</span>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                      log.type === 'SECURITY' ? 'bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400' :
-                      log.type === 'ACTION' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400' :
-                      'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300'
+                  <div key={idx} className="flex items-start gap-3 py-1 border-b border-neutral-200 dark:border-neutral-800">
+                    <span className="text-neutral-400 text-[10px] font-bold">{log.time}</span>
+                    <span className={`text-[10px] font-black px-2 py-0.5 border ${
+                      log.type === 'SECURITY' ? 'bg-red-600 text-white border-black' :
+                      log.type === 'ACTION' ? 'bg-emerald-600 text-white border-black' :
+                      'bg-black text-white border-black'
                     }`}>
                       {log.type}
                     </span>
-                    <span className="text-neutral-800 dark:text-neutral-200">{log.msg}</span>
+                    <span className="text-neutral-900 dark:text-neutral-100 font-bold">{log.msg}</span>
                   </div>
                 ))}
               </div>

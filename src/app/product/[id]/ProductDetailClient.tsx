@@ -23,7 +23,6 @@ import {
   ArrowLeft,
   MessageSquare,
   ChevronRight,
-  RefreshCw,
   Zap,
 } from 'lucide-react';
 
@@ -71,9 +70,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     } catch (e) {}
 
     // INSTANT LOCAL CACHE HYDRATION (0ms Load)
+    const targetId = decodeURIComponent(productId).trim().toLowerCase();
     const loadedSkus = getStoredSKUs();
     setAllSkus(loadedSkus);
-    const found = loadedSkus.find(s => s.id === productId);
+    
+    const found = loadedSkus.find(s => 
+      s.id.toLowerCase() === targetId || 
+      encodeURIComponent(s.id).toLowerCase() === targetId
+    );
 
     if (found) {
       setSku(found);
@@ -87,10 +91,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       setIsLoading(false);
     }
 
-    // NON-BLOCKING LIVE CLOUD REFRESH (Background Fetch from Google Sheets)
-    fetchCloudSKUs().then(cloudSkus => {
+    // NON-BLOCKING LIVE CLOUD REFRESH
+    fetchCloudSKUs(undefined, true).then(cloudSkus => {
       setAllSkus(cloudSkus);
-      const cloudFound = cloudSkus.find(s => s.id === productId);
+      const cloudFound = cloudSkus.find(s => 
+        s.id.toLowerCase() === targetId || 
+        encodeURIComponent(s.id).toLowerCase() === targetId
+      );
+
       if (cloudFound) {
         setSku(cloudFound);
         if (!selectedImage && cloudFound.imageUrl) {
@@ -212,22 +220,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     setNewReview({ authorName: '', rating: 5, headline: '', comment: '' });
   };
 
-  // UIVERSE.IO SPEEDER HIGH-SPEED RUNNER FULL-VIEWPORT RED SCREEN OVERLAY
   if (isLoading && !sku) {
     return (
-      <div className="fixed inset-0 z-[99999] bg-[#FF0000] text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
-        
+      <div className="fixed inset-0 z-[99999] bg-red-600 text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
         <div className="speeder-loader-wrapper scale-125 sm:scale-150">
           <div className="speeder-loader text-black">
-            <span>
-              <span />
-              <span />
-              <span />
-              <span />
-            </span>
-            <div className="speeder-base">
-              <span />
-            </div>
+            <span><span /><span /><span /><span /></span>
+            <div className="speeder-base"><span /></div>
             <div className="speeder-face" />
           </div>
           <div className="speeder-longfazers">
@@ -238,24 +237,23 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           </div>
         </div>
 
-        <div className="absolute bottom-10 inset-x-4 max-w-xs mx-auto flex items-center justify-center gap-2 text-xs font-black text-black tracking-widest uppercase animate-pulse z-10 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-full border border-black/20 shadow-xl text-center">
+        <div className="absolute bottom-10 inset-x-4 max-w-xs mx-auto flex items-center justify-center gap-2 text-xs font-black text-black tracking-widest uppercase animate-pulse z-10 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-4 py-2.5 rounded-none text-center">
           <Zap className="w-4 h-4 fill-black text-black shrink-0" />
           <span>FEEL THE BLISS • LOADING PRODUCT...</span>
         </div>
-
       </div>
     );
   }
 
   if (!sku) {
     return (
-      <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white flex flex-col justify-between">
+      <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white flex flex-col justify-between font-mono">
         <Navbar onOpenSearch={() => setSearchOpen(true)} />
         <main className="flex-1 flex flex-col items-center justify-center p-8 font-mono space-y-4">
-          <p className="text-sm text-neutral-500 uppercase">PRODUCT NOT FOUND</p>
+          <p className="text-sm text-neutral-500 uppercase font-black">PRODUCT NOT FOUND</p>
           <button
             onClick={() => router.push('/collections')}
-            className="px-6 py-3 rounded-xl bg-red-600 text-white font-bold text-xs uppercase"
+            className="px-6 py-3 rounded-none bg-red-600 text-white font-black text-xs uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
           >
             RETURN TO CATALOG
           </button>
@@ -277,14 +275,11 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
     : '5.0';
 
-  // REAL COLOR VARIANTS
   const displayColorVariants: ColorVariant[] = sku.colorVariants || [];
 
-  // DYNAMIC VARIANT-SPECIFIC MARKETPLACE BUY LINKS RESOLUTION ENGINE
   const activeColorObj = displayColorVariants.find(cv => cv.name === selectedColor);
   const activeSizeLinkObj = sku.sizeMarketplaceUrls ? sku.sizeMarketplaceUrls[selectedSize] : undefined;
 
-  // Resolve Amazon URL for selected size & color
   let resolvedAmazonUrl = (activeSizeLinkObj && activeSizeLinkObj.amazonUrl && activeSizeLinkObj.amazonUrl.trim() !== '')
     ? activeSizeLinkObj.amazonUrl
     : (activeColorObj && activeColorObj.amazonUrl && activeColorObj.amazonUrl.trim() !== '')
@@ -296,14 +291,12 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     resolvedAmazonUrl = `${resolvedAmazonUrl}${separator}th=1&psc=1`;
   }
 
-  // Resolve Myntra URL for selected size & color
   const resolvedMyntraUrl = (activeSizeLinkObj && activeSizeLinkObj.myntraUrl && activeSizeLinkObj.myntraUrl.trim() !== '')
     ? activeSizeLinkObj.myntraUrl
     : (activeColorObj && activeColorObj.myntraUrl && activeColorObj.myntraUrl.trim() !== '')
       ? activeColorObj.myntraUrl
       : sku.myntraUrl;
 
-  // Resolve Flipkart URL for selected size & color
   const resolvedFlipkartUrl = (activeSizeLinkObj && activeSizeLinkObj.flipkartUrl && activeSizeLinkObj.flipkartUrl.trim() !== '')
     ? activeSizeLinkObj.flipkartUrl
     : (activeColorObj && activeColorObj.flipkartUrl && activeColorObj.flipkartUrl.trim() !== '')
@@ -314,7 +307,6 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     (resolvedMyntraUrl && resolvedMyntraUrl.trim() !== '') ||
     (resolvedFlipkartUrl && resolvedFlipkartUrl.trim() !== '');
 
-  // GALLERY THUMBNAILS UPDATE ENGINE: DYNAMICALLY REFLECTS THE SELECTED COLOR VARIANT'S IMAGES!
   const allGalleryThumbnails: Array<{ url: string; label: string }> = [];
   
   if (activeColorObj && activeColorObj.imageUrl && activeColorObj.imageUrl.trim() !== '') {
@@ -336,7 +328,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white transition-colors">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors font-mono select-none">
       <Navbar onOpenSearch={() => setSearchOpen(true)} />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 w-full space-y-8 sm:space-y-12">
@@ -344,7 +336,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         {/* Back Link */}
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 font-mono text-xs font-bold text-neutral-500 hover:text-red-600 uppercase tracking-widest"
+          className="inline-flex items-center gap-2 font-mono text-xs font-black text-neutral-600 dark:text-neutral-400 hover:text-red-600 uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" /> BACK TO CATALOG
         </button>
@@ -356,15 +348,15 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           <div className="lg:col-span-7 space-y-4">
             
             {/* Main Stage Image */}
-            <div className="relative aspect-square w-full rounded-3xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 shadow-xl">
+            <div className="relative aspect-square w-full rounded-none overflow-hidden bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-100 p-4 sm:p-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
               {selectedImage ? (
                 <img
                   src={selectedImage}
                   alt={sku.title}
-                  className="w-full h-full object-cover rounded-2xl transition-all duration-500 hover:scale-105"
+                  className="w-full h-full object-cover rounded-none transition-all duration-300 hover:scale-105"
                 />
               ) : (
-                <div className="w-full h-full rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-mono text-xs text-neutral-400">
+                <div className="w-full h-full rounded-none bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-mono text-xs text-neutral-400">
                   NO IMAGE
                 </div>
               )}
@@ -372,26 +364,26 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {/* Wishlist Floating Button */}
               <button
                 onClick={toggleWishlist}
-                className={`absolute top-4 right-4 sm:top-6 sm:right-6 p-2.5 sm:p-3 rounded-full backdrop-blur-md transition-all shadow-xl ${
-                  isWishlisted ? 'bg-red-600 text-white scale-110' : 'bg-white/80 dark:bg-black/80 text-neutral-600 dark:text-neutral-300 hover:text-red-600'
+                className={`absolute top-4 right-4 sm:top-6 sm:right-6 p-3 rounded-none border-2 border-black transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
+                  isWishlisted ? 'bg-red-600 text-white scale-105' : 'bg-white dark:bg-black text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white'
                 }`}
               >
-                <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? 'fill-white' : ''}`} />
+                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-white' : ''}`} />
               </button>
             </div>
 
-            {/* Catalog & Color Gallery Thumbnails Strip (UPDATES ACCORDING TO SELECTED COLOR) */}
-            <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-2 no-scrollbar">
+            {/* Gallery Thumbnails Strip */}
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
               {allGalleryThumbnails.map((item, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(item.url)}
-                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 transition-all shrink-0 p-1 bg-neutral-100 dark:bg-neutral-900 ${
-                    selectedImage === item.url ? 'border-red-600 ring-2 ring-red-600/40' : 'border-transparent opacity-70 hover:opacity-100'
+                  className={`relative w-20 h-20 rounded-none overflow-hidden border-2 transition-all shrink-0 p-1 bg-white dark:bg-black ${
+                    selectedImage === item.url ? 'border-red-600 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]' : 'border-neutral-900 dark:border-neutral-700 opacity-70 hover:opacity-100'
                   }`}
                   title={item.label}
                 >
-                  <img src={item.url} alt={item.label} className="w-full h-full object-cover rounded-xl" />
+                  <img src={item.url} alt={item.label} className="w-full h-full object-cover rounded-none" />
                 </button>
               ))}
             </div>
@@ -401,63 +393,63 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           {/* Right Column: Product Specs & Dynamic Marketplace Buying Buttons */}
           <div className="lg:col-span-5 space-y-6 font-mono">
             
-            <div className="space-y-2 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+            <div className="space-y-2 border-b-2 border-neutral-900 dark:border-neutral-800 pb-6">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest bg-red-600 text-white px-2.5 py-0.5 rounded">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-red-600 text-white px-2.5 py-1 border border-black shadow-xs">
                   {sku.gender} • {sku.category}
                 </span>
 
                 {discountPercent > 0 && (
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest bg-neutral-950 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/40">
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-black text-emerald-400 px-2.5 py-1 border border-emerald-500 shadow-xs">
                     SAVE {discountPercent}%
                   </span>
                 )}
               </div>
 
-              <h1 className="font-heading text-2xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+              <h1 className="font-heading text-3xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                 {sku.title}
               </h1>
 
-              <p className="font-body text-xs text-neutral-600 dark:text-neutral-400">
+              <p className="font-mono text-xs text-neutral-500 font-bold">
                 {sku.subtitle}
               </p>
 
               {/* Price & Rating */}
               <div className="flex items-baseline justify-between pt-2">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
+                  <span className="text-3xl font-black text-neutral-950 dark:text-white">
                     ₹{sku.price.toLocaleString('en-IN')}
                   </span>
                   {sku.originalPrice && (
-                    <span className="text-xs sm:text-sm text-neutral-400 line-through">
+                    <span className="text-sm text-neutral-400 line-through">
                       ₹{sku.originalPrice.toLocaleString('en-IN')}
                     </span>
                   )}
                 </div>
 
-                <div className="flex items-center gap-1 text-xs sm:text-sm font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-xl border border-amber-200 dark:border-amber-800">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1 text-sm font-black text-amber-500 bg-amber-50 dark:bg-amber-950 px-3 py-1 rounded-none border border-black shadow-xs">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                   <span>{avgRating}</span>
                   <span className="text-[10px] text-neutral-400">({reviews.length})</span>
                 </div>
               </div>
             </div>
 
-            {/* COMET STYLE COLOR SELECTOR (SIDE-BY-SIDE SHOE PHOTO CARDS) */}
+            {/* COLOR SELECTOR */}
             {displayColorVariants.length > 0 && (
-              <div className="space-y-3 pt-2 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+              <div className="space-y-3 pt-2 border-b-2 border-neutral-900 dark:border-neutral-800 pb-6">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 tracking-wider">
-                    COLOR: <span className="text-neutral-950 dark:text-white font-extrabold">{selectedColor || displayColorVariants[0].name}</span>
+                  <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200 tracking-wider">
+                    COLOR: <span className="text-red-600">{selectedColor || displayColorVariants[0].name}</span>
                   </label>
-                  <span className="text-[10px] text-neutral-400 font-bold uppercase flex items-center gap-1">
+                  <span className="text-[10px] text-neutral-400 font-black uppercase flex items-center gap-1">
                     <span>{displayColorVariants.length} VARIANTS</span>
                     <ChevronRight className="w-3 h-3" />
                   </span>
                 </div>
 
-                {/* Side-by-Side Comet Style Shoe Photo Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                {/* Side-by-Side Shoe Photo Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {displayColorVariants.map((cv) => {
                     const isSelected = (selectedColor || displayColorVariants[0].name) === cv.name;
                     return (
@@ -467,20 +459,20 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                           setSelectedColor(cv.name);
                           if (cv.imageUrl) setSelectedImage(cv.imageUrl);
                         }}
-                        className={`relative rounded-2xl overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-neutral-50 dark:bg-neutral-900 border-2 ${
+                        className={`relative rounded-none overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-white dark:bg-black border-2 ${
                           isSelected
-                            ? 'border-red-600 ring-2 ring-red-600/30 scale-102 shadow-lg'
-                            : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
+                            ? 'border-red-600 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]'
+                            : 'border-neutral-900 dark:border-neutral-700 hover:border-neutral-500'
                         }`}
                       >
-                        <div className="w-full aspect-square rounded-xl overflow-hidden bg-white dark:bg-black p-1 flex items-center justify-center">
+                        <div className="w-full aspect-square rounded-none overflow-hidden bg-neutral-100 dark:bg-neutral-900 p-1 flex items-center justify-center">
                           {cv.imageUrl ? (
-                            <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-lg" />
+                            <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-none" />
                           ) : (
-                            <div className="w-full h-full rounded-lg flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
+                            <div className="w-full h-full rounded-none flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
                           )}
                         </div>
-                        <span className="text-[10px] font-heading font-extrabold uppercase text-neutral-950 dark:text-white truncate max-w-full">
+                        <span className="text-[10px] font-mono font-black uppercase text-neutral-950 dark:text-white truncate max-w-full">
                           {cv.name}
                         </span>
                       </button>
@@ -490,31 +482,31 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Size Selector (Saves preferred size persistently) */}
-            <div className="space-y-2">
+            {/* Size Selector */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300">
+                <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200">
                   SELECT SIZE: <span className="text-red-600">{selectedSize}</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => setSizeGuideOpen(true)}
-                  className="text-xs font-bold text-red-600 hover:text-red-500 uppercase flex items-center gap-1 underline underline-offset-4"
+                  className="text-xs font-black text-red-600 hover:text-red-500 uppercase flex items-center gap-1 underline underline-offset-4"
                 >
                   <Ruler className="w-3.5 h-3.5" />
                   <span>SIZE GUIDE</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
                 {availableSizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => handleSelectSize(size)}
-                    className={`py-3 rounded-xl text-xs font-bold uppercase border transition-all ${
+                    className={`py-3.5 rounded-none text-xs font-black uppercase border-2 transition-all ${
                       selectedSize === size
-                        ? 'bg-red-600 text-white border-red-500 shadow-md scale-102'
-                        : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
+                        ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
                     }`}
                   >
                     {size}
@@ -523,13 +515,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               </div>
             </div>
 
-            {/* DYNAMIC MARKETPLACE BUYING BUTTONS RESOLVED FOR SELECTED SIZE & COLOR */}
+            {/* DYNAMIC MARKETPLACE BUYING BUTTONS */}
             <div className="space-y-3 pt-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
                   BUY ON OFFICIAL MARKETPLACES:
                 </span>
-                <span className="text-[9px] font-bold text-red-600 uppercase bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded border border-red-200 dark:border-red-800 self-start sm:self-auto break-words">
+                <span className="text-[9px] font-black text-red-600 uppercase bg-red-50 dark:bg-red-950 px-2 py-0.5 border border-red-600 self-start sm:self-auto break-words">
                   RESOLVED FOR {selectedSize} {selectedColor ? `• ${selectedColor}` : ''}
                 </span>
               </div>
@@ -539,7 +531,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedAmazonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-2xl bg-[#FF9900] hover:bg-[#e68a00] text-black font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 text-center"
+                  className="w-full py-4 rounded-none bg-[#FF9900] hover:bg-[#e68a00] text-black font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON AMAZON INDIA ({selectedSize})</span>
                   <ExternalLink className="w-4 h-4 shrink-0" />
@@ -551,7 +543,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedMyntraUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-2xl bg-[#E42529] hover:bg-[#c91e22] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 text-center"
+                  className="w-full py-4 rounded-none bg-[#E42529] hover:bg-[#c91e22] text-white font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON MYNTRA ({selectedSize})</span>
                   <ExternalLink className="w-4 h-4 shrink-0" />
@@ -563,7 +555,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedFlipkartUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-2xl bg-[#2874F0] hover:bg-[#1a62d6] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2 text-center"
+                  className="w-full py-4 rounded-none bg-[#2874F0] hover:bg-[#1a62d6] text-white font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON FLIPKART ({selectedSize})</span>
                   <ExternalLink className="w-4 h-4 shrink-0" />
@@ -571,25 +563,25 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               )}
 
               {!hasAnyMarketplaceUrl && (
-                <div className="p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-center text-xs font-bold text-neutral-500 uppercase">
+                <div className="p-4 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-black text-center text-xs font-black text-neutral-500 uppercase">
                   COMING SOON ON AMAZON, MYNTRA & FLIPKART
                 </div>
               )}
             </div>
 
             {/* Service & Assurance Badges */}
-            <div className="grid grid-cols-3 gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-800 text-[10px] font-bold text-center text-neutral-600 dark:text-neutral-400">
-              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
+            <div className="grid grid-cols-3 gap-2.5 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800 text-[10px] font-black text-center text-neutral-900 dark:text-neutral-100">
+              <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
                 <Truck className="w-4 h-4 text-red-600 mx-auto" />
                 <span>FREE SHIPPING</span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
+              <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
                 <RotateCcw className="w-4 h-4 text-red-600 mx-auto" />
                 <span>7-DAY RETURNS</span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
+              <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
                 <ShieldCheck className="w-4 h-4 text-red-600 mx-auto" />
                 <span>100% ORIGINAL</span>
               </div>
@@ -600,11 +592,11 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         </div>
 
         {/* DYNAMIC REVIEWS & RATINGS SYSTEM */}
-        <section className="pt-8 border-t border-neutral-200 dark:border-neutral-800 space-y-8 font-mono">
+        <section className="pt-8 border-t-2 border-neutral-900 dark:border-neutral-800 space-y-8 font-mono">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-bold text-red-600 uppercase flex items-center gap-1.5">
+              <span className="text-xs font-black text-red-600 uppercase flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" /> VERIFIED CUSTOMER REVIEWS
               </span>
               <h2 className="font-heading text-2xl sm:text-3xl font-black uppercase text-neutral-950 dark:text-white">
@@ -614,7 +606,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
             <button
               onClick={() => setShowReviewForm(!showReviewForm)}
-              className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-2 self-start sm:self-auto"
+              className="px-5 py-3.5 rounded-none bg-red-600 hover:bg-black text-white font-black text-xs uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 self-start sm:self-auto"
             >
               <MessageSquare className="w-4 h-4" />
               <span>WRITE A REVIEW</span>
@@ -622,7 +614,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           </div>
 
           {reviewMsg && (
-            <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-500 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+            <div className="p-4 rounded-none bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-600 text-emerald-800 dark:text-emerald-300 text-xs font-black flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
               <span>{reviewMsg}</span>
             </div>
@@ -630,30 +622,30 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
           {/* Interactive Review Form */}
           {showReviewForm && (
-            <form onSubmit={handleReviewSubmit} className="p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-4 max-w-2xl">
-              <h3 className="font-heading text-xl font-bold uppercase text-neutral-950 dark:text-white">
+            <form onSubmit={handleReviewSubmit} className="p-6 sm:p-8 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] space-y-4 max-w-2xl">
+              <h3 className="font-heading text-xl font-black uppercase text-neutral-950 dark:text-white">
                 SUBMIT YOUR REVIEW
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">Your Name *</label>
+                  <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">Your Name *</label>
                   <input
                     type="text"
                     required
                     value={newReview.authorName}
                     onChange={(e) => setNewReview({ ...newReview, authorName: e.target.value })}
                     placeholder="e.g. Rahul M."
-                    className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">Rating *</label>
+                  <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">Rating *</label>
                   <select
                     value={newReview.rating}
                     onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
-                    className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
                   >
                     <option value={5}>⭐⭐⭐⭐⭐ 5 Stars (Excellent)</option>
                     <option value={4}>⭐⭐⭐⭐ 4 Stars (Very Good)</option>
@@ -665,25 +657,25 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">Review Headline</label>
+                <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">Review Headline</label>
                 <input
                   type="text"
                   value={newReview.headline}
                   onChange={(e) => setNewReview({ ...newReview, headline: e.target.value })}
                   placeholder="e.g. Extremely soft slippers!"
-                  className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">Review Details *</label>
+                <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">Review Details *</label>
                 <textarea
                   rows={3}
                   required
                   value={newReview.comment}
                   onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                   placeholder="Write your honest review..."
-                  className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                 />
               </div>
 
@@ -691,7 +683,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <button
                   type="submit"
                   disabled={submittingReview}
-                  className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase tracking-wider transition-all"
+                  className="px-6 py-3.5 rounded-none bg-red-600 hover:bg-black text-white font-black text-xs uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all"
                 >
                   {submittingReview ? 'SUBMITTING...' : 'SUBMIT REVIEW'}
                 </button>
@@ -699,7 +691,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <button
                   type="button"
                   onClick={() => setShowReviewForm(false)}
-                  className="px-6 py-3 rounded-xl bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-bold text-xs uppercase"
+                  className="px-6 py-3.5 rounded-none bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white font-black text-xs uppercase border-2 border-black"
                 >
                   CANCEL
                 </button>
@@ -709,17 +701,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
           {/* Dynamic Reviews List */}
           {reviews.length === 0 ? (
-            <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900/60 rounded-3xl border border-neutral-200 dark:border-neutral-800 p-8 space-y-3">
-              <Star className="w-10 h-10 text-neutral-300 dark:text-neutral-700 mx-auto" />
-              <h4 className="font-heading text-lg font-bold uppercase text-neutral-950 dark:text-white">
+            <div className="text-center py-12 bg-white dark:bg-black rounded-none border-2 border-neutral-900 dark:border-neutral-800 p-8 space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <Star className="w-10 h-10 text-amber-500 mx-auto fill-amber-400" />
+              <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
                 NO REVIEWS YET FOR THIS PRODUCT
               </h4>
-              <p className="text-xs text-neutral-500 font-mono max-w-sm mx-auto">
+              <p className="text-xs text-neutral-500 font-mono font-bold max-w-sm mx-auto">
                 Be the first customer to write a verified review for {sku.title}!
               </p>
               <button
                 onClick={() => setShowReviewForm(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 text-white font-bold text-xs uppercase shadow-sm hover:bg-red-500 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-none bg-red-600 text-white font-black text-xs uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-black transition-all"
               >
                 <Plus className="w-4 h-4" /> WRITE FIRST REVIEW
               </button>
@@ -729,18 +721,18 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {reviews.map((rev) => (
                 <div
                   key={rev.id}
-                  className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-2"
+                  className="p-6 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-neutral-950 dark:text-white">{rev.authorName}</span>
+                      <span className="font-black text-sm text-neutral-950 dark:text-white uppercase">{rev.authorName}</span>
                       {rev.verified && (
-                        <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                        <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 border border-emerald-600">
                           VERIFIED BUYER
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-neutral-400">{rev.date}</span>
+                    <span className="text-[10px] font-bold text-neutral-400">{rev.date}</span>
                   </div>
 
                   <div className="flex items-center gap-1 text-amber-500 text-xs">
@@ -749,8 +741,8 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                     ))}
                   </div>
 
-                  <h4 className="font-heading text-sm font-bold text-neutral-900 dark:text-white uppercase">{rev.headline}</h4>
-                  <p className="font-body text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">{rev.comment}</p>
+                  <h4 className="font-heading text-sm font-black text-neutral-900 dark:text-white uppercase">{rev.headline}</h4>
+                  <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold">{rev.comment}</p>
                 </div>
               ))}
             </div>
