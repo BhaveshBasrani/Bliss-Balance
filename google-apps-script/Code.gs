@@ -13,7 +13,16 @@
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
-var GOOGLE_DRIVE_FOLDER_NAME = "Bliss_Balance_Product_Photos";
+
+/**
+ * Run this function directly in Google Apps Script Editor to initialize & repair all sheet tabs
+ */
+function setup() {
+  var ss = getOrCreateSpreadsheet();
+  ensureAndRepairSheetStructure(ss);
+  Logger.log("SUCCESS: Bliss Balance Database setup & sheet tabs initialized!");
+  return "SUCCESS: Setup complete.";
+}
 
 function doGet(e) {
   var ss = getOrCreateSpreadsheet();
@@ -423,16 +432,34 @@ function handleCreateOrder(ss, postData) {
 }
 
 function getOrCreateSpreadsheet() {
-  var files = DriveApp.getFilesByName("Bliss_Balance_Database");
-  if (files.hasNext()) {
-    return SpreadsheetApp.open(files.next());
-  } else {
-    var ss = SpreadsheetApp.create("Bliss_Balance_Database");
-    return ss;
+  try {
+    var active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (e) {}
+
+  try {
+    var files = DriveApp.getFilesByName("Bliss_Balance_Database");
+    if (files.hasNext()) {
+      return SpreadsheetApp.open(files.next());
+    } else {
+      var ss = SpreadsheetApp.create("Bliss_Balance_Database");
+      return ss;
+    }
+  } catch (err) {
+    try {
+      return SpreadsheetApp.getActiveSpreadsheet();
+    } catch (err2) {
+      return null;
+    }
   }
 }
 
 function ensureAndRepairSheetStructure(ss) {
+  if (!ss) {
+    ss = getOrCreateSpreadsheet();
+  }
+  if (!ss) return;
+
   var sheets = ["Settings", "Announcements", "Logs", "Products", "Reviews", "Wishlists", "Orders"];
   for (var i = 0; i < sheets.length; i++) {
     var sheet = ss.getSheetByName(sheets[i]);
@@ -479,6 +506,7 @@ function formatHeaderRow(sheet, colCount) {
 }
 
 function getSettingsFromSheet(ss) {
+  if (!ss) return {};
   var sheet = ss.getSheetByName("Settings");
   var settings = {};
   if (sheet && sheet.getLastRow() > 1) {
@@ -491,6 +519,7 @@ function getSettingsFromSheet(ss) {
 }
 
 function getAnnouncementsFromSheet(ss) {
+  if (!ss) return [];
   var sheet = ss.getSheetByName("Announcements");
   var list = [];
   if (sheet && sheet.getLastRow() > 1) {
@@ -503,6 +532,7 @@ function getAnnouncementsFromSheet(ss) {
 }
 
 function getLogsFromSheet(ss) {
+  if (!ss) return [];
   var sheet = ss.getSheetByName("Logs");
   var logs = [];
   if (sheet && sheet.getLastRow() > 1) {
@@ -519,6 +549,7 @@ function getLogsFromSheet(ss) {
 }
 
 function getProductsFromSheet(ss) {
+  if (!ss) return [];
   var sheet = ss.getSheetByName("Products");
   var products = [];
   if (sheet && sheet.getLastRow() > 1) {
