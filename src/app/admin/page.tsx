@@ -110,8 +110,33 @@ export default function AdminPage() {
     getStorageQuotaStats(skus).then(setQuotaStats);
   }, [skus]);
 
+  useEffect(() => {
+    try {
+      const savedLogs = localStorage.getItem('bliss_balance_logs_v1');
+      if (savedLogs) {
+        const parsed = JSON.parse(savedLogs);
+        if (Array.isArray(parsed) && parsed.length > 0) setLogs(parsed);
+      }
+    } catch (e) {}
+  }, []);
+
   const addLog = (msg: string, type: string = 'INFO') => {
-    setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg, type }, ...prev]);
+    const time = new Date().toLocaleTimeString();
+    setLogs(prev => {
+      const next = [{ time, msg, type }, ...prev];
+      try {
+        localStorage.setItem('bliss_balance_logs_v1', JSON.stringify(next.slice(0, 100)));
+      } catch (e) {}
+      return next;
+    });
+
+    if (settings.appScriptUrl && !settings.appScriptUrl.includes('EXAMPLE')) {
+      syncWithAppsScript(settings.appScriptUrl, {
+        action: 'save_log',
+        log: { time, msg, type },
+        timestamp: new Date().toISOString(),
+      }).catch(() => {});
+    }
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -341,6 +366,13 @@ export default function AdminPage() {
 
     saveStoredSettings(settings);
 
+    if (!settings.appScriptUrl || settings.appScriptUrl.includes('EXAMPLE')) {
+      setIsSyncing(false);
+      addLog('Saved settings locally. Google Apps Script endpoint is unconfigured (empty).', 'CONFIG');
+      showStatus('info', 'Settings saved locally! Google Apps Script URL is unconfigured (empty).');
+      return;
+    }
+
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'update_banner');
 
     const syncRes = await syncWithAppsScript(settings.appScriptUrl, {
@@ -351,7 +383,7 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    addLog('Updated site settings & banner config in Google Sheets', 'CONFIG');
+    addLog('Updated site settings & ticker config in Google Sheets', 'CONFIG');
     showStatus('success', `Settings saved to Google Sheets! ${syncRes.message}`);
   };
 
@@ -447,30 +479,22 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
   return (
     <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors relative select-none">
       
-      {/* BEAUTIFUL APPSCRIPT SYNC LOADING MODAL */}
+      {/* SIMPLIFIED CLEAN PRODUCT SUBMISSION LOADING SCREEN */}
       {isSyncing && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-8 max-w-sm w-full text-center space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] relative overflow-hidden">
-            <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 border-4 border-red-600/20 border-t-red-600 animate-spin rounded-none" />
-              <BrandLogo size="md" className="relative z-10" />
+          <div className="bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 max-w-xs w-full text-center space-y-4 shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]">
+            <div className="relative w-14 h-14 mx-auto flex items-center justify-center">
+              <div className="absolute inset-0 border-3 border-red-600/20 border-t-red-600 animate-spin rounded-none" />
+              <BrandLogo size="sm" className="relative z-10" />
             </div>
 
-            <div className="space-y-2 relative z-10">
-              <span className="text-[10px] text-red-600 font-black uppercase tracking-widest flex items-center justify-center gap-1.5 animate-pulse">
-                <Sparkles className="w-3.5 h-3.5 text-red-600" /> SYNCING WITH GOOGLE APPSCRIPT
-              </span>
-              <h3 className="font-heading text-xl font-black uppercase text-neutral-950 dark:text-white tracking-wider">
-                SAVING TO GOOGLE SHEETS
+            <div className="space-y-1">
+              <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-wider">
+                SAVING PRODUCT...
               </h3>
-              <p className="text-xs font-mono font-bold text-neutral-500 leading-relaxed">
-                {syncStepText}
+              <p className="text-[11px] font-mono font-bold text-neutral-400">
+                Please wait a moment while changes sync.
               </p>
-            </div>
-
-            <div className="pt-2 border-t-2 border-neutral-900 dark:border-neutral-800 text-[10px] text-neutral-500 font-black flex items-center justify-center gap-2">
-              <RefreshCw className="w-3 h-3 text-red-600 animate-spin" />
-              <span>PLEASE DO NOT CLOSE THIS TAB...</span>
             </div>
           </div>
         </div>

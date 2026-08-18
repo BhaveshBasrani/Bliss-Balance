@@ -3,12 +3,13 @@
  * Official Tagline: Feel The Bliss
  * 
  * Google Sheets Tabs:
- * - Products: Stores all active footwear products (SKU ID, JSON Payload, Title, Category, Price)
+ * - Settings: Stores site configuration & dynamic ticker announcement text
  * - Announcements: Stores ticker offers & messages
- * - Settings: Stores site configuration (Hero Image, Subheadline, Admin Email)
+ * - Logs: Stores system audit logs (Security, Actions, Config)
  * - Reviews: Stores verified customer reviews
- * - Wishlists: Stores customer saved wishlist items & analytics
  * - Orders: Stores customer orders & fulfillment tracking
+ * - Wishlists: Stores customer saved wishlist items
+ * - Products: Stores backup product records
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
@@ -20,16 +21,16 @@ function doGet(e) {
 
   var action = e && e.parameter ? e.parameter.action : "";
 
-  if (action === "getProducts" || action === "get_products") {
-    return handleGetProducts(ss);
+  if (action === "getSettings" || action === "get_settings") {
+    return handleGetSettings(ss);
   }
 
   if (action === "getAnnouncements" || action === "get_announcements") {
     return handleGetAnnouncements(ss);
   }
 
-  if (action === "getSettings" || action === "get_settings") {
-    return handleGetSettings(ss);
+  if (action === "getLogs" || action === "get_logs") {
+    return handleGetLogs(ss);
   }
 
   if (action === "getReviews" || action === "get_reviews") {
@@ -40,20 +41,22 @@ function doGet(e) {
     return handleGetOrders(ss);
   }
 
-  // Default response returning status, products, announcements & settings
-  var products = getProductsFromSheet(ss);
-  var announcements = getAnnouncementsFromSheet(ss);
+  if (action === "getProducts" || action === "get_products") {
+    return handleGetProducts(ss);
+  }
+
+  // Default response returning complete status, settings, announcements & logs
   var settings = getSettingsFromSheet(ss);
+  var announcements = getAnnouncementsFromSheet(ss);
+  var logs = getLogsFromSheet(ss);
 
   return ContentService.createTextOutput(JSON.stringify({
     status: "active",
     brand: "Bliss Balance",
     tagline: "Feel The Bliss",
-    recaptchaProtected: true,
-    scalableStorage: true,
-    products: products,
+    settings: settings,
     announcements: announcements,
-    settings: settings
+    logs: logs
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -85,20 +88,16 @@ function doPost(e) {
 
     var action = postData.action || "";
 
-    if (action === "ADD_SKU" || action === "UPDATE_SKU" || action === "save_product") {
-      return handleAddOrUpdateSku(ss, postData);
-    }
-
-    if (action === "DELETE_SKU" || action === "delete_product") {
-      return handleDeleteSku(ss, postData);
-    }
-
-    if (action === "UPDATE_BANNER" || action === "save_settings") {
+    if (action === "UPDATE_BANNER" || action === "save_settings" || action === "UPDATE_SETTINGS") {
       return handleSaveSettings(ss, postData);
     }
 
     if (action === "save_announcements" || action === "updateAnnouncements") {
       return handleSaveAnnouncements(ss, postData);
+    }
+
+    if (action === "save_log" || action === "save_logs" || action === "ADD_LOG") {
+      return handleSaveLog(ss, postData);
     }
 
     if (action === "submitReview" || action === "save_review") {
@@ -111,6 +110,14 @@ function doPost(e) {
 
     if (action === "CREATE_ORDER" || action === "save_order") {
       return handleCreateOrder(ss, postData);
+    }
+
+    if (action === "ADD_SKU" || action === "UPDATE_SKU" || action === "save_product") {
+      return handleAddOrUpdateSku(ss, postData);
+    }
+
+    if (action === "DELETE_SKU" || action === "delete_product") {
+      return handleDeleteSku(ss, postData);
     }
 
     return ContentService.createTextOutput(JSON.stringify({
@@ -130,11 +137,11 @@ function doPost(e) {
   }
 }
 
-function handleGetProducts(ss) {
-  var products = getProductsFromSheet(ss);
+function handleGetSettings(ss) {
+  var settings = getSettingsFromSheet(ss);
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
-    products: products
+    settings: settings
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -146,11 +153,74 @@ function handleGetAnnouncements(ss) {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-function handleGetSettings(ss) {
-  var settings = getSettingsFromSheet(ss);
+function handleGetLogs(ss) {
+  var logs = getLogsFromSheet(ss);
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
-    settings: settings
+    logs: logs
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleSaveSettings(ss, postData) {
+  var setSheet = ss.getSheetByName("Settings");
+  if (!setSheet) setSheet = ss.insertSheet("Settings");
+
+  var settingsData = postData.settingsData || postData.settings || {};
+  var timestamp = postData.timestamp || new Date().toISOString();
+
+  setSheet.clear();
+  setSheet.appendRow(["Setting Key", "Setting Value", "Last Updated"]);
+  formatHeaderRow(setSheet, 3);
+
+  for (var key in settingsData) {
+    if (settingsData.hasOwnProperty(key)) {
+      setSheet.appendRow([key, settingsData[key].toString(), timestamp]);
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Site settings & dynamic ticker synced to Google Sheets!"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleSaveAnnouncements(ss, postData) {
+  var annSheet = ss.getSheetByName("Announcements");
+  if (!annSheet) annSheet = ss.insertSheet("Announcements");
+
+  var list = postData.announcements || postData.list || [];
+  var timestamp = new Date().toISOString();
+
+  annSheet.clear();
+  annSheet.appendRow(["Announcement Offer Message", "Is Active", "Updated At"]);
+  formatHeaderRow(annSheet, 3);
+
+  for (var i = 0; i < list.length; i++) {
+    annSheet.appendRow([list[i].toString(), true, timestamp]);
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Announcements updated in Google Sheets!"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleSaveLog(ss, postData) {
+  var logSheet = ss.getSheetByName("Logs");
+  if (!logSheet) logSheet = ss.insertSheet("Logs");
+
+  var log = postData.log || postData.logData || {};
+  var timestamp = postData.time || new Date().toLocaleTimeString();
+
+  logSheet.appendRow([
+    timestamp,
+    log.msg || postData.msg || "System Event",
+    log.type || postData.type || "INFO"
+  ]);
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "System audit log saved to Google Sheets!"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -199,6 +269,26 @@ function handleGetOrders(ss) {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
+function handleGetProducts(ss) {
+  var sheet = ss.getSheetByName("Products");
+  var products = [];
+  if (sheet && sheet.getLastRow() > 1) {
+    var data = sheet.getRange(2, 2, sheet.getLastRow() - 1, 1).getValues();
+    for (var i = 0; i < data.length; i++) {
+      try {
+        if (data[i][0]) {
+          var parsed = JSON.parse(data[i][0]);
+          products.push(parsed);
+        }
+      } catch (e) {}
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    products: products
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
 function handleAddOrUpdateSku(ss, postData) {
   var prodSheet = ss.getSheetByName("Products");
   if (!prodSheet) prodSheet = ss.insertSheet("Products");
@@ -209,7 +299,6 @@ function handleAddOrUpdateSku(ss, postData) {
   var jsonPayload = JSON.stringify(sku);
   var timestamp = postData.timestamp || new Date().toISOString();
 
-  // Search existing SKU by ID
   var existingRow = -1;
   var lastRow = prodSheet.getLastRow();
 
@@ -220,15 +309,6 @@ function handleAddOrUpdateSku(ss, postData) {
         existingRow = i + 2;
         break;
       }
-    }
-  }
-
-  // Upload image to Drive if base64 provided
-  if (postData.imageBase64) {
-    var driveUrl = uploadBase64ToDriveFolder(postData.imageBase64, sku.id + "_photo");
-    if (driveUrl) {
-      sku.imageUrl = driveUrl;
-      jsonPayload = JSON.stringify(sku);
     }
   }
 
@@ -249,16 +329,10 @@ function handleAddOrUpdateSku(ss, postData) {
     prodSheet.appendRow(rowData);
   }
 
-  // Send HTML Email Notification to Admin
-  try {
-    sendBeautifulEmailNotification(postData.adminEmail, sku);
-  } catch (emailErr) {}
-
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
-    message: "Product SKU " + sku.id + " saved successfully to Google Sheets!",
-    skuId: sku.id,
-    sku: sku
+    message: "Product SKU " + sku.id + " saved to Google Sheets!",
+    skuId: sku.id
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -282,50 +356,6 @@ function handleDeleteSku(ss, postData) {
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
     message: "Product SKU " + skuId + " deleted from Google Sheets."
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-
-function handleSaveSettings(ss, postData) {
-  var setSheet = ss.getSheetByName("Settings");
-  if (!setSheet) setSheet = ss.insertSheet("Settings");
-
-  var settingsData = postData.settingsData || postData.settings || {};
-  var timestamp = postData.timestamp || new Date().toISOString();
-
-  setSheet.clear();
-  setSheet.appendRow(["Setting Key", "Setting Value", "Last Updated"]);
-  formatHeaderRow(setSheet, 3);
-
-  for (var key in settingsData) {
-    if (settingsData.hasOwnProperty(key)) {
-      setSheet.appendRow([key, settingsData[key].toString(), timestamp]);
-    }
-  }
-
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "success",
-    message: "Site settings synced to Google Sheets!"
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-
-function handleSaveAnnouncements(ss, postData) {
-  var annSheet = ss.getSheetByName("Announcements");
-  if (!annSheet) annSheet = ss.insertSheet("Announcements");
-
-  var list = postData.announcements || postData.list || [];
-  var timestamp = new Date().toISOString();
-
-  annSheet.clear();
-  annSheet.appendRow(["Announcement Offer Message", "Is Active", "Updated At"]);
-  formatHeaderRow(annSheet, 3);
-
-  for (var i = 0; i < list.length; i++) {
-    annSheet.appendRow([list[i].toString(), true, timestamp]);
-  }
-
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "success",
-    message: "Announcements updated in Google Sheets!"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -392,23 +422,6 @@ function handleCreateOrder(ss, postData) {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-function uploadBase64ToDriveFolder(base64String, title) {
-  try {
-    var folders = DriveApp.getFoldersByName(GOOGLE_DRIVE_FOLDER_NAME);
-    var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(GOOGLE_DRIVE_FOLDER_NAME);
-
-    var cleanBase64 = base64String.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
-    var decoded = Utilities.base64Decode(cleanBase64);
-    var blob = Utilities.newBlob(decoded, "image/png", title + ".png");
-
-    var file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return file.getUrl();
-  } catch (e) {
-    return null;
-  }
-}
-
 function getOrCreateSpreadsheet() {
   var files = DriveApp.getFilesByName("Bliss_Balance_Database");
   if (files.hasNext()) {
@@ -420,20 +433,23 @@ function getOrCreateSpreadsheet() {
 }
 
 function ensureAndRepairSheetStructure(ss) {
-  var sheets = ["Products", "Announcements", "Settings", "Reviews", "Wishlists", "Orders"];
+  var sheets = ["Settings", "Announcements", "Logs", "Products", "Reviews", "Wishlists", "Orders"];
   for (var i = 0; i < sheets.length; i++) {
     var sheet = ss.getSheetByName(sheets[i]);
     if (!sheet) {
       sheet = ss.insertSheet(sheets[i]);
-      if (sheets[i] === "Products") {
-        sheet.appendRow(["SKU ID", "JSON Payload", "Title", "Category", "Price", "Gender", "Image URL", "Updated At"]);
-        formatHeaderRow(sheet, 8);
+      if (sheets[i] === "Settings") {
+        sheet.appendRow(["Setting Key", "Setting Value", "Last Updated"]);
+        formatHeaderRow(sheet, 3);
       } else if (sheets[i] === "Announcements") {
         sheet.appendRow(["Announcement Message", "Is Active", "Updated At"]);
         formatHeaderRow(sheet, 3);
-      } else if (sheets[i] === "Settings") {
-        sheet.appendRow(["Setting Key", "Setting Value", "Last Updated"]);
+      } else if (sheets[i] === "Logs") {
+        sheet.appendRow(["Time", "Message", "Type"]);
         formatHeaderRow(sheet, 3);
+      } else if (sheets[i] === "Products") {
+        sheet.appendRow(["SKU ID", "JSON Payload", "Title", "Category", "Price", "Gender", "Image URL", "Updated At"]);
+        formatHeaderRow(sheet, 8);
       } else if (sheets[i] === "Reviews") {
         sheet.appendRow(["Review ID", "Author Name", "Rating", "Headline", "Comment", "Created At"]);
         formatHeaderRow(sheet, 6);
@@ -447,7 +463,6 @@ function ensureAndRepairSheetStructure(ss) {
     }
   }
 
-  // Remove default Sheet1 if extra
   var sheet1 = ss.getSheetByName("Sheet1");
   if (sheet1 && ss.getSheets().length > 1) {
     try { ss.deleteSheet(sheet1); } catch (e) {}
@@ -461,6 +476,46 @@ function formatHeaderRow(sheet, colCount) {
     range.setFontColor("#FFFFFF");
     range.setFontWeight("bold");
   } catch (e) {}
+}
+
+function getSettingsFromSheet(ss) {
+  var sheet = ss.getSheetByName("Settings");
+  var settings = {};
+  if (sheet && sheet.getLastRow() > 1) {
+    var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues();
+    for (var i = 0; i < data.length; i++) {
+      if (data[i][0]) settings[data[i][0]] = data[i][1];
+    }
+  }
+  return settings;
+}
+
+function getAnnouncementsFromSheet(ss) {
+  var sheet = ss.getSheetByName("Announcements");
+  var list = [];
+  if (sheet && sheet.getLastRow() > 1) {
+    var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    for (var i = 0; i < data.length; i++) {
+      if (data[i][0]) list.push(data[i][0].toString());
+    }
+  }
+  return list;
+}
+
+function getLogsFromSheet(ss) {
+  var sheet = ss.getSheetByName("Logs");
+  var logs = [];
+  if (sheet && sheet.getLastRow() > 1) {
+    var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues();
+    for (var i = 0; i < data.length; i++) {
+      logs.push({
+        time: data[i][0],
+        msg: data[i][1],
+        type: data[i][2]
+      });
+    }
+  }
+  return logs;
 }
 
 function getProductsFromSheet(ss) {
@@ -478,30 +533,6 @@ function getProductsFromSheet(ss) {
     }
   }
   return products;
-}
-
-function getAnnouncementsFromSheet(ss) {
-  var sheet = ss.getSheetByName("Announcements");
-  var list = [];
-  if (sheet && sheet.getLastRow() > 1) {
-    var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    for (var i = 0; i < data.length; i++) {
-      if (data[i][0]) list.push(data[i][0].toString());
-    }
-  }
-  return list;
-}
-
-function getSettingsFromSheet(ss) {
-  var sheet = ss.getSheetByName("Settings");
-  var settings = {};
-  if (sheet && sheet.getLastRow() > 1) {
-    var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues();
-    for (var i = 0; i < data.length; i++) {
-      if (data[i][0]) settings[data[i][0]] = data[i][1];
-    }
-  }
-  return settings;
 }
 
 function verifyRecaptchaV3(token) {
@@ -522,37 +553,8 @@ function verifyRecaptchaV3(token) {
     var response = UrlFetchApp.fetch(verifyUrl, options);
     var result = JSON.parse(response.getContentText());
     if (result && result.success) return true;
-    return true; // Always allow request if verification call completes
+    return true;
   } catch (e) {
     return true;
   }
-}
-
-function sendBeautifulEmailNotification(adminEmail, sku) {
-  if (!adminEmail) return;
-  var subject = "✨ New Product Published: " + (sku.title || "Footwear") + " (Bliss Balance)";
-  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; border-radius: 16px; overflow: hidden;">' +
-    '<div style="background-color: #DC2626; padding: 24px; text-align: center; color: white;">' +
-      '<h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">BLISS BALANCE</h1>' +
-      '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Feel The Bliss</p>' +
-    '</div>' +
-    '<div style="padding: 24px; background-color: #ffffff;">' +
-      '<h2 style="color: #111; font-size: 18px; margin-top: 0;">New Product Live Alert</h2>' +
-      '<p style="color: #555; font-size: 14px;">A new footwear product has been created and synced to Google Sheets:</p>' +
-      '<table style="width: 100%; border-collapse: collapse; margin-top: 16px;">' +
-        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Title:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">' + (sku.title || "Footwear") + '</td></tr>' +
-        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Category:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">' + (sku.gender || "Men") + ' • ' + (sku.category || "Slides") + '</td></tr>' +
-        '<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Price:</td><td style="padding: 8px; border-bottom: 1px solid #eee;">₹' + (sku.price || 0) + '</td></tr>' +
-      '</table>' +
-    '</div>' +
-    '<div style="background-color: #f8f8f8; padding: 16px; text-align: center; font-size: 12px; color: #888;">' +
-      '© ' + new Date().getFullYear() + ' Bliss Balance Official Store Engine' +
-    '</div>' +
-  '</div>';
-
-  MailApp.sendEmail({
-    to: adminEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  });
 }

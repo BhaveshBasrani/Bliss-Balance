@@ -1,6 +1,6 @@
 /**
  * ⚡ OFFICIAL BLISS BALANCE SUPABASE CLIENT ENGINE
- * Ultra-Fast REST Client & Storage Quota Monitor
+ * Dedicated ONLY AND ONLY to Products Info & Image Data Storage
  * Connected to: https://ummvwrzzxehetmtaugop.supabase.co
  */
 
@@ -17,7 +17,7 @@ const HEADERS = {
 };
 
 /**
- * Fetch all SKUs directly from Supabase REST API
+ * Fetch all Product SKUs directly from Supabase REST API
  */
 export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
   try {
@@ -28,7 +28,7 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
     });
 
     if (!res.ok) {
-      console.warn('Supabase fetch returned non-200:', res.status);
+      console.warn('Supabase product fetch returned non-200:', res.status);
       return [];
     }
 
@@ -55,7 +55,7 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
       colorVariants: row.color_variants || [],
       sizeMarketplaceUrls: row.size_marketplace_urls || {},
       rating: Number(row.rating || 5.0),
-      reviewCount: Number(row.review_count || 0),
+      reviewCount: Number(row.review_count || row.reviews_count || 0),
       isNewArrival: Boolean(row.is_new_arrival),
       isBestseller: Boolean(row.is_bestseller),
       createdAt: row.created_at || new Date().toISOString(),
@@ -67,7 +67,7 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
 }
 
 /**
- * Insert or Update SKU in Supabase
+ * Insert or Update Product SKU in Supabase
  */
 export async function upsertSupabaseSKU(sku: FootwearSKU): Promise<boolean> {
   try {
@@ -114,7 +114,7 @@ export async function upsertSupabaseSKU(sku: FootwearSKU): Promise<boolean> {
 }
 
 /**
- * Delete SKU from Supabase
+ * Delete Product SKU from Supabase
  */
 export async function deleteSupabaseSKU(id: string): Promise<boolean> {
   try {
@@ -131,8 +131,7 @@ export async function deleteSupabaseSKU(id: string): Promise<boolean> {
 }
 
 /**
- * 📊 1GB STORAGE LIMITATION & USAGE METRICS MONITOR
- * Tracks storage usage and remaining free tier capacity for Admin Dashboard
+ * 📊 1GB STORAGE LIMITATION & USAGE METRICS MONITOR FOR SUPABASE PRODUCTS
  */
 export interface StorageQuotaStats {
   totalLimitBytes: number; // 1,073,741,824 Bytes (1 GB)

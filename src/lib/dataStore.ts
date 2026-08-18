@@ -1,5 +1,5 @@
-import { FootwearSKU, CollectionItem, SiteSettings } from './types';
-import { fetchSupabaseSKUs, upsertSupabaseSKU } from './supabaseClient';
+import { FootwearSKU, SiteSettings, CollectionItem } from './types';
+import { fetchSupabaseSKUs } from './supabaseClient';
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   announcementText: 'EASY 7-DAY RETURNS & REPLACEMENTS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL ONLINE STORE • MADE IN INDIA',
@@ -7,10 +7,10 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',
   heroImageUrl: '/hero-banner.png',
-  appScriptUrl: process.env.NEXT_PUBLIC_APPSCRIPT_URL || 'https://script.google.com/macros/s/AKfycbykDG_64LHgNhlS6gu-TowyNkTAC2Qfl3ohBoKmzQaub5oD0jj8Ah2Ow227lLG4D45ZzA/exec',
-  googleDriveFolderId: '1_BlissBalance_Footwear_Drive_Folder_ID',
-  recaptchaSiteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa',
-  adminEmail: 'blissbalance.in@gmail.com',
+  appScriptUrl: 'https://script.google.com/macros/s/AKfycbzEXAMPLE/exec',
+  recaptchaSiteKey: '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa',
+  adminEmail: 'admin@blissbalance.co',
+  googleDriveFolderId: '',
 };
 
 export const INITIAL_COLLECTIONS: CollectionItem[] = [
@@ -74,6 +74,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [];
 
 // Persistence Storage Keys
 const SKUS_STORAGE_KEY = 'bliss_balance_skus_v2';
+const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v2';
 
 // TURBO SPEED MEMORY CACHE
@@ -85,17 +86,17 @@ let memorySettingsCache: SiteSettings | null = null;
 let lastSettingsFetchTime = 0;
 let inFlightSettingsPromise: Promise<SiteSettings> | null = null;
 
-const CACHE_TTL_MS = 30 * 1000; // Reduced to 30s for rapid sync
+const CACHE_TTL_MS = 15 * 1000; // 15s refresh TTL
 
 export function mergeSKUArrays(primary: FootwearSKU[], secondary: FootwearSKU[]): FootwearSKU[] {
   const map = new Map<string, FootwearSKU>();
   
-  // 1. Load primary list
+  // 1. Load primary list first
   (primary || []).forEach(item => {
     if (item && item.id) map.set(item.id.toLowerCase(), item);
   });
 
-  // 2. Merge secondary list (updating or appending)
+  // 2. Merge secondary list (updating existing or appending new)
   (secondary || []).forEach(item => {
     if (item && item.id) {
       const key = item.id.toLowerCase();
@@ -122,6 +123,15 @@ export function getStoredSKUs(): FootwearSKU[] {
         return parsed;
       }
     }
+    const fallbackData = localStorage.getItem(SKUS_STORAGE_FALLBACK_KEY);
+    if (fallbackData) {
+      const parsedFallback = JSON.parse(fallbackData);
+      if (Array.isArray(parsedFallback) && parsedFallback.length > 0) {
+        memorySkusCache = parsedFallback;
+        localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(parsedFallback));
+        return parsedFallback;
+      }
+    }
     return memorySkusCache || [];
   } catch (e) {
     return memorySkusCache || [];
@@ -134,6 +144,7 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
     memorySkusCache = skus;
     lastSkusFetchTime = Date.now();
     localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(skus));
+    localStorage.setItem(SKUS_STORAGE_FALLBACK_KEY, JSON.stringify(skus));
     window.dispatchEvent(new Event('skus-updated'));
   } catch (e) {
     console.error('Error saving SKUs:', e);
@@ -167,14 +178,14 @@ export function saveStoredSettings(settings: SiteSettings) {
 }
 
 /**
- * ⚡ SUPABASE DATABASE & APPSCRIPT SMART SYNC ENGINE (PREVENTS DATA LOSS & OVERWRITES)
+ * ⚡ FETCH PRODUCTS (EXCLUSIVELY FROM SUPABASE DATABASE WITH APPSCRIPT BACKUP)
  */
 export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false): Promise<FootwearSKU[]> {
   const local = getStoredSKUs();
   const now = Date.now();
 
   if (!forceRefresh && memorySkusCache && (now - lastSkusFetchTime < CACHE_TTL_MS)) {
-    return memorySkusCache;
+    return mergeSKUArrays(local, memorySkusCache);
   }
 
   if (inFlightSkusPromise && !forceRefresh) {
@@ -183,35 +194,34 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
 
   inFlightSkusPromise = (async () => {
     try {
-      // 1. FETCH FROM SUPABASE DATABASE
+      // 1. FETCH EXCLUSIVELY FROM SUPABASE DATABASE
       const supabaseProducts = await fetchSupabaseSKUs();
 
+      let cloudProducts: FootwearSKU[] = [];
       if (supabaseProducts && supabaseProducts.length > 0) {
-        // SMART MERGE: Combine local SKUs with Supabase SKUs so newly added items are never lost!
-        const merged = mergeSKUArrays(local, supabaseProducts);
+        cloudProducts = supabaseProducts;
+      }
+
+      // 2. BACKUP FETCH FROM APPSCRIPT IF NEEDED
+      const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
+      if (url && !url.includes('EXAMPLE')) {
+        try {
+          const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
+          const data = await res.json();
+          if (data && data.products && Array.isArray(data.products) && data.products.length > 0) {
+            cloudProducts = mergeSKUArrays(cloudProducts, data.products);
+          }
+        } catch (gasErr) {}
+      }
+
+      // MERGE LOCAL & CLOUD PRODUCTS (LOCAL NEVER LOST)
+      const merged = mergeSKUArrays(local, cloudProducts);
+
+      if (merged.length > 0) {
         memorySkusCache = merged;
         lastSkusFetchTime = Date.now();
         saveStoredSKUs(merged);
         return merged;
-      }
-
-      // 2. FALLBACK FETCH FROM GOOGLE APPSCRIPT IF SUPABASE IS EMPTY
-      const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
-      if (url && !url.includes('EXAMPLE')) {
-        const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
-        const data = await res.json();
-        if (data && data.products && Array.isArray(data.products) && data.products.length > 0) {
-          const cloudProducts: FootwearSKU[] = data.products;
-          
-          // Background sync to Supabase
-          cloudProducts.forEach(sku => upsertSupabaseSKU(sku));
-
-          const merged = mergeSKUArrays(local, cloudProducts);
-          memorySkusCache = merged;
-          lastSkusFetchTime = Date.now();
-          saveStoredSKUs(merged);
-          return merged;
-        }
       }
     } catch (e) {
       console.warn('Could not fetch cloud SKUs:', e);
@@ -226,6 +236,9 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
   return inFlightSkusPromise;
 }
 
+/**
+ * ⚡ FETCH SITE SETTINGS & TICKER (EXCLUSIVELY FROM GOOGLE APPSCRIPT)
+ */
 export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = false): Promise<SiteSettings> {
   const local = getStoredSettings();
   const now = Date.now();
@@ -246,20 +259,22 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
 
   inFlightSettingsPromise = (async () => {
     try {
+      // FETCH EXCLUSIVELY FROM GOOGLE APPSCRIPT
       const res = await fetch(`${url}?action=getSettings`, { method: 'GET' });
       const data = await res.json();
-      if (data && data.settings && typeof data.settings === 'object') {
-        const merged = { ...getStoredSettings(), ...data.settings };
+      if (data && data.settings && Object.keys(data.settings).length > 0) {
+        const merged = { ...local, ...data.settings };
         memorySettingsCache = merged;
         lastSettingsFetchTime = Date.now();
         saveStoredSettings(merged);
         return merged;
       }
     } catch (e) {
-      console.warn('Could not fetch live cloud settings:', e);
+      console.warn('Could not fetch cloud settings from AppsScript:', e);
     } finally {
       inFlightSettingsPromise = null;
     }
+
     memorySettingsCache = local;
     return local;
   })();
