@@ -286,15 +286,15 @@ export const Footer: React.FC = () => {
 
         </div>
 
-        {/* GIANT HIGH-FASHION WATERMARK LOGO AT FOOTER BOTTOM - 100% PERFECT RESPONSIVE SCALING */}
-        <div className="w-full select-none pointer-events-none opacity-[0.12] dark:opacity-[0.22] py-4 text-center my-4 overflow-hidden">
-          <svg viewBox="0 0 1200 150" className="w-full h-auto max-h-[160px] mx-auto">
+        {/* GIANT HIGH-FASHION WATERMARK LOGO AT FOOTER BOTTOM - 100% PERFECT MOBILE SCALING */}
+        <div className="w-full select-none pointer-events-none opacity-[0.12] dark:opacity-[0.22] py-2 text-center my-2 overflow-hidden px-2">
+          <svg viewBox="0 0 1600 130" className="w-full h-auto max-h-[140px] mx-auto" preserveAspectRatio="xMidYMid meet">
             <text
               x="50%"
               y="50%"
-              dominantBaseline="middle"
+              dominantBaseline="central"
               textAnchor="middle"
-              className="font-heading font-black text-[130px] fill-current text-neutral-950 dark:text-white tracking-tighter uppercase"
+              className="font-heading font-black text-[105px] fill-current text-neutral-950 dark:text-white tracking-tight uppercase"
             >
               BLISS BALANCE
             </text>

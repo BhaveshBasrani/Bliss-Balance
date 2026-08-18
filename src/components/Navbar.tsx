@@ -126,11 +126,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             
-            {/* Brand Logo & Title with Custom Pi-Arch 'A' */}
-            <Link href="/" className="flex items-center gap-3 group shrink-0">
-              <BrandLogo size="md" className="group-hover:scale-105 transition-transform duration-300 rounded-none border border-black dark:border-white" />
-
-              <BrandTitleText size="md" showSubtitle={true} />
+            {/* Brand Logo & Title */}
+            <Link href="/" className="flex items-center gap-1.5 sm:gap-3 group shrink min-w-0 pr-1">
+              <BrandLogo size="md" className="group-hover:scale-105 transition-transform duration-300 rounded-none border border-black dark:border-white shrink-0" />
+              <BrandTitleText size="md" showSubtitle={true} className="shrink min-w-0" />
             </Link>
 
             {/* Desktop Category Links */}
