@@ -164,17 +164,22 @@ export const Footer: React.FC = () => {
               Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.
             </p>
 
-            {/* Detailed Head Office Address Card */}
-            <div className="p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 space-y-1.5 text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
+            {/* Detailed Head Office Address Link */}
+            <a
+              href="https://maps.app.goo.gl/LkJSdiNqZNrcXKJE7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-1.5 text-xs hover:border-red-600 transition-all group"
+            >
               <span className="text-[10px] font-black text-red-600 uppercase flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-red-600" /> REGISTERED HEAD OFFICE ADDRESS
+                <MapPin className="w-3.5 h-3.5 text-red-600" /> REGISTERED HEAD OFFICE ADDRESS <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
               </span>
-              <p className="text-neutral-900 dark:text-neutral-100 leading-relaxed font-black">
+              <p className="text-neutral-900 dark:text-neutral-100 leading-relaxed font-bold">
                 Novel House, Iskon Temple, Road No. 1,<br />
                 Muralidhar Bagh, Abids, Hyderabad,<br />
                 Telangana 500012, India
               </p>
-            </div>
+            </a>
 
             {/* Social Media Links & Theme Switcher */}
             <div className="pt-2 space-y-2">
@@ -186,7 +191,7 @@ export const Footer: React.FC = () => {
                   href="https://www.facebook.com/share/1Bhmz8KL1w/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                   aria-label="Facebook Page"
                 >
                   <Facebook className="w-4 h-4" />
@@ -195,7 +200,7 @@ export const Footer: React.FC = () => {
                   href="https://x.com/blissbalance_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                   aria-label="Twitter X Profile"
                 >
                   <Twitter className="w-4 h-4" />
@@ -204,7 +209,7 @@ export const Footer: React.FC = () => {
                   href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                   aria-label="YouTube Channel"
                 >
                   <Youtube className="w-4 h-4" />

@@ -7,8 +7,6 @@ export const PressMarquee: React.FC = () => {
     'AMAZON',
     'FLIPKART',
     'MYNTRA',
-    'MEESHO',
-    'AJIO',
   ];
 
   return (

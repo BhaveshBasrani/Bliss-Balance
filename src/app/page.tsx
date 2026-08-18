@@ -6,7 +6,6 @@ import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { SkuCard } from '@/components/SkuCard';
-import { ProductSlider } from '@/components/ProductSlider';
 import { PressMarquee } from '@/components/PressMarquee';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
@@ -103,11 +102,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 1. FOOTWEAR SHOWCASE */}
-        <section className="relative py-16 bg-white dark:bg-black border-b-2 border-neutral-900 dark:border-neutral-800 font-mono overflow-hidden">
+        {/* 1. FEATURED FOOTWEAR DROPS GRID */}
+        <section className="py-20 sm:py-28 bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900 transition-colors relative select-none">
           
-          {/* Subtle Background Brand Watermark Imprint */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.04] dark:opacity-[0.08] select-none">
+          {/* Background Subtle Watermark */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] dark:opacity-[0.06] select-none">
             <span className="font-heading font-black text-[15rem] lg:text-[22rem] tracking-tighter uppercase text-black dark:text-white leading-none whitespace-nowrap">
               BLISS
             </span>
@@ -115,28 +114,28 @@ export default function HomePage() {
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             
-            {/* Brutalist Header & Gender Tabs */}
+            {/* Header & Gender Tabs */}
             <ScrollReveal direction="up">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-neutral-900 dark:border-neutral-800 pb-6">
-                <div>
-                  <span className="text-xs font-black tracking-widest text-red-600 uppercase flex items-center gap-1.5 mb-1">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div className="space-y-1">
+                  <span className="text-[11px] font-black tracking-[0.25em] text-red-600 uppercase flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5" /> OFFICIAL DROPS
                   </span>
-                  <h2 className="font-heading text-4xl sm:text-6xl font-black uppercase tracking-tighter text-neutral-950 dark:text-white">
+                  <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
                     FEATURED <span className="text-red-600">FOOTWEAR</span>
                   </h2>
                 </div>
 
-                {/* Minimal Brutalist Gender Tabs */}
-                <div className="flex items-center gap-1.5 bg-neutral-100 dark:bg-neutral-950 p-1.5 rounded-none border-2 border-neutral-900 dark:border-neutral-700">
+                {/* Gender Filter Tabs */}
+                <div className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-950 p-1.5 rounded-none border border-neutral-200 dark:border-neutral-800">
                   {(['All', 'Men', 'Women'] as const).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setSelectedTab(tab)}
-                      className={`px-5 py-2 rounded-none text-xs font-black uppercase tracking-widest transition-all border ${
+                      className={`px-5 py-2 rounded-none text-xs font-black uppercase tracking-widest transition-all ${
                         selectedTab === tab
-                          ? 'bg-red-600 text-white border-red-600 shadow-md'
-                          : 'text-neutral-700 dark:text-neutral-300 border-transparent hover:border-neutral-900 dark:hover:border-neutral-100'
+                          ? 'bg-red-600 text-white'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-red-600'
                       }`}
                     >
                       {tab}
@@ -146,11 +145,11 @@ export default function HomePage() {
               </div>
             </ScrollReveal>
 
-            {/* Product Grid Stage */}
+            {/* Clean Responsive Product Grid */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 animate-pulse">
                 {Array.from({ length: 4 }).map((_, idx) => (
-                  <div key={idx} className="rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-800 p-4 space-y-4">
+                  <div key={idx} className="rounded-none bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 space-y-4">
                     <div className="aspect-square w-full rounded-none bg-neutral-200 dark:bg-neutral-800" />
                     <div className="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
                     <div className="h-6 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
@@ -159,24 +158,24 @@ export default function HomePage() {
                 ))}
               </div>
             ) : displayedSkus.length === 0 ? (
-              <div className="text-center py-16 bg-neutral-50 dark:bg-neutral-950 rounded-none border-2 border-neutral-900 dark:border-neutral-800 space-y-4">
+              <div className="text-center py-16 bg-neutral-50 dark:bg-neutral-950 rounded-none border border-neutral-200 dark:border-neutral-800 space-y-4">
                 <p className="text-neutral-500 text-xs font-black uppercase">
                   NO PRODUCTS ADDED YET
                 </p>
                 <Link
                   href="/admin"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-none bg-red-600 text-white font-black text-xs uppercase border-2 border-red-600"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-none bg-red-600 text-white font-black text-xs uppercase border border-red-600"
                 >
                   <Plus className="w-4 h-4" /> ADD FIRST FOOTWEAR
                 </Link>
               </div>
             ) : (
               <ScrollReveal direction="up">
-                <ProductSlider
-                  skus={displayedSkus}
-                  title="FEATURED FOOTWEAR DROPS"
-                  subtitle="SMOOTH HORIZONTAL SLIDER • FEEL THE BLISS"
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                  {displayedSkus.map((sku) => (
+                    <SkuCard key={sku.id} sku={sku} />
+                  ))}
+                </div>
               </ScrollReveal>
             )}
 
@@ -185,7 +184,7 @@ export default function HomePage() {
               <div className="text-center pt-4">
                 <Link
                   href="/collections"
-                  className="inline-flex items-center gap-3 px-9 py-4 rounded-none bg-black text-white dark:bg-white dark:text-black font-black text-xs uppercase tracking-widest border-2 border-neutral-900 dark:border-white hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  className="inline-flex items-center gap-3 px-9 py-4 rounded-none bg-black text-white dark:bg-white dark:text-black font-black text-xs uppercase tracking-widest border border-neutral-900 dark:border-white hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all"
                 >
                   <span>VIEW FULL CATALOG ({skus.length} PRODUCTS)</span>
                   <ArrowRight className="w-4 h-4" />

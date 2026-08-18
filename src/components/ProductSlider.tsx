@@ -60,12 +60,12 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
   if (skus.length === 0) return null;
 
   return (
-    <div className="w-full space-y-6 font-mono select-none">
+    <div className="w-full space-y-8 font-mono select-none">
       
-      {/* Top Controls Bar: Section Title, Index Counter & Neo-Brutalist Arrow Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-neutral-900 dark:border-neutral-800 pb-5">
-        <div>
-          <span className="text-[10px] font-black tracking-widest text-red-600 uppercase block">
+      {/* Top Controls Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+        <div className="space-y-1">
+          <span className="text-[11px] font-black tracking-[0.25em] text-red-600 uppercase block">
             {subtitle}
           </span>
           <h3 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
@@ -73,11 +73,11 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
           </h3>
         </div>
 
-        {/* CRAZYY NEO-BRUTALIST SLIDER CONTROLS & PROGRESS TRACK */}
+        {/* Minimal Controls & Index Counter */}
         <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-auto">
           
-          {/* High-Legibility Index Counter (e.g. 01 / 12) */}
-          <div className="text-xs font-bold font-mono tracking-widest text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900 border-2 border-black dark:border-white px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          {/* Index Counter */}
+          <div className="text-xs font-bold font-mono tracking-widest text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 px-3.5 py-2">
             <span className="text-red-600 font-black text-sm">
               {String(currentIndex).padStart(2, '0')}
             </span>
@@ -89,31 +89,19 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => scroll('left')}
-              className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:-translate-y-0.5 transition-all duration-200 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)] active:scale-95"
+              className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
               aria-label="Previous Slide"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll('right')}
-              className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:-translate-y-0.5 transition-all duration-200 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)] active:scale-95"
+              className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200"
               aria-label="Next Slide"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
-
-          {/* Dynamic Progress Indicator Track */}
-          <div className="w-24 sm:w-44 h-2 bg-neutral-200 dark:bg-neutral-800 rounded-none border border-black relative overflow-hidden shrink-0">
-            <div
-              className="absolute top-0 bottom-0 bg-red-600 transition-all duration-200 ease-out"
-              style={{
-                left: '0%',
-                width: `${Math.max(scrollProgress * 100, 12)}%`,
-              }}
-            />
-          </div>
-
         </div>
       </div>
 

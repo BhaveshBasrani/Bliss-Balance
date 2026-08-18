@@ -30,7 +30,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         
         <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="max-w-lg lg:max-w-xl space-y-5">
-            <div className="inline-flex items-center px-3.5 py-1.5 rounded-none bg-black border-2 border-red-600 text-white text-xs font-mono font-black tracking-widest uppercase shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]">
+            <div className="inline-flex items-center px-3.5 py-1.5 rounded-none bg-black/80 backdrop-blur-xs border border-red-600/80 text-white text-xs font-mono font-black tracking-widest uppercase">
               <span>EVERYDAY FOOTWEAR • MADE IN INDIA</span>
             </div>
 
@@ -46,7 +46,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             <div className="flex flex-row gap-3.5 pt-4 font-mono">
               <Link
                 href="/men"
-                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-none bg-red-600 hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest border-2 border-red-600 transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-none bg-red-600 hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest border border-red-600 transition-all duration-200"
               >
                 <span>SHOP MEN</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -54,7 +54,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
 
               <Link
                 href="/women"
-                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-none bg-black border-2 border-white hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-none bg-black border border-white hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest transition-all duration-200"
               >
                 <span>SHOP WOMEN</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -75,7 +75,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         </div>
       </div>
 
-      {/* MOBILE HERO LAYOUT (Visible on Mobile Only): Clean Separation of Shoe Photo & Text on Solid Black Part */}
+      {/* MOBILE HERO LAYOUT */}
       <div className="sm:hidden flex flex-col w-full bg-black">
         
         {/* Top: Clean Unobstructed Mobile Shoe Image */}
@@ -88,10 +88,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
           <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black to-transparent pointer-events-none" />
         </div>
 
-        {/* Bottom: Text & Buttons Sitting Cleanly on Solid Black Part */}
-        <div className="p-5 space-y-4 font-mono bg-black relative z-10">
+        {/* Bottom: Text & Buttons */}
+        <div className="p-6 space-y-4 font-mono bg-black relative z-10">
           
-          <div className="inline-flex items-center px-3 py-1 rounded-none bg-black border-2 border-red-600 text-white text-[9px] font-mono font-black tracking-widest uppercase shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]">
+          <div className="inline-flex items-center px-3 py-1 rounded-none bg-black border border-red-600 text-white text-[9px] font-mono font-black tracking-widest uppercase">
             <span>EVERYDAY FOOTWEAR • MADE IN INDIA</span>
           </div>
 
@@ -107,7 +107,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
           <div className="flex flex-row gap-2.5 pt-2">
             <Link
               href="/men"
-              className="group flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-red-600 text-white font-black text-xs uppercase tracking-widest border-2 border-red-600 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+              className="group flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-red-600 text-white font-black text-xs uppercase tracking-widest border border-red-600"
             >
               <span>SHOP MEN</span>
               <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -115,7 +115,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
 
             <Link
               href="/women"
-              className="group flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-black border-2 border-white text-white font-black text-xs uppercase tracking-widest shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"
+              className="group flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-none bg-black border border-white text-white font-black text-xs uppercase tracking-widest"
             >
               <span>SHOP WOMEN</span>
               <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
