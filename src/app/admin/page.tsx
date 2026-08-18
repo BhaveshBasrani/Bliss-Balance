@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
-import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings } from '@/lib/dataStore';
+import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs } from '@/lib/dataStore';
 import { upsertSupabaseSKU, deleteSupabaseSKU, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
-import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant } from '@/lib/types';
+import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview } from '@/lib/types';
 import {
   Shield,
   Plus,
@@ -44,7 +44,99 @@ export default function AdminPage() {
   // Data State
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
-  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs'>('skus');
+  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs' | 'reviews'>('skus');
+
+  // Dynamic Ticker Offer Items State (Learned from Brindavanam)
+  const [tickerItems, setTickerItems] = useState<string[]>([]);
+  const [newTickerText, setNewTickerText] = useState('');
+  const [editingTickerIndex, setEditingTickerIndex] = useState<number | null>(null);
+  const [editingTickerValue, setEditingTickerValue] = useState('');
+
+  // Admin Customer Reviews State
+  const [allReviews, setAllReviews] = useState<ProductReview[]>([]);
+
+  useEffect(() => {
+    if (settings.announcementText) {
+      const parsed = settings.announcementText
+        .split('•')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      setTickerItems(parsed);
+    }
+  }, [settings.announcementText]);
+
+  useEffect(() => {
+    try {
+      const savedRev = localStorage.getItem('bliss_balance_reviews_v1');
+      if (savedRev) {
+        const parsed = JSON.parse(savedRev);
+        if (Array.isArray(parsed)) setAllReviews(parsed);
+      }
+    } catch (e) {}
+  }, []);
+
+  const handleAddTickerItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTickerText.trim()) return;
+    const updated = [...tickerItems, newTickerText.trim()];
+    const joined = updated.join(' • ');
+    setTickerItems(updated);
+    setSettings(prev => ({ ...prev, announcementText: joined }));
+    saveStoredSettings({ ...settings, announcementText: joined });
+    setNewTickerText('');
+    addLog(`Added ticker offer item: "${newTickerText.trim()}"`, 'CONFIG');
+    showStatus('success', 'Ticker item added!');
+  };
+
+  const handleDeleteTickerItem = (idx: number) => {
+    const updated = tickerItems.filter((_, i) => i !== idx);
+    const joined = updated.join(' • ');
+    setTickerItems(updated);
+    setSettings(prev => ({ ...prev, announcementText: joined }));
+    saveStoredSettings({ ...settings, announcementText: joined });
+    addLog('Deleted ticker announcement item', 'CONFIG');
+    showStatus('info', 'Ticker item deleted.');
+  };
+
+  const handleSaveEditedTickerItem = (idx: number) => {
+    if (!editingTickerValue.trim()) return;
+    const updated = [...tickerItems];
+    updated[idx] = editingTickerValue.trim();
+    const joined = updated.join(' • ');
+    setTickerItems(updated);
+    setSettings(prev => ({ ...prev, announcementText: joined }));
+    saveStoredSettings({ ...settings, announcementText: joined });
+    setEditingTickerIndex(null);
+    addLog('Updated ticker announcement item', 'CONFIG');
+    showStatus('success', 'Ticker item updated!');
+  };
+
+  const handleResetDefaultTickers = () => {
+    const defaults = [
+      'EASY 7-DAY RETURNS & REPLACEMENTS',
+      'CUSHIONED & ANTI-SKID FOOTWEAR',
+      'OFFICIAL ONLINE STORE',
+      'MADE IN INDIA'
+    ];
+    const joined = defaults.join(' • ');
+    setTickerItems(defaults);
+    setSettings(prev => ({ ...prev, announcementText: joined }));
+    saveStoredSettings({ ...settings, announcementText: joined });
+    addLog('Reset ticker announcements to default offers', 'CONFIG');
+    showStatus('info', 'Reset tickers to defaults.');
+  };
+
+  const handleDeleteAdminReview = (revId: string) => {
+    if (!confirm('Are you sure you want to delete this customer review?')) return;
+    const updated = allReviews.filter(r => r.id !== revId);
+    setAllReviews(updated);
+    try {
+      localStorage.setItem('bliss_balance_reviews_v1', JSON.stringify(updated));
+      window.dispatchEvent(new Event('reviews-updated'));
+    } catch (e) {}
+    addLog(`Deleted customer review ${revId}`, 'ACTION');
+    showStatus('info', 'Review deleted.');
+  };
 
   // Editing Product Mode State
   const [editingSkuId, setEditingSkuId] = useState<string | null>(null);
@@ -99,6 +191,14 @@ export default function AdminPage() {
     setSkus(currentSkus);
     setSettings(getStoredSettings());
     getStorageQuotaStats(currentSkus).then(setQuotaStats);
+
+    // Fetch live products from Supabase/cloud on mount to guarantee up-to-date products!
+    fetchCloudSKUs(undefined, true).then(cloudSkus => {
+      if (cloudSkus && cloudSkus.length > 0) {
+        setSkus(cloudSkus);
+        getStorageQuotaStats(cloudSkus).then(setQuotaStats);
+      }
+    }).catch(() => {});
 
     const session = sessionStorage.getItem('bliss_balance_admin_auth');
     if (session === 'true') {
@@ -645,6 +745,17 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             >
               5. AUDIT LOGS ({logs.length})
             </button>
+
+            <button
+              onClick={() => setActiveTab('reviews')}
+              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
+                activeTab === 'reviews'
+                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+              }`}
+            >
+              6. REVIEWS MANAGER ({allReviews.length})
+            </button>
           </div>
 
           {/* TAB 1: PRODUCTS WORKSPACE */}
@@ -1128,16 +1239,107 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
-                    Announcement Marquee Ticker Text
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.announcementText}
-                    onChange={(e) => setSettings({ ...settings, announcementText: e.target.value })}
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-bold"
-                  />
+                {/* DYNAMIC TICKER OFFER MANAGER (LEARNED FROM BRINDAVANAM) */}
+                <div className="space-y-4 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-red-600" /> DYNAMIC MARQUEE TICKER OFFERS [{tickerItems.length}]
+                      </h4>
+                      <p className="text-[11px] font-mono text-neutral-400">
+                        Add, edit, delete, or re-order announcement ticker messages. Updates live across the website.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleResetDefaultTickers}
+                      className="px-3 py-1.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white text-[10px] font-black uppercase border border-black hover:bg-red-600 hover:text-white transition-all"
+                    >
+                      RESET DEFAULTS
+                    </button>
+                  </div>
+
+                  {/* Add New Ticker Item Input */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newTickerText}
+                      onChange={(e) => setNewTickerText(e.target.value)}
+                      placeholder="e.g. FAST PAN-INDIA SHIPPING • 7-DAY EASY RETURNS"
+                      className="flex-1 bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs font-mono font-bold text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddTickerItem}
+                      className="px-5 py-2.5 bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all shrink-0"
+                    >
+                      + ADD TICKER
+                    </button>
+                  </div>
+
+                  {/* Active Ticker Items List with Inline Edit/Delete */}
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                    {tickerItems.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 bg-neutral-100 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 flex items-center justify-between gap-3 font-mono text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      >
+                        {editingTickerIndex === idx ? (
+                          <div className="flex-1 flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editingTickerValue}
+                              onChange={(e) => setEditingTickerValue(e.target.value)}
+                              className="flex-1 bg-white dark:bg-black border border-red-600 px-3 py-1.5 text-xs font-bold text-neutral-950 dark:text-white focus:outline-none"
+                              autoFocus
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleSaveEditedTickerItem(idx)}
+                              className="px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase border border-black"
+                            >
+                              SAVE
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingTickerIndex(null)}
+                              className="px-3 py-1.5 bg-neutral-300 text-black text-[10px] font-black uppercase border border-black"
+                            >
+                              CANCEL
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="font-bold text-neutral-900 dark:text-neutral-100 truncate">
+                              <strong className="text-red-600 mr-2">[{idx + 1}]</strong> {item}
+                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingTickerIndex(idx);
+                                  setEditingTickerValue(item);
+                                }}
+                                className="p-1.5 bg-white dark:bg-black border border-black text-neutral-700 dark:text-neutral-300 hover:text-red-600"
+                                title="Edit Ticker Item"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteTickerItem(idx)}
+                                className="p-1.5 bg-white dark:bg-black border border-black text-neutral-700 dark:text-neutral-300 hover:text-red-600"
+                                title="Delete Ticker Item"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
@@ -1199,6 +1401,35 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
+                </div>
+
+                {/* EMAIL SYSTEM TOGGLE SWITCH */}
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none flex items-center justify-between gap-4 font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <div>
+                    <span className="block text-xs font-black uppercase text-neutral-950 dark:text-white flex items-center gap-1.5">
+                      <Mail className="w-4 h-4 text-blue-600" /> AUTOMATIC HTML EMAIL NOTIFICATIONS
+                    </span>
+                    <span className="text-[10px] text-neutral-400 font-bold">
+                      Sends real-time email order alerts & SKU updates to <strong className="text-red-600">{settings.adminEmail || 'admin'}</strong>
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextState = !settings.isEmailEnabled;
+                      const updated = { ...settings, isEmailEnabled: nextState };
+                      setSettings(updated);
+                      saveStoredSettings(updated);
+                      addLog(`Admin email notification system ${nextState ? 'ENABLED' : 'DISABLED'}`, 'CONFIG');
+                      showStatus('info', `Email notifications ${nextState ? 'Enabled ✓' : 'Disabled ✕'}`);
+                    }}
+                    className={`px-4 py-2 border-2 border-black font-black text-xs uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all shrink-0 ${
+                      settings.isEmailEnabled !== false ? 'bg-emerald-600 text-white' : 'bg-neutral-300 text-neutral-900'
+                    }`}
+                  >
+                    {settings.isEmailEnabled !== false ? 'SYSTEM ENABLED ✓' : 'SYSTEM DISABLED ✕'}
+                  </button>
                 </div>
 
                 <div className="p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-3">
@@ -1263,6 +1494,50 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* TAB 6: REVIEWS MANAGER */}
+          {activeTab === 'reviews' && (
+            <div className="max-w-4xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
+              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3 flex items-center justify-between">
+                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-red-600" /> CUSTOMER REVIEWS MANAGER [{allReviews.length}]
+                </h3>
+              </div>
+
+              {allReviews.length === 0 ? (
+                <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-950 rounded-none border-2 border-neutral-900 dark:border-neutral-800 p-6 space-y-2">
+                  <p className="text-xs text-neutral-500 font-mono font-bold">No customer reviews submitted yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                  {allReviews.map((rev) => (
+                    <div
+                      key={rev.id}
+                      className="p-4 bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 flex items-center justify-between gap-4 font-mono text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                    >
+                      <div className="space-y-1 overflow-hidden">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-neutral-950 dark:text-white uppercase">{rev.authorName}</span>
+                          <span className="text-[10px] text-amber-500 font-black">{'★'.repeat(rev.rating)}</span>
+                          <span className="text-[10px] text-neutral-400 font-bold">{rev.date}</span>
+                        </div>
+                        <h5 className="font-bold text-neutral-900 dark:text-neutral-100">{rev.headline}</h5>
+                        <p className="text-neutral-500 text-[11px] truncate max-w-xl">{rev.comment}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteAdminReview(rev.id)}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-black text-white text-xs font-black uppercase border border-black transition-all shrink-0"
+                      >
+                        DELETE REVIEW ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

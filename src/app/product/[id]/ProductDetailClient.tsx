@@ -220,6 +220,22 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     setNewReview({ authorName: '', rating: 5, headline: '', comment: '' });
   };
 
+  const handleDeleteMyReview = (revId: string) => {
+    const updated = reviews.filter(r => r.id !== revId);
+    setReviews(updated);
+    try {
+      const saved = localStorage.getItem('bliss_balance_reviews_v1');
+      if (saved) {
+        const all = JSON.parse(saved);
+        if (Array.isArray(all)) {
+          const nextAll = all.filter((r: any) => r.id !== revId);
+          localStorage.setItem('bliss_balance_reviews_v1', JSON.stringify(nextAll));
+          window.dispatchEvent(new Event('reviews-updated'));
+        }
+      }
+    } catch (e) {}
+  };
+
   if (isLoading && !sku) {
     return (
       <div className="fixed inset-0 z-[99999] bg-red-600 text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
@@ -732,7 +748,16 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] font-bold text-neutral-400">{rev.date}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-bold text-neutral-400">{rev.date}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMyReview(rev.id)}
+                        className="text-[10px] font-black text-neutral-400 hover:text-red-600 uppercase underline"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-1 text-amber-500 text-xs">

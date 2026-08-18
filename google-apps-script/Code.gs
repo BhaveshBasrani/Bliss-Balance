@@ -1,27 +1,33 @@
 /**
- * BLISS BALANCE FOOTWEAR - COMPLETE GOOGLE SHEETS LIVE SYNC ENGINE
+ * BLISS BALANCE FOOTWEAR - ULTIMATE GOOGLE SHEETS & DRIVE DATABASE ENGINE
  * Official Tagline: Feel The Bliss
  * 
+ * Google Drive Auto-Storage:
+ * - Creates/locates folder "Bliss_Balance_Product_Photos"
+ * - Converts base64 image data into public Google Drive image URLs automatically!
+ * 
  * Google Sheets Tabs:
- * - Settings: Stores site configuration & dynamic ticker announcement text
- * - Announcements: Stores ticker offers & messages
- * - Logs: Stores system audit logs (Security, Actions, Config)
- * - Reviews: Stores verified customer reviews
- * - Orders: Stores customer orders & fulfillment tracking
- * - Wishlists: Stores customer saved wishlist items
- * - Products: Stores backup product records
+ * 1. Products: UK Sizes, Price, Title, Image URLs (Drive hosted), Marketplace links
+ * 2. Settings: Dynamic hero banner, headline, subheadline, admin email
+ * 3. Announcements: Dynamic ticker announcements list
+ * 4. Logs: System audit logs (Security, Actions, Config)
+ * 5. Reviews: Verified customer reviews
+ * 6. Orders: Customer orders & fulfillment tracking
+ * 7. Wishlists: Customer saved wishlists
  */
 
+var DRIVE_FOLDER_NAME = "Bliss_Balance_Product_Photos";
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
 
 /**
- * Run this function directly in Google Apps Script Editor to initialize & repair all sheet tabs
+ * Run this function directly in Google Apps Script Editor to initialize spreadsheet tabs & Drive folder!
  */
 function setup() {
   var ss = getOrCreateSpreadsheet();
   ensureAndRepairSheetStructure(ss);
-  Logger.log("SUCCESS: Bliss Balance Database setup & sheet tabs initialized!");
-  return "SUCCESS: Setup complete.";
+  var folder = getOrCreateDriveFolder();
+  Logger.log("SUCCESS: Bliss Balance Database (" + ss.getName() + ") & Drive Folder (" + folder.getName() + ") ready!");
+  return "SUCCESS: Setup complete. Drive Folder: " + folder.getName();
 }
 
 function doGet(e) {
@@ -54,7 +60,7 @@ function doGet(e) {
     return handleGetProducts(ss);
   }
 
-  // Default response returning complete status, settings, announcements & logs
+  // Default status payload
   var settings = getSettingsFromSheet(ss);
   var announcements = getAnnouncementsFromSheet(ss);
   var logs = getLogsFromSheet(ss);
@@ -63,6 +69,7 @@ function doGet(e) {
     status: "active",
     brand: "Bliss Balance",
     tagline: "Feel The Bliss",
+    spreadsheetName: ss ? ss.getName() : "None",
     settings: settings,
     announcements: announcements,
     logs: logs
@@ -86,12 +93,12 @@ function doPost(e) {
 
     var postData = JSON.parse(e.postData.contents);
 
-    // Verify reCAPTCHA v3 Anti-DDoS Shield (Always allow mock/dev tokens)
+    // Verify reCAPTCHA v3
     var isHuman = verifyRecaptchaV3(postData.recaptchaToken);
     if (!isHuman) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "error",
-        message: "DDoS Shield Alert: reCAPTCHA v3 bot verification failed."
+        message: "DDoS Shield Alert: reCAPTCHA v3 verification failed."
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -189,7 +196,7 @@ function handleSaveSettings(ss, postData) {
 
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
-    message: "Site settings & dynamic ticker synced to Google Sheets!"
+    message: "Site settings & ticker synced to Google Sheets!"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -279,15 +286,43 @@ function handleGetOrders(ss) {
 }
 
 function handleGetProducts(ss) {
+  if (!ss) return ContentService.createTextOutput(JSON.stringify({ status: "success", products: [] })).setMimeType(ContentService.MimeType.JSON);
   var sheet = ss.getSheetByName("Products");
   var products = [];
   if (sheet && sheet.getLastRow() > 1) {
-    var data = sheet.getRange(2, 2, sheet.getLastRow() - 1, 1).getValues();
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var jsonColIndex = -1;
+    var skuIdColIndex = -1;
+
+    for (var h = 0; h < headers.length; h++) {
+      var headerName = headers[h].toString().toLowerCase();
+      if (headerName.indexOf("json") !== -1 || headerName.indexOf("payload") !== -1) jsonColIndex = h + 1;
+      if (headerName.indexOf("sku") !== -1 || headerName === "id") skuIdColIndex = h + 1;
+    }
+
+    var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
     for (var i = 0; i < data.length; i++) {
       try {
-        if (data[i][0]) {
-          var parsed = JSON.parse(data[i][0]);
+        if (jsonColIndex > 0 && data[i][jsonColIndex - 1]) {
+          var parsed = JSON.parse(data[i][jsonColIndex - 1]);
           products.push(parsed);
+        } else {
+          var id = skuIdColIndex > 0 ? data[i][skuIdColIndex - 1] : "sku-" + (i + 1);
+          if (id) {
+            products.push({
+              id: id.toString(),
+              title: data[i][2] || "Footwear Product",
+              category: data[i][4] || "Slides",
+              gender: data[i][5] || "Men",
+              price: Number(data[i][6] || 999),
+              originalPrice: Number(data[i][7] || 1999),
+              sizes: data[i][8] ? data[i][8].toString().split(",") : ["UK 6", "UK 7", "UK 8", "UK 9", "UK 10"],
+              imageUrl: data[i][11] || "/collections/mens-casual-sneakers.jpg",
+              amazonUrl: data[i][13] || "",
+              myntraUrl: data[i][14] || "",
+              flipkartUrl: data[i][15] || "",
+            });
+          }
         }
       } catch (e) {}
     }
@@ -305,43 +340,97 @@ function handleAddOrUpdateSku(ss, postData) {
   var sku = postData.skuData || postData.sku || {};
   if (!sku.id) sku.id = "sku-bb-" + Math.floor(10000 + Math.random() * 90000);
 
-  var jsonPayload = JSON.stringify(sku);
-  var timestamp = postData.timestamp || new Date().toISOString();
+  var timestamp = postData.timestamp || new Date().toLocaleString();
 
-  var existingRow = -1;
+  // Automatic Google Drive Image Hosting Engine
+  var driveImageUrl = sku.imageUrl || "";
+  if (driveImageUrl.indexOf("data:image") === 0) {
+    driveImageUrl = saveBase64ImageToDrive(driveImageUrl, sku.id + "_primary");
+    sku.imageUrl = driveImageUrl;
+  }
+
+  var driveHoverUrl = sku.hoverImageUrl || "";
+  if (driveHoverUrl.indexOf("data:image") === 0) {
+    driveHoverUrl = saveBase64ImageToDrive(driveHoverUrl, sku.id + "_hover");
+    sku.hoverImageUrl = driveHoverUrl;
+  }
+
+  var ukSizesStr = Array.isArray(sku.sizes) ? sku.sizes.join(", ") : (sku.sizes || "UK 6, UK 7, UK 8, UK 9, UK 10");
+  var colorVariantsStr = Array.isArray(sku.colorVariants) ? sku.colorVariants.map(function(c){ return c.name; }).join(", ") : "";
+  var featuresStr = Array.isArray(sku.features) ? sku.features.join(", ") : "";
+
+  // Check and setup clean UK Footwear headers
+  if (prodSheet.getLastRow() === 0) {
+    prodSheet.appendRow([
+      "Timestamp", "SKU ID", "Title", "Subtitle", "Category", "Gender", 
+      "Selling Price (INR)", "MRP (INR)", "UK Sizes Available", "Color Variants", 
+      "Features", "Image URL (Google Drive)", "Hover Image URL", 
+      "Amazon URL", "Myntra URL", "Flipkart URL", "Is New Arrival", "Is Bestseller", "JSON Payload"
+    ]);
+    formatHeaderRow(prodSheet, 19);
+  }
+
+  var headers = prodSheet.getRange(1, 1, 1, Math.max(1, prodSheet.getLastColumn())).getValues()[0];
   var lastRow = prodSheet.getLastRow();
 
+  var existingRow = -1;
   if (lastRow > 1) {
-    var ids = prodSheet.getRange(2, 1, lastRow - 1, 1).getValues();
-    for (var i = 0; i < ids.length; i++) {
-      if (ids[i][0] === sku.id) {
-        existingRow = i + 2;
+    var skuIdColIndex = -1;
+    for (var h = 0; h < headers.length; h++) {
+      var headerName = headers[h].toString().toLowerCase();
+      if (headerName.indexOf("sku") !== -1 || headerName === "id") {
+        skuIdColIndex = h + 1;
         break;
+      }
+    }
+    if (skuIdColIndex > 0) {
+      var ids = prodSheet.getRange(2, skuIdColIndex, lastRow - 1, 1).getValues();
+      for (var i = 0; i < ids.length; i++) {
+        if (ids[i][0] && ids[i][0].toString().toLowerCase() === sku.id.toLowerCase()) {
+          existingRow = i + 2;
+          break;
+        }
       }
     }
   }
 
-  var rowData = [
-    sku.id,
-    jsonPayload,
-    sku.title || "",
-    sku.category || "",
-    sku.price || 0,
-    sku.gender || "Unisex",
-    sku.imageUrl || "",
-    timestamp
-  ];
+  var rowValues = [];
+  for (var c = 0; c < headers.length; c++) {
+    var name = headers[c].toString().toLowerCase().trim();
+    if (name.indexOf("time") !== -1) rowValues.push(timestamp);
+    else if (name.indexOf("action") !== -1) rowValues.push(postData.action || "UPSERT");
+    else if (name.indexOf("sku") !== -1 || name === "id") rowValues.push(sku.id);
+    else if (name.indexOf("subtitle") !== -1) rowValues.push(sku.subtitle || "");
+    else if (name.indexOf("title") !== -1) rowValues.push(sku.title || "");
+    else if (name.indexOf("category") !== -1) rowValues.push(sku.category || "");
+    else if (name.indexOf("gender") !== -1) rowValues.push(sku.gender || "Unisex");
+    else if (name.indexOf("selling") !== -1 || name === "price" || name.indexOf("price (inr)") !== -1) rowValues.push(sku.price || 0);
+    else if (name.indexOf("mrp") !== -1 || name.indexOf("original") !== -1) rowValues.push(sku.originalPrice || sku.price || 0);
+    else if (name.indexOf("size") !== -1 || name.indexOf("uk") !== -1) rowValues.push(ukSizesStr);
+    else if (name.indexOf("color") !== -1 || name.indexOf("variant") !== -1) rowValues.push(colorVariantsStr);
+    else if (name.indexOf("feature") !== -1) rowValues.push(featuresStr);
+    else if (name.indexOf("hover") !== -1) rowValues.push(driveHoverUrl);
+    else if (name.indexOf("image") !== -1) rowValues.push(driveImageUrl);
+    else if (name.indexOf("amazon") !== -1) rowValues.push(sku.amazonUrl || "");
+    else if (name.indexOf("myntra") !== -1) rowValues.push(sku.myntraUrl || "");
+    else if (name.indexOf("flipkart") !== -1) rowValues.push(sku.flipkartUrl || "");
+    else if (name.indexOf("new") !== -1) rowValues.push(sku.isNewArrival ? true : false);
+    else if (name.indexOf("best") !== -1) rowValues.push(sku.isBestseller ? true : false);
+    else if (name.indexOf("json") !== -1 || name.indexOf("payload") !== -1) rowValues.push(JSON.stringify(sku));
+    else rowValues.push("");
+  }
 
   if (existingRow > 0) {
-    prodSheet.getRange(existingRow, 1, 1, rowData.length).setValues([rowData]);
+    prodSheet.getRange(existingRow, 1, 1, rowValues.length).setValues([rowValues]);
   } else {
-    prodSheet.appendRow(rowData);
+    prodSheet.appendRow(rowValues);
   }
 
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
     message: "Product SKU " + sku.id + " saved to Google Sheets!",
-    skuId: sku.id
+    skuId: sku.id,
+    driveImageUrl: driveImageUrl
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -431,6 +520,44 @@ function handleCreateOrder(ss, postData) {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
+function saveBase64ImageToDrive(base64Data, filename) {
+  try {
+    var folder = getOrCreateDriveFolder();
+    var contentType = "image/png";
+    var base64String = base64Data;
+
+    if (base64Data.indexOf("data:") === 0 && base64Data.indexOf(";base64,") !== -1) {
+      contentType = base64Data.substring(5, base64Data.indexOf(";base64,"));
+      base64String = base64Data.substring(base64Data.indexOf(";base64,") + 8);
+    }
+
+    var decoded = Utilities.base64Decode(base64String);
+    var blob = Utilities.newBlob(decoded, contentType, filename + ".png");
+    var file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+    return "https://drive.google.com/uc?id=" + file.getId();
+  } catch (e) {
+    Logger.log("Error saving base64 to Drive: " + e.toString());
+    return base64Data;
+  }
+}
+
+function getOrCreateDriveFolder() {
+  try {
+    var folders = DriveApp.getFoldersByName(DRIVE_FOLDER_NAME);
+    if (folders.hasNext()) {
+      return folders.next();
+    } else {
+      var newFolder = DriveApp.createFolder(DRIVE_FOLDER_NAME);
+      newFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      return newFolder;
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
 function getOrCreateSpreadsheet() {
   try {
     var active = SpreadsheetApp.getActiveSpreadsheet();
@@ -438,13 +565,21 @@ function getOrCreateSpreadsheet() {
   } catch (e) {}
 
   try {
-    var files = DriveApp.getFilesByName("Bliss_Balance_Database");
-    if (files.hasNext()) {
-      return SpreadsheetApp.open(files.next());
-    } else {
-      var ss = SpreadsheetApp.create("Bliss_Balance_Database");
-      return ss;
-    }
+    var active2 = SpreadsheetApp.getActive();
+    if (active2) return active2;
+  } catch (e) {}
+
+  try {
+    var filesWebsite = DriveApp.getFilesByName("Website");
+    if (filesWebsite.hasNext()) return SpreadsheetApp.open(filesWebsite.next());
+
+    var filesBb = DriveApp.getFilesByName("Bliss_Balance_Database");
+    if (filesBb.hasNext()) return SpreadsheetApp.open(filesBb.next());
+
+    var allSheets = DriveApp.getFilesByType(MimeType.GOOGLE_SHEETS);
+    if (allSheets.hasNext()) return SpreadsheetApp.open(allSheets.next());
+
+    return SpreadsheetApp.create("Bliss_Balance_Database");
   } catch (err) {
     try {
       return SpreadsheetApp.getActiveSpreadsheet();
@@ -475,8 +610,13 @@ function ensureAndRepairSheetStructure(ss) {
         sheet.appendRow(["Time", "Message", "Type"]);
         formatHeaderRow(sheet, 3);
       } else if (sheets[i] === "Products") {
-        sheet.appendRow(["SKU ID", "JSON Payload", "Title", "Category", "Price", "Gender", "Image URL", "Updated At"]);
-        formatHeaderRow(sheet, 8);
+        sheet.appendRow([
+          "Timestamp", "SKU ID", "Title", "Subtitle", "Category", "Gender", 
+          "Selling Price (INR)", "MRP (INR)", "UK Sizes Available", "Color Variants", 
+          "Features", "Image URL (Google Drive)", "Hover Image URL", 
+          "Amazon URL", "Myntra URL", "Flipkart URL", "Is New Arrival", "Is Bestseller", "JSON Payload"
+        ]);
+        formatHeaderRow(sheet, 19);
       } else if (sheets[i] === "Reviews") {
         sheet.appendRow(["Review ID", "Author Name", "Rating", "Headline", "Comment", "Created At"]);
         formatHeaderRow(sheet, 6);
@@ -546,24 +686,6 @@ function getLogsFromSheet(ss) {
     }
   }
   return logs;
-}
-
-function getProductsFromSheet(ss) {
-  if (!ss) return [];
-  var sheet = ss.getSheetByName("Products");
-  var products = [];
-  if (sheet && sheet.getLastRow() > 1) {
-    var data = sheet.getRange(2, 2, sheet.getLastRow() - 1, 1).getValues();
-    for (var i = 0; i < data.length; i++) {
-      try {
-        if (data[i][0]) {
-          var parsed = JSON.parse(data[i][0]);
-          products.push(parsed);
-        }
-      } catch (e) {}
-    }
-  }
-  return products;
 }
 
 function verifyRecaptchaV3(token) {

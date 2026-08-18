@@ -76,12 +76,14 @@ export interface SiteSettings {
   googleDriveFolderId: string;
   recaptchaSiteKey: string;
   adminEmail: string;
+  isEmailEnabled?: boolean;
 }
 
 export interface ProductReview {
   id: string;
   productId: string;
   authorName: string;
+  authorId?: string;
   rating: number;
   headline: string;
   comment: string;

@@ -11,6 +11,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   recaptchaSiteKey: '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa',
   adminEmail: 'admin@blissbalance.co',
   googleDriveFolderId: '',
+  isEmailEnabled: true,
 };
 
 export const INITIAL_COLLECTIONS: CollectionItem[] = [
@@ -143,11 +144,24 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
   try {
     memorySkusCache = skus;
     lastSkusFetchTime = Date.now();
-    localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(skus));
-    localStorage.setItem(SKUS_STORAGE_FALLBACK_KEY, JSON.stringify(skus));
+    const jsonString = JSON.stringify(skus);
+    localStorage.setItem(SKUS_STORAGE_KEY, jsonString);
+    localStorage.setItem(SKUS_STORAGE_FALLBACK_KEY, jsonString);
     window.dispatchEvent(new Event('skus-updated'));
   } catch (e) {
-    console.error('Error saving SKUs:', e);
+    try {
+      const sanitized = skus.map(s => ({
+        ...s,
+        imageUrl: s.imageUrl && s.imageUrl.startsWith('data:image') ? '/collections/mens-casual-sneakers.jpg' : s.imageUrl,
+        hoverImageUrl: s.hoverImageUrl && s.hoverImageUrl.startsWith('data:image') ? '' : s.hoverImageUrl,
+      }));
+      const cleanJson = JSON.stringify(sanitized);
+      localStorage.setItem(SKUS_STORAGE_KEY, cleanJson);
+      localStorage.setItem(SKUS_STORAGE_FALLBACK_KEY, cleanJson);
+      window.dispatchEvent(new Event('skus-updated'));
+    } catch (err) {
+      console.error('Error saving SKUs to localStorage:', err);
+    }
   }
 }
 
