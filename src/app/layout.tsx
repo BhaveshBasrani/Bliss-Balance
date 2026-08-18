@@ -6,8 +6,8 @@ const siteUrl = 'https://blissbalance.co';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Bliss Balance - Official Online Store',
-    template: '%s | Bliss Balance - Official Online Store',
+    default: 'Bliss Balance - Official Online Store India',
+    template: '%s | Bliss Balance',
   },
   description:
     "Bliss Balance is India's official footwear brand creating cushioned slippers, flip-flops, slides, sandals, clogs & sneakers for everyday comfort and grip.",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: siteUrl,
-    title: 'Bliss Balance - Official Online Store',
+    title: 'Bliss Balance Footwear - Official Online Store India',
     description:
       'Bliss Balance is a homegrown Indian lifestyle & footwear brand creating unisex sneakers, slides, sandals & slippers for everyday balance. Feel The Bliss.',
     siteName: 'Bliss Balance Footwear',
@@ -210,7 +210,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="theme-color" content="#DC2626" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
