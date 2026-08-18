@@ -701,13 +701,13 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
           )}
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 border-b-2 border-neutral-900 dark:border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab('skus')}
-              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
+              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
                 activeTab === 'skus'
-                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
               }`}
             >
               1. SINGLE SKU FORM ({skus.length})
@@ -715,46 +715,46 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
             <button
               onClick={() => setActiveTab('landing')}
-              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
+              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
                 activeTab === 'landing'
-                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
               }`}
             >
-              3. LANDING BANNER & MEDIA
+              2. LANDING BANNER & MEDIA
             </button>
 
             <button
               onClick={() => setActiveTab('appscript')}
-              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
+              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
                 activeTab === 'appscript'
-                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
               }`}
             >
-              4. APPSCRIPT & EMAIL ENGINE
+              3. APPSCRIPT & EMAIL ENGINE
             </button>
 
             <button
               onClick={() => setActiveTab('logs')}
-              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
+              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
                 activeTab === 'logs'
-                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
               }`}
             >
-              5. AUDIT LOGS ({logs.length})
+              4. AUDIT LOGS ({logs.length})
             </button>
 
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`whitespace-nowrap px-5 py-3 rounded-none font-black text-xs uppercase tracking-wider transition-all border-2 ${
+              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
                 activeTab === 'reviews'
-                  ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
               }`}
             >
-              6. REVIEWS MANAGER ({allReviews.length})
+              5. REVIEWS MANAGER ({allReviews.length})
             </button>
           </div>
 

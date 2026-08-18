@@ -364,15 +364,15 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           <div className="lg:col-span-7 space-y-4">
             
             {/* Main Stage Image */}
-            <div className="relative aspect-square w-full rounded-none overflow-hidden bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-100 p-4 sm:p-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
+            <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 shadow-sm">
               {selectedImage ? (
                 <img
                   src={selectedImage}
                   alt={sku.title}
-                  className="w-full h-full object-cover rounded-none transition-all duration-300 hover:scale-105"
+                  className="w-full h-full object-cover rounded-xl transition-all duration-300 hover:scale-105"
                 />
               ) : (
-                <div className="w-full h-full rounded-none bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-mono text-xs text-neutral-400">
+                <div className="w-full h-full rounded-xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-mono text-xs text-neutral-400">
                   NO IMAGE
                 </div>
               )}
@@ -380,8 +380,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {/* Wishlist Floating Button */}
               <button
                 onClick={toggleWishlist}
-                className={`absolute top-4 right-4 sm:top-6 sm:right-6 p-3 rounded-none border-2 border-black transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
-                  isWishlisted ? 'bg-red-600 text-white scale-105' : 'bg-white dark:bg-black text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white'
+                className={`absolute top-4 right-4 sm:top-6 sm:right-6 p-3 rounded-full border transition-all ${
+                  isWishlisted 
+                    ? 'bg-red-600 text-white border-red-600 scale-105 shadow-md' 
+                    : 'bg-white/90 dark:bg-black/90 backdrop-blur-md border-neutral-200 dark:border-neutral-800 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600'
                 }`}
               >
                 <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-white' : ''}`} />
@@ -394,12 +396,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(item.url)}
-                  className={`relative w-20 h-20 rounded-none overflow-hidden border-2 transition-all shrink-0 p-1 bg-white dark:bg-black ${
-                    selectedImage === item.url ? 'border-red-600 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]' : 'border-neutral-900 dark:border-neutral-700 opacity-70 hover:opacity-100'
+                  className={`relative w-20 h-20 rounded-xl overflow-hidden border transition-all shrink-0 p-1 bg-white dark:bg-black ${
+                    selectedImage === item.url 
+                      ? 'border-red-600 ring-2 ring-red-600/30' 
+                      : 'border-neutral-200 dark:border-neutral-800 opacity-70 hover:opacity-100'
                   }`}
                   title={item.label}
                 >
-                  <img src={item.url} alt={item.label} className="w-full h-full object-cover rounded-none" />
+                  <img src={item.url} alt={item.label} className="w-full h-full object-cover rounded-lg" />
                 </button>
               ))}
             </div>
@@ -409,14 +413,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           {/* Right Column: Product Specs & Dynamic Marketplace Buying Buttons */}
           <div className="lg:col-span-5 space-y-6 font-mono">
             
-            <div className="space-y-2 border-b-2 border-neutral-900 dark:border-neutral-800 pb-6">
+            <div className="space-y-3 border-b border-neutral-200 dark:border-neutral-800 pb-6">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-black uppercase tracking-widest bg-red-600 text-white px-2.5 py-1 border border-black shadow-xs">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-red-600 text-white px-3 py-1 rounded-full">
                   {sku.gender} • {sku.category}
                 </span>
 
                 {discountPercent > 0 && (
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-black text-emerald-400 px-2.5 py-1 border border-emerald-500 shadow-xs">
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-neutral-900 text-emerald-400 dark:bg-neutral-800 px-3 py-1 rounded-full">
                     SAVE {discountPercent}%
                   </span>
                 )}
@@ -443,7 +447,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   )}
                 </div>
 
-                <div className="flex items-center gap-1 text-sm font-black text-amber-500 bg-amber-50 dark:bg-amber-950 px-3 py-1 rounded-none border border-black shadow-xs">
+                <div className="flex items-center gap-1 text-sm font-black text-amber-500 bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                   <span>{avgRating}</span>
                   <span className="text-[10px] text-neutral-400">({reviews.length})</span>
@@ -453,7 +457,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
             {/* COLOR SELECTOR */}
             {displayColorVariants.length > 0 && (
-              <div className="space-y-3 pt-2 border-b-2 border-neutral-900 dark:border-neutral-800 pb-6">
+              <div className="space-y-3 pt-2 border-b border-neutral-200 dark:border-neutral-800 pb-6">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-black uppercase text-neutral-800 dark:text-neutral-200 tracking-wider">
                     COLOR: <span className="text-red-600">{selectedColor || displayColorVariants[0].name}</span>
@@ -475,17 +479,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                           setSelectedColor(cv.name);
                           if (cv.imageUrl) setSelectedImage(cv.imageUrl);
                         }}
-                        className={`relative rounded-none overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-white dark:bg-black border-2 ${
+                        className={`relative rounded-xl overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-white dark:bg-black border ${
                           isSelected
-                            ? 'border-red-600 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]'
-                            : 'border-neutral-900 dark:border-neutral-700 hover:border-neutral-500'
+                            ? 'border-red-600 ring-2 ring-red-600/30 bg-red-50/20 dark:bg-red-950/20'
+                            : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
                         }`}
                       >
-                        <div className="w-full aspect-square rounded-none overflow-hidden bg-neutral-100 dark:bg-neutral-900 p-1 flex items-center justify-center">
+                        <div className="w-full aspect-square rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-900 p-1 flex items-center justify-center">
                           {cv.imageUrl ? (
-                            <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-none" />
+                            <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-lg" />
                           ) : (
-                            <div className="w-full h-full rounded-none flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
+                            <div className="w-full h-full rounded-lg flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
                           )}
                         </div>
                         <span className="text-[10px] font-mono font-black uppercase text-neutral-950 dark:text-white truncate max-w-full">
@@ -519,10 +523,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   <button
                     key={size}
                     onClick={() => handleSelectSize(size)}
-                    className={`py-3.5 rounded-none text-xs font-black uppercase border-2 transition-all ${
+                    className={`py-3 rounded-lg text-xs font-black uppercase border transition-all ${
                       selectedSize === size
-                        ? 'bg-red-600 text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
-                        : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-900 dark:border-neutral-700 hover:border-red-600'
+                        ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                        : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
                     }`}
                   >
                     {size}
@@ -537,7 +541,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">
                   BUY ON OFFICIAL MARKETPLACES:
                 </span>
-                <span className="text-[9px] font-black text-red-600 uppercase bg-red-50 dark:bg-red-950 px-2 py-0.5 border border-red-600 self-start sm:self-auto break-words">
+                <span className="text-[9px] font-bold text-red-600 uppercase bg-red-50 dark:bg-red-950/80 px-2.5 py-0.5 rounded-full border border-red-200 dark:border-red-800 self-start sm:self-auto break-words">
                   RESOLVED FOR {selectedSize} {selectedColor ? `• ${selectedColor}` : ''}
                 </span>
               </div>
@@ -547,10 +551,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedAmazonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-none bg-[#FF9900] hover:bg-[#e68a00] text-black font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 text-center"
+                  className="w-full py-3.5 rounded-xl bg-[#FF9900] hover:bg-[#e68a00] text-black font-black text-xs uppercase tracking-widest border border-amber-500 shadow-sm transition-all flex items-center justify-center gap-2 text-center"
                 >
                   <span>BUY NOW ON AMAZON INDIA ({selectedSize})</span>
-                  <ExternalLink className="w-4 h-4 shrink-0" />
+                  <ExternalLink className="w-4 h-4" />
                 </a>
               )}
 
@@ -559,10 +563,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedMyntraUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-none bg-[#E42529] hover:bg-[#c91e22] text-white font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 text-center"
+                  className="w-full py-3.5 rounded-xl bg-[#ff3f6c] hover:bg-[#e6355d] text-white font-black text-xs uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-2 text-center"
                 >
-                  <span>BUY NOW ON MYNTRA ({selectedSize})</span>
-                  <ExternalLink className="w-4 h-4 shrink-0" />
+                  <span>BUY NOW ON MYNTRA</span>
+                  <ExternalLink className="w-4 h-4" />
                 </a>
               )}
 
@@ -571,33 +575,33 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   href={resolvedFlipkartUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-none bg-[#2874F0] hover:bg-[#1a62d6] text-white font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 text-center"
+                  className="w-full py-3.5 rounded-xl bg-[#2874f0] hover:bg-[#1f62d1] text-white font-black text-xs uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-2 text-center"
                 >
-                  <span>BUY NOW ON FLIPKART ({selectedSize})</span>
-                  <ExternalLink className="w-4 h-4 shrink-0" />
+                  <span>BUY NOW ON FLIPKART</span>
+                  <ExternalLink className="w-4 h-4" />
                 </a>
               )}
 
               {!hasAnyMarketplaceUrl && (
-                <div className="p-4 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-black text-center text-xs font-black text-neutral-500 uppercase">
+                <div className="p-4 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-center text-xs font-black text-neutral-500 uppercase">
                   COMING SOON ON AMAZON, MYNTRA & FLIPKART
                 </div>
               )}
             </div>
 
             {/* Service & Assurance Badges */}
-            <div className="grid grid-cols-3 gap-2.5 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800 text-[10px] font-black text-center text-neutral-900 dark:text-neutral-100">
-              <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
+            <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-neutral-200 dark:border-neutral-800 text-[10px] font-black text-center text-neutral-900 dark:text-neutral-100">
+              <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <Truck className="w-4 h-4 text-red-600 mx-auto" />
                 <span>FAST SHIPPING</span>
               </div>
 
-              <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
+              <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <RotateCcw className="w-4 h-4 text-red-600 mx-auto" />
                 <span>7-DAY RETURNS</span>
               </div>
 
-              <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
+              <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1">
                 <ShieldCheck className="w-4 h-4 text-red-600 mx-auto" />
                 <span>100% ORIGINAL</span>
               </div>
@@ -608,7 +612,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         </div>
 
         {/* DYNAMIC REVIEWS & RATINGS SYSTEM */}
-        <section className="pt-8 border-t-2 border-neutral-900 dark:border-neutral-800 space-y-8 font-mono">
+        <section className="pt-8 border-t border-neutral-200 dark:border-neutral-800 space-y-8 font-mono">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -622,7 +626,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
             <button
               onClick={() => setShowReviewForm(!showReviewForm)}
-              className="px-5 py-3.5 rounded-none bg-red-600 hover:bg-black text-white font-black text-xs uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 self-start sm:self-auto"
+              className="px-5 py-3 rounded-xl bg-red-600 hover:bg-neutral-900 text-white font-black text-xs uppercase tracking-wider border border-red-600 transition-all flex items-center gap-2 self-start sm:self-auto shadow-sm"
             >
               <MessageSquare className="w-4 h-4" />
               <span>WRITE A REVIEW</span>
@@ -630,7 +634,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           </div>
 
           {reviewMsg && (
-            <div className="p-4 rounded-none bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-600 text-emerald-800 dark:text-emerald-300 text-xs font-black flex items-center gap-2">
+            <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 text-xs font-black flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
               <span>{reviewMsg}</span>
             </div>
@@ -638,7 +642,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
           {/* Interactive Review Form */}
           {showReviewForm && (
-            <form onSubmit={handleReviewSubmit} className="p-6 sm:p-8 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] space-y-4 max-w-2xl">
+            <form onSubmit={handleReviewSubmit} className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-lg space-y-4 max-w-2xl">
               <h3 className="font-heading text-xl font-black uppercase text-neutral-950 dark:text-white">
                 SUBMIT YOUR REVIEW
               </h3>
@@ -652,7 +656,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                     value={newReview.authorName}
                     onChange={(e) => setNewReview({ ...newReview, authorName: e.target.value })}
                     placeholder="e.g. Rahul M."
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                   />
                 </div>
 
@@ -661,7 +665,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   <select
                     value={newReview.rating}
                     onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
                   >
                     <option value={5}>⭐⭐⭐⭐⭐ 5 Stars (Excellent)</option>
                     <option value={4}>⭐⭐⭐⭐ 4 Stars (Very Good)</option>
@@ -679,7 +683,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   value={newReview.headline}
                   onChange={(e) => setNewReview({ ...newReview, headline: e.target.value })}
                   placeholder="e.g. Extremely soft slippers!"
-                  className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                 />
               </div>
 
@@ -691,7 +695,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   value={newReview.comment}
                   onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                   placeholder="Write your honest review..."
-                  className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                 />
               </div>
 
@@ -699,7 +703,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <button
                   type="submit"
                   disabled={submittingReview}
-                  className="px-6 py-3.5 rounded-none bg-red-600 hover:bg-black text-white font-black text-xs uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  className="px-6 py-3 rounded-xl bg-red-600 hover:bg-neutral-900 text-white font-black text-xs uppercase tracking-wider transition-all shadow-sm"
                 >
                   {submittingReview ? 'SUBMITTING...' : 'SUBMIT REVIEW'}
                 </button>
@@ -707,7 +711,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <button
                   type="button"
                   onClick={() => setShowReviewForm(false)}
-                  className="px-6 py-3.5 rounded-none bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white font-black text-xs uppercase border-2 border-black"
+                  className="px-6 py-3 rounded-xl bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white font-black text-xs uppercase border border-neutral-300 dark:border-neutral-700"
                 >
                   CANCEL
                 </button>
@@ -717,7 +721,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
           {/* Dynamic Reviews List */}
           {reviews.length === 0 ? (
-            <div className="text-center py-12 bg-white dark:bg-black rounded-none border-2 border-neutral-900 dark:border-neutral-800 p-8 space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-center py-12 bg-neutral-50/50 dark:bg-neutral-950/50 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 space-y-3">
               <Star className="w-10 h-10 text-amber-500 mx-auto fill-amber-400" />
               <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
                 NO REVIEWS YET FOR THIS PRODUCT
@@ -727,7 +731,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               </p>
               <button
                 onClick={() => setShowReviewForm(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-none bg-red-600 text-white font-black text-xs uppercase border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-black transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white font-black text-xs uppercase border border-red-600 shadow-sm hover:bg-neutral-950 transition-all"
               >
                 <Plus className="w-4 h-4" /> WRITE FIRST REVIEW
               </button>
@@ -737,13 +741,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {reviews.map((rev) => (
                 <div
                   key={rev.id}
-                  className="p-6 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  className="p-6 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-3 shadow-sm"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-black text-sm text-neutral-950 dark:text-white uppercase">{rev.authorName}</span>
                       {rev.verified && (
-                        <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 border border-emerald-600">
+                        <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
                           VERIFIED BUYER
                         </span>
                       )}
