@@ -11,7 +11,7 @@ interface HeroSectionProps {
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
-  const slides: HeroSlide[] = (settings.heroSlides && settings.heroSlides.length > 0)
+  const slides: HeroSlide[] = (settings?.heroSlides && Array.isArray(settings.heroSlides) && settings.heroSlides.length > 0)
     ? settings.heroSlides
     : DEFAULT_HERO_SLIDES;
 

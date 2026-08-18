@@ -1365,7 +1365,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     <button
                       type="button"
                       onClick={() => {
-                        const current = settings.heroSlides || DEFAULT_HERO_SLIDES;
+                        const current = (Array.isArray(settings.heroSlides) && settings.heroSlides.length > 0) ? settings.heroSlides : DEFAULT_HERO_SLIDES;
                         const newSlide = {
                           id: `slide-${Date.now()}`,
                           desktopImageUrl: '/hero-banner.png',
@@ -1387,17 +1387,17 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
                   {/* SLIDES LIST */}
                   <div className="space-y-6 max-h-[550px] overflow-y-auto pr-1 pt-2">
-                    {(settings.heroSlides || DEFAULT_HERO_SLIDES).map((slide: HeroSlide, sIdx: number) => (
+                    {((Array.isArray(settings.heroSlides) && settings.heroSlides.length > 0) ? settings.heroSlides : DEFAULT_HERO_SLIDES).map((slide: HeroSlide, sIdx: number) => (
                       <div key={slide.id || sIdx} className="p-4 bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm">
                         <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2">
                           <span className="text-xs font-black text-red-600 uppercase">
                             SLIDE #{sIdx + 1}
                           </span>
-                          {(settings.heroSlides || DEFAULT_HERO_SLIDES).length > 1 && (
+                          {((Array.isArray(settings.heroSlides) && settings.heroSlides.length > 0) ? settings.heroSlides : DEFAULT_HERO_SLIDES).length > 1 && (
                             <button
                               type="button"
                               onClick={() => {
-                                const current = settings.heroSlides || DEFAULT_HERO_SLIDES;
+                                const current = (Array.isArray(settings.heroSlides) && settings.heroSlides.length > 0) ? settings.heroSlides : DEFAULT_HERO_SLIDES;
                                 const updated = current.filter((_: HeroSlide, i: number) => i !== sIdx);
                                 setSettings({ ...settings, heroSlides: updated });
                               }}

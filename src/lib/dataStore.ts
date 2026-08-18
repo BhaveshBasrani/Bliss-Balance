@@ -243,6 +243,9 @@ export function getStoredSettings(): SiteSettings {
       if (!merged.appScriptUrl || merged.appScriptUrl.includes('EXAMPLE')) {
         merged.appScriptUrl = DEFAULT_SITE_SETTINGS.appScriptUrl;
       }
+      if (!Array.isArray(merged.heroSlides) || merged.heroSlides.length === 0) {
+        merged.heroSlides = DEFAULT_HERO_SLIDES;
+      }
       return merged;
     }
     return DEFAULT_SITE_SETTINGS;
