@@ -63,7 +63,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-none overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between"
+      className="group relative rounded-xl overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between"
     >
       <Link href={`/product?id=${sku.id}`} className="block flex-1 flex flex-col">
         

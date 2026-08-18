@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
 import { BrandTitleText } from './BrandTitleText';
 import { PaymentLogos } from './PaymentLogos';
-import { Truck, ShieldCheck, RefreshCw, Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube, Sun, Moon } from 'lucide-react';
+import { Truck, ShieldCheck, RefreshCw, Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube, Instagram, Sun, Moon } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const waveRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -139,6 +139,15 @@ export const Footer: React.FC = () => {
               </span>
               <div className="flex items-center gap-2">
                 <a
+                  href="https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all"
+                  aria-label="Instagram Official Profile"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a
                   href="https://www.facebook.com/share/1Bhmz8KL1w/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -201,6 +210,20 @@ export const Footer: React.FC = () => {
             <span className="font-black text-neutral-950 dark:text-white uppercase tracking-widest block text-xs border-b-2 border-red-600 pb-1">
               OFFICIAL CHANNELS
             </span>
+
+            {/* Official Instagram Badge Link */}
+            <a
+              href="https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-3 rounded-none bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-400 dark:border-rose-700 text-rose-950 dark:text-rose-200 hover:bg-gradient-to-r hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white transition-all group shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+            >
+              <div className="flex items-center gap-2">
+                <Instagram className="w-4 h-4 text-rose-600 group-hover:text-white shrink-0" />
+                <span className="font-black text-xs uppercase">INSTAGRAM @BLISSBALANCE.CO</span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </a>
 
             {/* Official Amazon Brand Store Badge Link */}
             <a

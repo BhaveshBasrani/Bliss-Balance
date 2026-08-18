@@ -105,13 +105,13 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
         </div>
       </div>
 
-      {/* ULTRA-FLUID HORIZONTAL CAROUSEL SNAP TRACK */}
+      {/* SLEEK COMPACT HORIZONTAL SLIDER TRACK */}
       <div
         ref={scrollContainerRef}
-        className="flex items-stretch gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-1"
+        className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2 px-1"
       >
         {skus.map((sku) => (
-          <div key={sku.id} className="w-[280px] sm:w-[320px] shrink-0 snap-start">
+          <div key={sku.id} className="w-[230px] sm:w-[270px] shrink-0 snap-start">
             <SkuCard sku={sku} />
           </div>
         ))}

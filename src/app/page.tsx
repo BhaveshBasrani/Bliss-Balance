@@ -9,6 +9,7 @@ import { SkuCard } from '@/components/SkuCard';
 import { PressMarquee } from '@/components/PressMarquee';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
+import { ProductSlider } from '@/components/ProductSlider';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
@@ -122,34 +123,44 @@ export default function HomePage() {
                   </h2>
                 </div>
 
-                {/* Gender Filter Tabs */}
-                <div className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-950 p-1.5 rounded-none border border-neutral-200 dark:border-neutral-800">
-                  {(['All', 'Men', 'Women'] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setSelectedTab(tab)}
-                      className={`px-5 py-2 rounded-none text-xs font-black uppercase tracking-widest transition-all ${
-                        selectedTab === tab
-                          ? 'bg-red-600 text-white'
-                          : 'text-neutral-600 dark:text-neutral-400 hover:text-red-600'
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-auto">
+                  {/* Gender Filter Tabs */}
+                  <div className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-950 p-1.5 rounded-none border border-neutral-200 dark:border-neutral-800">
+                    {(['All', 'Men', 'Women'] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setSelectedTab(tab)}
+                        className={`px-4 py-1.5 rounded-none text-[11px] font-black uppercase tracking-widest transition-all ${
+                          selectedTab === tab
+                            ? 'bg-red-600 text-white'
+                            : 'text-neutral-600 dark:text-neutral-400 hover:text-red-600'
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Top Right VIEW ALL Link matching user screenshot */}
+                  <Link
+                    href="/collections"
+                    className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider text-red-600 hover:text-neutral-950 dark:hover:text-white transition-colors"
+                  >
+                    <span>VIEW ALL</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
             </ScrollReveal>
 
-            {/* Clean Responsive Product Grid */}
+            {/* Compact Horizontal Product Slider */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 animate-pulse">
+              <div className="flex gap-6 overflow-hidden animate-pulse">
                 {Array.from({ length: 4 }).map((_, idx) => (
-                  <div key={idx} className="rounded-none bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 space-y-4">
+                  <div key={idx} className="w-[260px] shrink-0 rounded-none bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 space-y-4">
                     <div className="aspect-square w-full rounded-none bg-neutral-200 dark:bg-neutral-800" />
                     <div className="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
                     <div className="h-6 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
-                    <div className="h-4 w-1/2 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
                   </div>
                 ))}
               </div>
@@ -167,23 +178,19 @@ export default function HomePage() {
               </div>
             ) : (
               <ScrollReveal direction="up">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                  {displayedSkus.map((sku) => (
-                    <SkuCard key={sku.id} sku={sku} />
-                  ))}
-                </div>
+                <ProductSlider skus={displayedSkus} title="" subtitle="" />
               </ScrollReveal>
             )}
 
-            {/* View Catalog Action */}
+            {/* Minimal Compact View Catalog Button */}
             <ScrollReveal direction="up" delay={0.2}>
-              <div className="text-center pt-4">
+              <div className="text-center pt-2">
                 <Link
                   href="/collections"
-                  className="inline-flex items-center gap-3 px-9 py-4 rounded-none bg-black text-white dark:bg-white dark:text-black font-black text-xs uppercase tracking-widest border border-neutral-900 dark:border-white hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all"
+                  className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-none bg-neutral-950 text-white dark:bg-white dark:text-black font-black text-[11px] uppercase tracking-widest border border-neutral-900 dark:border-white hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm"
                 >
                   <span>VIEW FULL CATALOG ({skus.length} PRODUCTS)</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </ScrollReveal>
@@ -216,8 +223,8 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
               {/* Card 1 */}
-              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
-                <div className="w-10 h-10 rounded-none bg-red-600 text-white flex items-center justify-center">
+              <div className="p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center">
                   <Cloud className="w-5 h-5" />
                 </div>
                 <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
@@ -229,8 +236,8 @@ export default function HomePage() {
               </div>
 
               {/* Card 2 */}
-              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
-                <div className="w-10 h-10 rounded-none bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+              <div className="p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
@@ -242,8 +249,8 @@ export default function HomePage() {
               </div>
 
               {/* Card 3 */}
-              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
-                <div className="w-10 h-10 rounded-none bg-red-600 text-white flex items-center justify-center">
+              <div className="p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center">
                   <Feather className="w-5 h-5" />
                 </div>
                 <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
@@ -255,8 +262,8 @@ export default function HomePage() {
               </div>
 
               {/* Card 4 */}
-              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
-                <div className="w-10 h-10 rounded-none bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+              <div className="p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
                   <Award className="w-5 h-5" />
                 </div>
                 <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">

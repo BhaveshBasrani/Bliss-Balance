@@ -11,6 +11,11 @@ import {
   LogOut,
   Plus,
   Minus,
+  Instagram,
+  Facebook,
+  Twitter,
+  Youtube,
+  MessageSquare,
 } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { BrandTitleText } from './BrandTitleText';
@@ -353,7 +358,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 setMobileMenuOpen(false);
                 onOpenSearch();
               }}
-              className="py-3 px-4 bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-center gap-2 text-xs font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 hover:text-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="py-3 px-4 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg flex items-center justify-center gap-2 text-xs font-black uppercase hover:bg-red-600 hover:text-white transition-all"
             >
               <Search className="w-4 h-4 text-red-600" />
               <span>SEARCH</span>
@@ -364,7 +369,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 setMobileMenuOpen(false);
                 setWishlistModalOpen(true);
               }}
-              className="relative py-3 px-4 bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-center gap-2 text-xs font-black uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 hover:text-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="relative py-3 px-4 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg flex items-center justify-center gap-2 text-xs font-black uppercase hover:bg-red-600 hover:text-white transition-all"
             >
               <Heart className="w-4 h-4 text-red-600 fill-red-600" />
               <span>WISHLIST ({wishlistCount})</span>
@@ -421,16 +426,71 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               </Link>
             </div>
 
+            {/* Official Mobile Social Media Section */}
+            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 space-y-3 font-mono">
+              <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 block">
+                CONNECT WITH BLISS BALANCE
+              </span>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white transition-all"
+                  aria-label="Instagram Profile"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://wa.me/919440961776?text=Hi%20Bliss%20Balance%20Team%2C%20I%20have%20a%20query"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all"
+                  aria-label="WhatsApp Support"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://www.facebook.com/share/1Bhmz8KL1w/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all"
+                  aria-label="Facebook Page"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://x.com/blissbalance_"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all"
+                  aria-label="Twitter X Profile"
+                >
+                  <Twitter className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all"
+                  aria-label="YouTube Channel"
+                >
+                  <Youtube className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
           </div>
 
           {/* Drawer Footer Account CTA */}
-          <div className="p-6 border-t-2 border-neutral-900 dark:border-neutral-100 bg-neutral-50 dark:bg-neutral-950 space-y-3">
+          <div className="p-6 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 space-y-3">
             {currentUser ? (
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-neutral-400 uppercase">LOGGED IN AS: {currentUser.email}</p>
                 <button
                   onClick={handleLogout}
-                  className="w-full py-3 bg-red-600 text-white font-black text-xs uppercase tracking-widest border-2 border-black"
+                  className="w-full py-3 bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded-lg border border-red-600"
                 >
                   SIGN OUT
                 </button>
@@ -441,7 +501,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                   setMobileMenuOpen(false);
                   setAuthModalOpen(true);
                 }}
-                className="w-full py-3.5 bg-red-600 text-white font-black text-xs uppercase tracking-widest border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                className="w-full py-3.5 bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded-lg border border-red-600"
               >
                 SIGN IN / REGISTER
               </button>

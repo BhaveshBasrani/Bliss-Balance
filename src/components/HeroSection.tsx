@@ -30,7 +30,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         
         <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="max-w-lg lg:max-w-xl space-y-5">
-            <div className="inline-flex items-center px-3.5 py-1.5 rounded-none bg-black/80 backdrop-blur-xs border border-red-600/80 text-white text-xs font-mono font-black tracking-widest uppercase">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black/80 backdrop-blur-xs border border-red-600/80 text-white text-xs font-mono font-black tracking-widest uppercase">
               <span>EVERYDAY FOOTWEAR • MADE IN INDIA</span>
             </div>
 
@@ -46,7 +46,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             <div className="flex flex-row gap-3.5 pt-4 font-mono">
               <Link
                 href="/men"
-                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-none bg-red-600 hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest border border-red-600 transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-lg bg-red-600 hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest border border-red-600 transition-all duration-200"
               >
                 <span>SHOP MEN</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -54,7 +54,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
 
               <Link
                 href="/women"
-                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-none bg-black border border-white hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-lg bg-black border border-white hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest transition-all duration-200"
               >
                 <span>SHOP WOMEN</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

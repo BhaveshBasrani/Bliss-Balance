@@ -61,7 +61,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {filteredCollections.map((item, idx) => (
             <ScrollReveal key={item.id} direction="up" delay={idx * 0.05}>
-              <div className="group relative rounded-none overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 flex flex-col justify-between h-full">
+              <div className="group relative rounded-xl overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 flex flex-col justify-between h-full">
                 {/* Compact Category Image Banner */}
                 <div className="p-1.5 sm:p-2.5">
                   <ImagePlaceholder
