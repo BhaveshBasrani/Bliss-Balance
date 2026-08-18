@@ -120,7 +120,7 @@ export const Footer: React.FC = () => {
               href="https://maps.app.goo.gl/LkJSdiNqZNrcXKJE7"
               target="_blank"
               rel="noopener noreferrer"
-              className="block p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-1.5 text-xs hover:border-red-600 transition-all group"
+              className="block p-4 rounded-xl bg-neutral-50/80 dark:bg-neutral-950/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 space-y-1.5 text-xs hover:border-red-600 transition-all duration-300 shadow-sm hover:shadow-md group"
             >
               <span className="text-[10px] font-black text-red-600 uppercase flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-red-600" /> REGISTERED HEAD OFFICE ADDRESS <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
@@ -142,7 +142,7 @@ export const Footer: React.FC = () => {
                   href="https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA=="
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all"
+                  className="p-2.5 rounded-xl bg-white/80 dark:bg-black/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all shadow-sm hover:shadow-md"
                   aria-label="Instagram Official Profile"
                 >
                   <Instagram className="w-4 h-4" />
@@ -151,7 +151,7 @@ export const Footer: React.FC = () => {
                   href="https://www.facebook.com/share/1Bhmz8KL1w/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
+                  className="p-2.5 rounded-xl bg-white/80 dark:bg-black/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-sm hover:shadow-md"
                   aria-label="Facebook Page"
                 >
                   <Facebook className="w-4 h-4" />
@@ -160,7 +160,7 @@ export const Footer: React.FC = () => {
                   href="https://x.com/blissbalance_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
+                  className="p-2.5 rounded-xl bg-white/80 dark:bg-black/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-sm hover:shadow-md"
                   aria-label="Twitter X Profile"
                 >
                   <Twitter className="w-4 h-4" />
@@ -169,7 +169,7 @@ export const Footer: React.FC = () => {
                   href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-none bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
+                  className="p-2.5 rounded-xl bg-white/80 dark:bg-black/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-sm hover:shadow-md"
                   aria-label="YouTube Channel"
                 >
                   <Youtube className="w-4 h-4" />
@@ -216,7 +216,7 @@ export const Footer: React.FC = () => {
               href="https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA=="
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-none bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-400 dark:border-rose-700 text-rose-950 dark:text-rose-200 hover:bg-gradient-to-r hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white transition-all group shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+              className="flex items-center justify-between p-3.5 rounded-xl bg-rose-50/80 dark:bg-rose-950/40 backdrop-blur-md border border-rose-200 dark:border-rose-800/60 text-rose-950 dark:text-rose-200 hover:bg-gradient-to-r hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 group"
             >
               <div className="flex items-center gap-2">
                 <Instagram className="w-4 h-4 text-rose-600 group-hover:text-white shrink-0" />
@@ -230,7 +230,7 @@ export const Footer: React.FC = () => {
               href="https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3?lp_asin=B0GV6T919J&ref_=cm_sw_r_apann_ast_store_DTJ19G6CEXMFCXTTDYBR"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-none bg-amber-50 dark:bg-amber-950/70 border-2 border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 hover:bg-amber-500 hover:text-black transition-all group shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+              className="flex items-center justify-between p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 backdrop-blur-md border border-amber-200 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 hover:bg-amber-500 hover:text-black hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 group"
             >
               <div className="flex items-center gap-2">
                 <span className="font-black text-xs uppercase">AMAZON BRAND STORE</span>
@@ -243,7 +243,7 @@ export const Footer: React.FC = () => {
               href="https://wa.me/919440961776?text=Hi%20Bliss%20Balance%20Team%2C%20I%20have%20a%20query"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 p-3 rounded-none bg-emerald-50 dark:bg-emerald-950/60 border-2 border-emerald-400 dark:border-emerald-700/60 text-emerald-900 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition-all group shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+              className="flex items-center gap-2 p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 backdrop-blur-md border border-emerald-200 dark:border-emerald-800/60 text-emerald-950 dark:text-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 group"
             >
               <MessageSquare className="w-4 h-4 text-emerald-600 group-hover:text-white shrink-0" />
               <div className="flex flex-col">
@@ -255,7 +255,7 @@ export const Footer: React.FC = () => {
             {/* Official Gmail */}
             <a
               href="mailto:blissbalance.in@gmail.com"
-              className="flex items-center gap-2 p-3 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:border-red-600 hover:text-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+              className="flex items-center gap-2.5 p-3.5 rounded-xl bg-white/80 dark:bg-black/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 text-neutral-950 dark:text-white hover:border-red-600 hover:text-red-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 group"
             >
               <Mail className="w-4 h-4 text-red-600 shrink-0" />
               <span className="text-xs font-black">blissbalance.in@gmail.com</span>
