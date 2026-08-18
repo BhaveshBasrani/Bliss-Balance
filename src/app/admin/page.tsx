@@ -613,7 +613,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 max-w-xs w-full text-center space-y-4 shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]">
             <div className="relative w-14 h-14 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 border-3 border-red-600/20 border-t-red-600 animate-spin rounded-none" />
+              <div className="absolute inset-0 border-3 border-red-600/20 border-t-red-600 animate-spin rounded-none"></div>
               <BrandLogo size="sm" className="relative z-10" />
             </div>
 
@@ -1283,9 +1283,9 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   />
                 </div>
 
-                {/* DYNAMIC TICKER OFFER MANAGER (LEARNED FROM BRINDAVANAM) */}
-                <div className="space-y-4 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
-                  <div className="flex items-center justify-between">
+                {/* DYNAMIC TICKER OFFER MANAGER */}
+                <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-red-600" /> DYNAMIC MARQUEE TICKER OFFERS [{tickerItems.length}]
@@ -1298,25 +1298,25 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     <button
                       type="button"
                       onClick={handleResetDefaultTickers}
-                      className="px-3 py-1.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white text-[10px] font-black uppercase border border-black hover:bg-red-600 hover:text-white transition-all"
+                      className="px-3.5 py-1.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-[10px] font-black uppercase rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-red-600 hover:text-white transition-all shrink-0 self-start sm:self-auto"
                     >
                       RESET DEFAULTS
                     </button>
                   </div>
 
                   {/* Add New Ticker Item Input */}
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={newTickerText}
                       onChange={(e) => setNewTickerText(e.target.value)}
                       placeholder="e.g. FAST PAN-INDIA SHIPPING • 7-DAY EASY RETURNS"
-                      className="flex-1 bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-2.5 text-xs font-mono font-bold text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="flex-1 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={handleAddTickerItem}
-                      className="px-5 py-2.5 bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all shrink-0"
+                      className="w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase rounded-xl transition-all shadow-xs shrink-0"
                     >
                       + ADD TICKER
                     </button>
@@ -1327,7 +1327,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     {tickerItems.map((item, idx) => (
                       <div
                         key={idx}
-                        className="p-3 bg-neutral-100 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 flex items-center justify-between gap-3 font-mono text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        className="p-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl flex items-center justify-between gap-3 font-mono text-xs shadow-xs"
                       >
                         {editingTickerIndex === idx ? (
                           <div className="flex-1 flex items-center gap-2">
@@ -1335,20 +1335,20 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                               type="text"
                               value={editingTickerValue}
                               onChange={(e) => setEditingTickerValue(e.target.value)}
-                              className="flex-1 bg-white dark:bg-black border border-red-600 px-3 py-1.5 text-xs font-bold text-neutral-950 dark:text-white focus:outline-none"
+                              className="flex-1 bg-white dark:bg-black border border-red-600 px-3 py-1.5 text-xs font-bold text-neutral-950 dark:text-white focus:outline-none rounded-lg"
                               autoFocus
                             />
                             <button
                               type="button"
                               onClick={() => handleSaveEditedTickerItem(idx)}
-                              className="px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase border border-black"
+                              className="px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg border border-emerald-600"
                             >
                               SAVE
                             </button>
                             <button
                               type="button"
                               onClick={() => setEditingTickerIndex(null)}
-                              className="px-3 py-1.5 bg-neutral-300 text-black text-[10px] font-black uppercase border border-black"
+                              className="px-3 py-1.5 bg-neutral-300 dark:bg-neutral-700 text-neutral-900 dark:text-white text-[10px] font-black uppercase rounded-lg"
                             >
                               CANCEL
                             </button>
@@ -1365,7 +1365,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                                   setEditingTickerIndex(idx);
                                   setEditingTickerValue(item);
                                 }}
-                                className="p-1.5 bg-white dark:bg-black border border-black text-neutral-700 dark:text-neutral-300 hover:text-red-600"
+                                className="p-1.5 bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-red-600"
                                 title="Edit Ticker Item"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -1373,7 +1373,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                               <button
                                 type="button"
                                 onClick={() => handleDeleteTickerItem(idx)}
-                                className="p-1.5 bg-white dark:bg-black border border-black text-neutral-700 dark:text-neutral-300 hover:text-red-600"
+                                className="p-1.5 bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-red-600"
                                 title="Delete Ticker Item"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1394,14 +1394,14 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     rows={2}
                     value={settings.heroSubheadline}
                     onChange={(e) => setSettings({ ...settings, heroSubheadline: e.target.value })}
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-bold"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-bold"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSyncing}
-                  className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest transition-all duration-200 shadow-sm"
                 >
                   SAVE BANNER & MEDIA CONFIG
                 </button>
@@ -1448,7 +1448,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                 </div>
 
                 {/* EMAIL SYSTEM TOGGLE SWITCH */}
-                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-2xl flex items-center justify-between gap-4 font-mono shadow-xs">
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono shadow-xs">
                   <div>
                     <span className="block text-xs font-black uppercase text-neutral-950 dark:text-white flex items-center gap-1.5">
                       <Mail className="w-4 h-4 text-emerald-600" /> AUTOMATIC HTML EMAIL NOTIFICATIONS
@@ -1468,7 +1468,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       addLog(`Admin email notification system ${nextState ? 'ENABLED' : 'DISABLED'}`, 'CONFIG');
                       showStatus('info', `Email notifications ${nextState ? 'Enabled ✓' : 'Disabled ✕'}`);
                     }}
-                    className={`px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 font-black text-xs uppercase shadow-xs transition-all shrink-0 ${
+                    className={`w-full sm:w-auto px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 font-black text-xs uppercase shadow-xs transition-all shrink-0 text-center ${
                       settings.isEmailEnabled !== false ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700'
                     }`}
                   >
@@ -1477,7 +1477,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                 </div>
 
                 <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 shadow-xs">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-mono font-black text-red-600 uppercase flex items-center gap-1">
                       <Mail className="w-4 h-4 text-red-600" /> LIVE SYNC APPSCRIPT CODE:
                     </span>
@@ -1492,7 +1492,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     </button>
                   </div>
 
-                  <pre className="p-4 bg-white dark:bg-black rounded-none text-[11px] text-neutral-800 dark:text-neutral-300 overflow-x-auto border-2 border-neutral-900 dark:border-neutral-800 leading-relaxed max-h-[350px] font-mono font-bold">
+                  <pre className="p-4 bg-white dark:bg-black rounded-xl text-[11px] text-neutral-800 dark:text-neutral-300 overflow-x-auto border border-neutral-200 dark:border-neutral-800 leading-relaxed max-h-[350px] font-mono font-bold">
 {appScriptCode}
                   </pre>
                 </div>
@@ -1500,7 +1500,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                 <button
                   type="submit"
                   disabled={isSyncing}
-                  className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest transition-all duration-200 shadow-sm"
                 >
                   SAVE APPSCRIPT & EMAIL CONFIG
                 </button>

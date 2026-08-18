@@ -86,7 +86,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
             {isSignUp ? 'JOIN BLISS BALANCE' : 'WELCOME TO BLISS BALANCE'}
           </h3>
           <p className="font-mono text-xs text-neutral-500 max-w-xs mx-auto font-bold">
-            {isSignUp ? 'Create an account to track orders & express checkout' : 'Sign in to access your account & saved items'}
+            {isSignUp ? 'Create an account for express checkout' : 'Sign in to access your account & saved items'}
           </p>
         </div>
 

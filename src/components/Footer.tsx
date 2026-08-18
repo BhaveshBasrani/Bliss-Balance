@@ -199,7 +199,6 @@ export const Footer: React.FC = () => {
               CUSTOMER HELP
             </span>
             <ul className="space-y-2 font-bold text-neutral-700 dark:text-neutral-300">
-              <li><Link href="/account" className="hover:text-red-600 transition-colors">Track Order</Link></li>
               <li><Link href="/faq" className="hover:text-red-600 transition-colors">FAQ & Support</Link></li>
               <li><Link href="/about" className="hover:text-red-600 transition-colors">About Us</Link></li>
             </ul>

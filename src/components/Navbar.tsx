@@ -303,7 +303,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                             WELCOME TO BLISS BALANCE
                           </h4>
                           <p className="text-[11px] text-neutral-500">
-                            Sign in to track orders, save wishlist items, and manage addresses.
+                            Sign in to save wishlist items and manage addresses.
                           </p>
                         </div>
 
