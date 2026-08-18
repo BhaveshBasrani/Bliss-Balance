@@ -783,7 +783,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
       <Footer />
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} skus={allSkus} />
-      <SizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
+      <SizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} initialGender={sku.gender as any} />
     </div>
   );
 }

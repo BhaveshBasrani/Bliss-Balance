@@ -31,7 +31,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="max-w-lg lg:max-w-xl space-y-5">
             <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-black/80 backdrop-blur-xs border border-red-600/80 text-white text-xs font-mono font-black tracking-widest uppercase">
-              <span>EVERYDAY FOOTWEAR • MADE IN INDIA</span>
+              <span>FEEL THE BLISS • MADE IN INDIA</span>
             </div>
 
             <h1 className="font-heading text-5xl lg:text-6xl font-black uppercase tracking-tighter text-white leading-[0.95] [text-shadow:_0_2px_12px_rgb(0_0_0_/_95%)]">

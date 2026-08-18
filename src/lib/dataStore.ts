@@ -165,6 +165,18 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
   }
 }
 
+export function clearAllSKUs() {
+  if (typeof window === 'undefined') return;
+  try {
+    memorySkusCache = [];
+    localStorage.removeItem(SKUS_STORAGE_KEY);
+    localStorage.removeItem(SKUS_STORAGE_FALLBACK_KEY);
+    window.dispatchEvent(new Event('skus-updated'));
+  } catch (e) {
+    console.error('Error clearing SKUs from localStorage:', e);
+  }
+}
+
 export function getStoredSettings(): SiteSettings {
   if (typeof window === 'undefined') return DEFAULT_SITE_SETTINGS;
   try {
