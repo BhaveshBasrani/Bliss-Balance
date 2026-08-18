@@ -131,6 +131,23 @@ export async function deleteSupabaseSKU(id: string): Promise<boolean> {
 }
 
 /**
+ * Delete ALL Product SKUs from Supabase (Wipe Supabase Database)
+ */
+export async function deleteAllSupabaseSKUs(): Promise<boolean> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?id=neq.__NO_MATCH__`, {
+      method: 'DELETE',
+      headers: HEADERS,
+    });
+
+    return res.ok;
+  } catch (e) {
+    console.error('Error wiping Supabase database:', e);
+    return false;
+  }
+}
+
+/**
  * 📊 1GB STORAGE LIMITATION & USAGE METRICS MONITOR FOR SUPABASE PRODUCTS
  */
 export interface StorageQuotaStats {

@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
-import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs } from '@/lib/dataStore';
-import { upsertSupabaseSKU, deleteSupabaseSKU, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
+import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs } from '@/lib/dataStore';
+import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
 import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview } from '@/lib/types';
 import {
@@ -459,6 +459,26 @@ export default function AdminPage() {
     showStatus('info', `Deleted product "${title}". ${syncRes.message}`);
   };
 
+  const handleWipeSupabase = async () => {
+    if (!confirm('⚠️ ARE YOU ABSOLUTELY SURE?\nThis will completely wipe all product records and image references from Supabase PostgreSQL Database and local storage.')) return;
+
+    setIsSyncing(true);
+    setSyncStepText('Wiping All Products & Storage Data from Supabase Database...');
+
+    clearAllSKUs();
+    setSkus([]);
+
+    const success = await deleteAllSupabaseSKUs();
+
+    setIsSyncing(false);
+    if (success) {
+      addLog('Completely wiped all products & storage from Supabase Database', 'ACTION');
+      showStatus('success', 'Supabase Database & Storage completely cleaned and wiped!');
+    } else {
+      showStatus('error', 'Could not complete full wipe. Please check network connection.');
+    }
+  };
+
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSyncing(true);
@@ -644,24 +664,31 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
               </div>
 
               {/* 1GB SUPABASE STORAGE MONITOR */}
-              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-2">
+              <div className="p-5 rounded-lg bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex flex-col justify-between shadow-sm space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-neutral-500 uppercase font-black">SUPABASE 1GB STORAGE</span>
-                  <Database className="w-5 h-5 text-emerald-600" />
+                  <button
+                    onClick={handleWipeSupabase}
+                    className="text-[9px] font-black text-red-600 hover:text-white bg-red-50 dark:bg-red-950 hover:bg-red-600 px-2 py-0.5 rounded-full border border-red-300 dark:border-red-800 transition-all flex items-center gap-1"
+                    title="Wipe all products and clear Supabase database"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>WIPE STORAGE</span>
+                  </button>
                 </div>
                 <div>
                   <div className="flex items-baseline justify-between text-xs font-black">
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      {quotaStats ? `${(quotaStats.remainingBytes / (1024 * 1024)).toFixed(1)} MB LEFT` : '998.4 MB LEFT'}
+                      {quotaStats ? `${(quotaStats.remainingBytes / (1024 * 1024)).toFixed(1)} MB LEFT` : '1024.0 MB LEFT'}
                     </span>
                     <span className="text-[10px] text-neutral-400">
-                      {quotaStats ? `${quotaStats.usedPercentage}% USED` : '0.1% USED'}
+                      {quotaStats ? `${quotaStats.usedPercentage}% USED` : '0% USED'}
                     </span>
                   </div>
-                  <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2.5 rounded-none mt-1.5 overflow-hidden border-2 border-black">
+                  <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2 rounded-full mt-1.5 overflow-hidden">
                     <div
                       className="bg-emerald-600 h-full transition-all duration-500"
-                      style={{ width: `${quotaStats ? Math.max(2, quotaStats.usedPercentage) : 2}%` }}
+                      style={{ width: `${quotaStats ? Math.max(2, quotaStats.usedPercentage) : 0}%` }}
                     />
                   </div>
                 </div>
