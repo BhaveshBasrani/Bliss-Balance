@@ -37,9 +37,10 @@ export default function MenPage() {
   ];
 
   const allSizes = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+  const safeSkus = Array.isArray(skus) ? skus : [];
   const extractedColors = Array.from(
     new Set(
-      skus.flatMap(sku => (sku.colorVariants || []).map(cv => cv.name.trim())).filter(Boolean)
+      safeSkus.flatMap(sku => (sku?.colorVariants || []).map(cv => (cv?.name || '').trim())).filter(Boolean)
     )
   );
   const allColors = extractedColors.length > 0

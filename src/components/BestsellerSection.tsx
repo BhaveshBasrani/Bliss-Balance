@@ -12,9 +12,10 @@ interface BestsellerSectionProps {
 }
 
 export const BestsellerSection: React.FC<BestsellerSectionProps> = ({ skus }) => {
+  const safeSkus = Array.isArray(skus) ? skus : [];
   // Filter bestsellers (isBestseller flag or top rated/reviewed)
-  const bestsellers = skus.filter((sku) => sku.isBestseller || (sku.rating && sku.rating >= 4.5)).slice(0, 4);
-  const displayed = bestsellers.length > 0 ? bestsellers : skus.slice(0, 4);
+  const bestsellers = safeSkus.filter((sku) => sku?.isBestseller || (sku?.rating && sku.rating >= 4.5)).slice(0, 4);
+  const displayed = bestsellers.length > 0 ? bestsellers : safeSkus.slice(0, 4);
 
   return (
     <section className="py-20 sm:py-28 bg-neutral-50/70 dark:bg-neutral-950/70 border-b border-neutral-200 dark:border-neutral-800 relative select-none font-mono">

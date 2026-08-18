@@ -152,7 +152,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             </p>
 
             {/* INTERACTIVE COLOR SWATCHES BAR ON CATALOG CARD */}
-            {sku.colorVariants && sku.colorVariants.length > 0 && (
+            {Array.isArray(sku?.colorVariants) && sku.colorVariants.length > 0 && (
               <div className="flex items-center gap-1.5 pt-1" onClick={(e) => e.preventDefault()}>
                 {sku.colorVariants.map((cv) => (
                   <button

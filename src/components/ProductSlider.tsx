@@ -110,8 +110,8 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
         ref={scrollContainerRef}
         className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2 px-1"
       >
-        {skus.map((sku) => (
-          <div key={sku.id} className="w-[230px] sm:w-[270px] shrink-0 snap-start">
+        {(Array.isArray(skus) ? skus : []).map((sku) => (
+          <div key={sku?.id || Math.random()} className="w-[230px] sm:w-[270px] shrink-0 snap-start">
             <SkuCard sku={sku} />
           </div>
         ))}
