@@ -14,17 +14,17 @@ export const BrandTitleText: React.FC<BrandTitleTextProps> = ({
   showSubtitle = true,
 }) => {
   const textSizes = {
-    sm: 'text-base sm:text-xl font-black',
-    md: 'text-lg sm:text-2xl font-black',
-    lg: 'text-2xl sm:text-4xl font-black',
-    xl: 'text-4xl sm:text-6xl font-black',
+    sm: 'text-lg sm:text-2xl font-black',
+    md: 'text-xl sm:text-3xl font-black',
+    lg: 'text-3xl sm:text-5xl font-black',
+    xl: 'text-5xl sm:text-7xl font-black',
   }[size];
 
   return (
     <div className={`flex flex-col select-none items-start justify-center leading-none ${className}`}>
       {/* High-Legibility Bold Editorial BLISS BALANCE Title */}
       <div className={`font-heading uppercase flex items-center whitespace-nowrap tracking-tight ${textSizes}`}>
-        <span className="text-neutral-950 dark:text-white mr-1.5 font-black">BLISS</span>
+        <span className="text-neutral-950 dark:text-white mr-1 font-black">BLISS</span>
         <span className="text-red-600 tracking-tight font-black">BALANCE</span>
       </div>
 
