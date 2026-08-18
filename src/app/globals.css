@@ -23,11 +23,13 @@
   font-family: var(--font-space), var(--font-jakarta), monospace;
 }
 
-/* Hide invalid Google reCAPTCHA floating error badge on mobile screens */
+/* Official Google reCAPTCHA v3 Floating Blue Badge */
 .grecaptcha-badge {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 40 !important;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 /* Nothing OS Dot Matrix Background Patterns */

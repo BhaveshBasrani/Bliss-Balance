@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 
 const siteUrl = 'https://blissbalance.co';
@@ -245,6 +246,11 @@ export default function RootLayout({
       </head>
       <body className="bg-white dark:bg-black text-neutral-900 dark:text-white font-mono antialiased selection:bg-red-600 selection:text-white">
         {children}
+        {/* OFFICIAL GOOGLE RECAPTCHA V3 FLOATING BADGE ENGINE */}
+        <Script
+          src="https://www.google.com/recaptcha/api.js?render=6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
