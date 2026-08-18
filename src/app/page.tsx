@@ -11,6 +11,7 @@ import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
 import { ProductSlider } from '@/components/ProductSlider';
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { BestsellerSection } from '@/components/BestsellerSection';
 import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
 import { ArrowRight, Zap, Plus, Cloud, ShieldCheck, Feather, Award, Star, CheckCircle } from 'lucide-react';
@@ -203,6 +204,9 @@ export default function HomePage() {
 
         {/* 2. EXPLORE COLLECTIONS */}
         <CategoryGrid collections={INITIAL_COLLECTIONS} />
+
+        {/* 3. DYNAMIC OUR BEST SELLERS SECTION */}
+        <BestsellerSection skus={skus} />
 
         {/* 3. THE BLISS STANDARDS SECTION */}
         <section className="py-10 sm:py-28 bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900 transition-colors relative select-none overflow-hidden">

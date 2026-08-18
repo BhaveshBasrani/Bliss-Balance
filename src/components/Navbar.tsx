@@ -16,6 +16,7 @@ import {
   Twitter,
   Youtube,
   MessageSquare,
+  Menu,
 } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { BrandTitleText } from './BrandTitleText';
@@ -23,26 +24,25 @@ import { CustomerAuthModal } from './CustomerAuthModal';
 import { WishlistModal } from './WishlistModal';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
-import { getStoredSKUs } from '@/lib/dataStore';
 import { FootwearSKU } from '@/lib/types';
+import { getStoredSKUs } from '@/lib/dataStore';
 
 interface NavbarProps {
-  onOpenSearch: () => void;
+  onOpenSearch?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [wishlistModalOpen, setWishlistModalOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // Accordion open section states for mobile drawer
-  const [openAccordion, setOpenAccordion] = useState<string | null>('shop');
+  // Accordion state for mobile category navigation
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
   useEffect(() => {
-    // Listen to Firebase Auth state
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });
@@ -107,87 +107,42 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
     setOpenAccordion(openAccordion === key ? null : key);
   };
 
-  const desktopNavLinks = [
-    { name: "MEN", href: "/men" },
-    { name: "WOMEN", href: "/women" },
-    { name: "SLIPPERS", href: "/collections?cat=Slippers" },
-    { name: "SANDALS", href: "/collections?cat=Sandals" },
-    { name: "SLIDES", href: "/collections?cat=Slides" },
-    { name: "CLOGS", href: "/collections?cat=Clogs" },
-    { name: "SHOES", href: "/collections?cat=Casual+Shoes" },
-    { name: "NEW ARRIVALS", href: "/collections?filter=new" },
-  ];
-
   return (
     <>
       <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-900 transition-colors duration-300 select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* MOBILE HEADER (lg:hidden) - MATCHING COMET REFERENCE EXACTLY */}
+          {/* MOBILE HEADER (lg:hidden) */}
           <div className="flex lg:hidden items-center justify-between h-16 w-full font-mono">
-            {/* Mobile Left: 3-Bar Hamburger Menu + Search */}
             <div className="flex items-center gap-1 shrink-0">
               <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-none text-neutral-900 dark:text-white hover:text-red-600 transition-colors"
-                aria-label="Toggle Navigation Menu"
+                onClick={() => setMobileMenuOpen(true)}
+                className="p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                aria-label="Open navigation menu"
               >
-                <div className="w-5 h-4 flex flex-col justify-between items-center relative">
-                  <span
-                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
-                      mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
-                    }`}
-                  />
-                  <span
-                    className={`w-full h-0.5 bg-current transition-all duration-300 ${
-                      mobileMenuOpen ? 'opacity-0 scale-x-0' : ''
-                    }`}
-                  />
-                  <span
-                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
-                      mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
-                    }`}
-                  />
-                </div>
+                <Menu className="w-5 h-5" />
               </button>
-
               <button
                 onClick={onOpenSearch}
-                className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
-                title="Search Footwear"
+                className="p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                aria-label="Search products"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Mobile Center: Centered Logo & Title */}
-            <Link href="/" className="flex items-center gap-2.5 group mx-auto">
-              <BrandLogo size="md" />
-              <BrandTitleText size="md" showSubtitle={false} />
+            <Link href="/" className="flex items-center gap-2 group shrink min-w-0 mx-2">
+              <BrandLogo size="sm" />
+              <BrandTitleText size="sm" showSubtitle={false} className="shrink min-w-0" />
             </Link>
 
-            {/* Mobile Right: Account Profile + Wishlist */}
             <div className="flex items-center gap-1 shrink-0">
               <button
-                onClick={() => {
-                  if (currentUser) {
-                    window.location.href = '/account';
-                  } else {
-                    setAuthModalOpen(true);
-                  }
-                }}
-                className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
-                title="Account Profile"
-              >
-                <UserIcon className="w-4 h-4" />
-              </button>
-
-              <button
                 onClick={() => setWishlistModalOpen(true)}
-                className="relative p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
+                className="relative p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
                 title="View Wishlist"
               >
-                <Heart className="w-4 h-4" />
+                <Heart className="w-5 h-5" />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                     {wishlistCount}
@@ -197,85 +152,84 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </div>
           </div>
 
-          {/* DESKTOP HEADER (hidden on mobile, lg:flex) - LEAVE DESKTOP ALONE */}
-          <div className="hidden lg:flex items-center justify-between h-20">
+          {/* DESKTOP HEADER (hidden on mobile, lg:flex) - HIGH-FASHION CHK STYLE MINIMALIST CENTERPIECE */}
+          <div className="hidden lg:flex items-center justify-between h-20 relative">
             
-            {/* BRAND LOGO & TITLE */}
-            <Link href="/" className="flex items-center gap-3 group shrink min-w-0 pr-1">
-              <BrandLogo size="md" />
-              <BrandTitleText size="md" showSubtitle={true} className="shrink min-w-0" />
-            </Link>
-
-            {/* DESKTOP CATEGORY LINKS */}
-            <nav className="flex items-center space-x-7 font-mono">
-              {desktopNavLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  rel={link.href.includes('?') ? 'nofollow' : undefined}
-                  className="text-xs font-bold tracking-widest text-neutral-800 dark:text-neutral-200 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 relative group uppercase"
-                >
-                  {link.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
-                </Link>
-              ))}
+            {/* LEFT NAV LINKS (Spaced out, clean tracking) */}
+            <nav className="flex items-center space-x-8 xl:space-x-10 font-mono text-xs font-black tracking-widest text-neutral-800 dark:text-neutral-200 uppercase">
+              <Link href="/collections" className="hover:text-red-600 transition-colors py-2 relative group">
+                SHOP ALL
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              </Link>
+              <Link href="/men" className="hover:text-red-600 transition-colors py-2 relative group">
+                MEN
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              </Link>
+              <Link href="/women" className="hover:text-red-600 transition-colors py-2 relative group">
+                WOMEN
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              </Link>
+              <Link href="/about" className="hover:text-red-600 transition-colors py-2 relative group">
+                OUR STORY
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              </Link>
             </nav>
 
-            {/* MINIMALIST RIGHT HEADER ACTIONS */}
-            <div className="flex items-center gap-2 shrink-0 font-mono">
-              <Link
-                href="/about"
-                className="text-xs font-bold text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors uppercase tracking-wider px-2 py-1"
-              >
-                ABOUT US
+            {/* EXACT CENTER: BRAND LOGO & TITLE CENTERPIECE */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto z-10">
+              <Link href="/" className="flex items-center gap-3 group px-4 py-1.5 rounded-2xl hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-all duration-300 relative">
+                <div className="absolute inset-0 bg-red-600/10 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <BrandLogo size="md" className="group-hover:scale-105 transition-transform duration-300" />
+                <BrandTitleText size="md" showSubtitle={true} className="shrink min-w-0" />
               </Link>
+            </div>
 
-              {/* Minimal Wishlist Icon */}
-              <button
-                onClick={() => setWishlistModalOpen(true)}
-                className="relative p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
-                title="View Wishlist"
-              >
-                <Heart className="w-4 h-4" />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                    {wishlistCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Minimal Search Icon */}
+            {/* RIGHT ACTIONS (Text + Minimal Icon Labels) */}
+            <div className="flex items-center space-x-8 xl:space-x-10 font-mono text-xs font-black tracking-widest text-neutral-800 dark:text-neutral-200 uppercase">
               <button
                 onClick={onOpenSearch}
-                className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
-                title="Search Footwear"
+                className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5"
               >
-                <Search className="w-4 h-4" />
+                <span>SEARCH</span>
+                <Search className="w-3.5 h-3.5 text-neutral-400" />
               </button>
 
-              {/* Minimal User Account Icon */}
+              <button
+                onClick={() => setWishlistModalOpen(true)}
+                className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5 relative"
+              >
+                <span>WISHLIST ({wishlistCount})</span>
+              </button>
+
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
-                  className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors flex items-center gap-1"
-                  title="Account Menu"
+                  className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5"
                 >
-                  <UserIcon className="w-4 h-4" />
-                  <ChevronDown className="w-3 h-3 text-neutral-400" />
+                  <span>ACCOUNT</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
                 </button>
 
-                {/* Minimal Dropdown Menu */}
+                {/* Account Dropdown Popover Box */}
                 {userDropdownOpen && (
                   <div
                     onMouseLeave={() => setUserDropdownOpen(false)}
-                    className="absolute right-0 mt-2 w-60 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 shadow-xl p-4 space-y-3 z-50 font-mono text-xs"
+                    className="absolute right-0 top-full mt-3 w-72 bg-white dark:bg-black border-2 border-neutral-950 dark:border-neutral-100 shadow-[8px_8px_0px_0px_rgba(220,38,38,1)] p-5 space-y-4 z-50 font-mono text-xs animate-in fade-in zoom-in-95 duration-150 select-none"
                   >
+                    {/* Top Accent Pill */}
+                    <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2.5">
+                      <span className="text-[9px] font-mono font-black text-red-600 uppercase tracking-widest">
+                        BLISS BALANCE • ACCOUNT
+                      </span>
+                      <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                    </div>
+
                     {currentUser ? (
                       <>
-                        <div className="border-b border-neutral-200 dark:border-neutral-800 pb-2.5">
-                          <p className="text-[9px] font-bold text-neutral-400 uppercase">LOGGED IN AS</p>
-                          <p className="text-xs font-bold text-neutral-950 dark:text-white truncate">
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-mono font-bold text-neutral-400 uppercase">LOGGED IN AS</p>
+                          <p className="text-xs font-black text-neutral-950 dark:text-white truncate">
                             {currentUser.displayName || currentUser.email || 'Customer'}
                           </p>
                         </div>
@@ -283,7 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                         <Link
                           href="/account"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center gap-2 p-1.5 hover:text-red-600 font-bold uppercase transition-all"
+                          className="flex items-center gap-2.5 p-3 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-950 hover:text-white dark:hover:bg-neutral-100 dark:hover:text-black font-black uppercase text-xs rounded-xl border border-neutral-200 dark:border-neutral-800 transition-all duration-200"
                         >
                           <UserIcon className="w-4 h-4 text-red-600" />
                           <span>MY ORDERS & PROFILE</span>
@@ -291,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 p-1.5 hover:text-red-600 font-bold uppercase text-red-600 transition-all"
+                          className="w-full flex items-center justify-center gap-2 p-2.5 bg-red-600/10 hover:bg-red-600 hover:text-white font-black uppercase text-xs text-red-600 rounded-xl border border-red-600/30 transition-all duration-200"
                         >
                           <LogOut className="w-4 h-4" />
                           <span>SIGN OUT</span>
@@ -299,12 +253,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                       </>
                     ) : (
                       <>
-                        <div className="space-y-1">
-                          <h4 className="font-heading text-xs font-bold uppercase text-neutral-950 dark:text-white">
+                        <div className="space-y-1.5">
+                          <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                             WELCOME TO BLISS BALANCE
                           </h4>
-                          <p className="text-[11px] text-neutral-500">
-                            Sign in to save wishlist items and manage addresses.
+                          <p className="text-[11px] text-neutral-500 font-bold leading-relaxed">
+                            Sign in to save wishlist items, track orders and manage delivery addresses.
                           </p>
                         </div>
 
@@ -313,7 +267,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                             setUserDropdownOpen(false);
                             setAuthModalOpen(true);
                           }}
-                          className="w-full py-2 bg-red-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-red-500 transition-all"
+                          className="w-full py-3 bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest rounded-xl transition-all duration-200 shadow-md border border-red-600 active:scale-98"
                         >
                           SIGN IN / REGISTER
                         </button>
@@ -322,7 +276,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                   </div>
                 )}
               </div>
-
             </div>
 
           </div>
@@ -338,7 +291,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-3"
             >
               <BrandLogo size="md" />
               <BrandTitleText size="md" showSubtitle={true} />
@@ -346,175 +299,210 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-100 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="p-2 rounded-full border-2 border-neutral-900 dark:border-neutral-100 hover:bg-red-600 hover:text-white transition-colors"
+              aria-label="Close menu"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          {/* Search & Wishlist Quick Buttons inside Mobile Drawer */}
-          <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 grid grid-cols-2 gap-3">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenSearch();
-              }}
-              className="py-3 px-4 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg flex items-center justify-center gap-2 text-xs font-black uppercase hover:bg-red-600 hover:text-white transition-all"
-            >
-              <Search className="w-4 h-4 text-red-600" />
-              <span>SEARCH</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setWishlistModalOpen(true);
-              }}
-              className="relative py-3 px-4 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg flex items-center justify-center gap-2 text-xs font-black uppercase hover:bg-red-600 hover:text-white transition-all"
-            >
-              <Heart className="w-4 h-4 text-red-600 fill-red-600" />
-              <span>WISHLIST ({wishlistCount})</span>
-            </button>
-          </div>
-
-          {/* Drawer Accordion Links */}
-          <div className="flex-1 p-4 sm:p-6 space-y-4">
+          {/* Drawer Nav Content */}
+          <div className="flex-1 p-6 sm:p-8 space-y-6">
             
-            {/* Shop Accordion */}
-            <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
-              <button
-                onClick={() => toggleAccordion('shop')}
-                className="w-full flex items-center justify-between py-2 text-left font-heading text-xl font-black uppercase tracking-wider text-neutral-950 dark:text-white"
-              >
-                <span>SHOP FOOTWEAR</span>
-                {openAccordion === 'shop' ? <Minus className="w-5 h-5 text-red-600" /> : <Plus className="w-5 h-5" />}
-              </button>
-
-              {openAccordion === 'shop' && (
-                <div className="pl-4 pt-2 space-y-3 font-mono text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                  <Link href="/men" onClick={() => setMobileMenuOpen(false)} className="block hover:text-red-600 transition-colors">
-                    Men's Footwear
-                  </Link>
-                  <Link href="/women" onClick={() => setMobileMenuOpen(false)} className="block hover:text-red-600 transition-colors">
-                    Women's Footwear
-                  </Link>
-                  <Link href="/collections?cat=Slippers" onClick={() => setMobileMenuOpen(false)} className="block hover:text-red-600 transition-colors">
-                    Slippers & Slides
-                  </Link>
-                  <Link href="/collections?cat=Sandals" onClick={() => setMobileMenuOpen(false)} className="block hover:text-red-600 transition-colors">
-                    Sandals & Flats
-                  </Link>
-                  <Link href="/collections?cat=Clogs" onClick={() => setMobileMenuOpen(false)} className="block hover:text-red-600 transition-colors">
-                    Clogs & Crocs
-                  </Link>
-                  <Link href="/collections?cat=Casual+Shoes" onClick={() => setMobileMenuOpen(false)} className="block hover:text-red-600 transition-colors">
-                    Casual Shoes & Sneakers
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Links */}
-            <div className="space-y-3 font-mono text-sm font-black uppercase tracking-wider pt-2">
-              <Link href="/collections" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-red-600">
-                EXPLORE ALL COLLECTIONS →
-              </Link>
-              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2">
-                ABOUT BLISS BALANCE
-              </Link>
-              <Link href="/faq" onClick={() => setMobileMenuOpen(false)} className="block py-2">
-                SUPPORT & FAQ
-              </Link>
-            </div>
-
-            {/* Official Mobile Social Media Section */}
-            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 space-y-3 font-mono">
-              <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 block">
-                CONNECT WITH BLISS BALANCE
-              </span>
-
-              <div className="flex items-center gap-2">
-                <a
-                  href="https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA=="
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-600 hover:to-purple-600 hover:text-white transition-all"
-                  aria-label="Instagram Profile"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://wa.me/919440961776?text=Hi%20Bliss%20Balance%20Team%2C%20I%20have%20a%20query"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all"
-                  aria-label="WhatsApp Support"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://www.facebook.com/share/1Bhmz8KL1w/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all"
-                  aria-label="Facebook Page"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://x.com/blissbalance_"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all"
-                  aria-label="Twitter X Profile"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all"
-                  aria-label="YouTube Channel"
-                >
-                  <Youtube className="w-4 h-4" />
-                </a>
+            {/* Quick Auth Banner in Mobile Drawer */}
+            <div className="p-4 bg-neutral-100 dark:bg-neutral-900 rounded-none border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between">
+              <div>
+                {currentUser ? (
+                  <>
+                    <p className="text-[10px] font-black text-red-600 uppercase">LOGGED IN AS</p>
+                    <p className="text-xs font-bold truncate max-w-[180px]">
+                      {currentUser.displayName || currentUser.email || 'Customer'}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs font-black uppercase">ACCOUNT ACCESS</p>
+                    <p className="text-[10px] text-neutral-500 font-bold">Track orders & save wishlist</p>
+                  </>
+                )}
               </div>
-            </div>
-
-          </div>
-
-          {/* Drawer Footer Account CTA */}
-          <div className="p-6 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 space-y-3">
-            {currentUser ? (
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold text-neutral-400 uppercase">LOGGED IN AS: {currentUser.email}</p>
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-3 bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded-lg border border-red-600"
-                >
-                  SIGN OUT
-                </button>
-              </div>
-            ) : (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  setAuthModalOpen(true);
+                  if (currentUser) {
+                    window.location.href = '/account';
+                  } else {
+                    setAuthModalOpen(true);
+                  }
                 }}
-                className="w-full py-3.5 bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded-lg border border-red-600"
+                className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-black uppercase border border-red-600"
               >
-                SIGN IN / REGISTER
+                {currentUser ? 'MY ACCOUNT' : 'LOGIN / REGISTER'}
               </button>
-            )}
+            </div>
+
+            {/* Accordion Links */}
+            <div className="space-y-4 font-mono text-sm font-black uppercase">
+              
+              <Link
+                href="/collections"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-3 border-b border-neutral-200 dark:border-neutral-800 hover:text-red-600 transition-colors"
+              >
+                SHOP ALL FOOTWEAR
+              </Link>
+
+              {/* MEN ACCORDION */}
+              <div className="border-b border-neutral-200 dark:border-neutral-800">
+                <button
+                  onClick={() => toggleAccordion('men')}
+                  className="w-full py-3 flex items-center justify-between text-left hover:text-red-600 transition-colors"
+                >
+                  <span>MEN'S COLLECTION</span>
+                  {openAccordion === 'men' ? (
+                    <Minus className="w-4 h-4 text-red-600" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </button>
+                {openAccordion === 'men' && (
+                  <div className="pl-4 pb-3 space-y-2 text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                    <Link
+                      href="/men"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      ALL MEN'S FOOTWEAR
+                    </Link>
+                    <Link
+                      href="/collections?cat=Slippers"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      SLIPPERS & FLIP-FLOPS
+                    </Link>
+                    <Link
+                      href="/collections?cat=Slides"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      SLIDES & CLOGS
+                    </Link>
+                    <Link
+                      href="/collections?cat=Casual+Shoes"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      SNEAKERS & CASUAL SHOES
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* WOMEN ACCORDION */}
+              <div className="border-b border-neutral-200 dark:border-neutral-800">
+                <button
+                  onClick={() => toggleAccordion('women')}
+                  className="w-full py-3 flex items-center justify-between text-left hover:text-red-600 transition-colors"
+                >
+                  <span>WOMEN'S COLLECTION</span>
+                  {openAccordion === 'women' ? (
+                    <Minus className="w-4 h-4 text-red-600" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </button>
+                {openAccordion === 'women' && (
+                  <div className="pl-4 pb-3 space-y-2 text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                    <Link
+                      href="/women"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      ALL WOMEN'S FOOTWEAR
+                    </Link>
+                    <Link
+                      href="/collections?cat=Slides"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      SLIDES & SLIPPERS
+                    </Link>
+                    <Link
+                      href="/collections?cat=Sandals"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block py-1 hover:text-red-600"
+                    >
+                      SANDALS & FLATS
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-3 border-b border-neutral-200 dark:border-neutral-800 hover:text-red-600 transition-colors"
+              >
+                OUR STORY / ABOUT US
+              </Link>
+            </div>
+
+            {/* Social Icons & Contact */}
+            <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800 space-y-4">
+              <p className="text-xs font-mono font-black uppercase tracking-widest text-red-600">
+                CONNECT WITH BLISS BALANCE
+              </p>
+              <div className="flex items-center gap-4 text-neutral-700 dark:text-neutral-300">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-full hover:border-red-600 hover:text-red-600 transition-colors"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-full hover:border-red-600 hover:text-red-600 transition-colors"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-full hover:border-red-600 hover:text-red-600 transition-colors"
+                >
+                  <Youtube className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Drawer Footer */}
+          <div className="p-6 border-t-2 border-neutral-900 dark:border-neutral-100 bg-neutral-50 dark:bg-neutral-900 text-center font-mono text-xs">
+            <p className="font-bold text-neutral-500">
+              © {new Date().getFullYear()} BLISS BALANCE FOOTWEAR. ALL RIGHTS RESERVED.
+            </p>
           </div>
 
         </div>
       )}
 
-      {/* Floating Auth Modal & Wishlist Modal */}
-      <CustomerAuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
-      <WishlistModal isOpen={wishlistModalOpen} onClose={() => setWishlistModalOpen(false)} />
+      {/* MODALS */}
+      <CustomerAuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+      />
+
+      <WishlistModal
+        isOpen={wishlistModalOpen}
+        onClose={() => setWishlistModalOpen(false)}
+      />
     </>
   );
 };

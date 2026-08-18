@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
-import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs } from '@/lib/dataStore';
+import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
 import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
-import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview } from '@/lib/types';
+import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide } from '@/lib/types';
 import {
   Shield,
   Plus,
@@ -23,6 +23,7 @@ import {
   Copy,
   Check,
   ArrowLeft,
+  Flame,
   Key,
   Layers,
   Terminal,
@@ -477,6 +478,19 @@ export default function AdminPage() {
     }
   };
 
+  const handleToggleBestseller = async (id: string, isBestseller: boolean) => {
+    setIsSyncing(true);
+    const updated = skus.map(s => s.id === id ? { ...s, isBestseller } : s);
+    setSkus(updated);
+    saveStoredSKUs(updated);
+    const skuToSave = updated.find(s => s.id === id);
+    if (skuToSave) {
+      await upsertSupabaseSKU(skuToSave);
+    }
+    setIsSyncing(false);
+    showStatus('success', isBestseller ? 'Marked product as BESTSELLER! 🔥' : 'Removed product from Bestsellers.');
+  };
+
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSyncing(true);
@@ -605,22 +619,27 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
   return (
     <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-mono flex flex-col justify-between transition-colors relative select-none">
       
-      {/* SIMPLIFIED CLEAN PRODUCT SUBMISSION LOADING SCREEN */}
+      {/* SOLID HIGH-IMPACT LUXURY LOADING SCREEN */}
       {isSyncing && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 max-w-xs w-full text-center space-y-4 shadow-[4px_4px_0px_0px_rgba(220,38,38,1)]">
-            <div className="relative w-14 h-14 mx-auto flex items-center justify-center">
-              <div className="absolute inset-0 border-3 border-red-600/20 border-t-red-600 animate-spin rounded-none"></div>
-              <BrandLogo size="sm" className="relative z-10" />
+        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-6 animate-in fade-in duration-200 text-white font-mono select-none">
+          <div className="bg-neutral-950 border border-neutral-800 rounded-2xl p-8 max-w-sm w-full text-center space-y-5 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-red-600 animate-pulse" />
+
+            <div className="relative w-16 h-16 mx-auto flex items-center justify-center p-3 rounded-2xl bg-red-950/80 border border-red-800">
+              <BrandLogo size="md" className="animate-pulse" />
             </div>
 
-            <div className="space-y-1">
-              <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-wider">
-                SAVING PRODUCT...
+            <div className="space-y-2">
+              <h3 className="font-heading text-xl font-black uppercase text-white tracking-wider">
+                SYNCING DATA...
               </h3>
-              <p className="text-[11px] font-mono font-bold text-neutral-400">
-                Please wait a moment while changes sync.
+              <p className="text-xs font-mono font-bold text-neutral-400">
+                Updating cloud database & local storage. Please wait.
               </p>
+            </div>
+
+            <div className="w-full bg-neutral-900 rounded-full h-1.5 overflow-hidden">
+              <div className="bg-red-600 h-full w-full animate-pulse" />
             </div>
           </div>
         </div>
@@ -920,11 +939,54 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     </div>
                   </div>
 
+                  {/* BESTSELLER TAG TOGGLE CHECKBOX */}
+                  <label className="flex items-center gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={!!newSku.isBestseller}
+                      onChange={(e) => setNewSku({ ...newSku, isBestseller: e.target.checked })}
+                      className="w-5 h-5 accent-red-600 rounded-md cursor-pointer"
+                    />
+                    <div>
+                      <span className="block text-xs font-mono font-black uppercase text-red-600 flex items-center gap-1.5">
+                        <Flame className="w-4 h-4 fill-red-600" /> MARK AS BESTSELLER PRODUCT
+                      </span>
+                      <span className="text-[10px] font-mono text-neutral-500 font-bold block">
+                        Displays product prominently in the Bestsellers section on homepage & catalog
+                      </span>
+                    </div>
+                  </label>
+
                   {/* Available Sizes Checkboxes */}
                   <div>
-                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1.5">
-                      Available Sizes
-                    </label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
+                        Available Sizes
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setNewSku({ ...newSku, sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'] })}
+                          className="px-2.5 py-1 bg-neutral-900 text-white text-[10px] font-mono font-bold rounded-lg hover:bg-red-600 transition-all"
+                        >
+                          + Mens 6-11
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewSku({ ...newSku, sizes: ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8'] })}
+                          className="px-2.5 py-1 bg-neutral-900 text-white text-[10px] font-mono font-bold rounded-lg hover:bg-red-600 transition-all"
+                        >
+                          + Womens 3-8
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewSku({ ...newSku, sizes: ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11', 'UK 12'] })}
+                          className="px-2.5 py-1 bg-neutral-900 text-white text-[10px] font-mono font-bold rounded-lg hover:bg-red-600 transition-all"
+                        >
+                          + All 3-12
+                        </button>
+                      </div>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {availableSizeOptions.map((size) => {
                         const isChecked = (newSku.sizes || []).includes(size);
@@ -1024,6 +1086,18 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                         </button>
                         <button type="button" onClick={() => addQuickColorVariant('Olive Green', '#3F6212')} className="px-3.5 py-1.5 rounded-lg bg-lime-950 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
                           + Olive Green
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('Tan Beige', '#D97706')} className="px-3.5 py-1.5 rounded-lg bg-amber-700 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
+                          + Tan Beige
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('Pure White', '#FFFFFF')} className="px-3.5 py-1.5 rounded-lg bg-white text-black border border-neutral-300 text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600 hover:text-white">
+                          + Pure White
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('Charcoal Grey', '#4B5563')} className="px-3.5 py-1.5 rounded-lg bg-neutral-600 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
+                          + Charcoal Grey
+                        </button>
+                        <button type="button" onClick={() => addQuickColorVariant('Crimson Red', '#DC2626')} className="px-3.5 py-1.5 rounded-lg bg-red-600 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-neutral-950">
+                          + Crimson Red
                         </button>
                       </div>
                     </div>
@@ -1225,6 +1299,21 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
                         <div className="flex items-center gap-2 shrink-0">
                           <button
+                            type="button"
+                            onClick={() => handleToggleBestseller(sku.id, !sku.isBestseller)}
+                            disabled={isSyncing}
+                            className={`px-3 py-2 rounded-lg text-xs font-mono font-black uppercase transition-all shadow-xs flex items-center gap-1 border ${
+                              sku.isBestseller
+                                ? 'bg-red-600 text-white border-red-600'
+                                : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                            }`}
+                            title="Toggle Bestseller Tag"
+                          >
+                            <Flame className={`w-3.5 h-3.5 ${sku.isBestseller ? 'fill-white' : ''}`} />
+                            <span className="hidden sm:inline">{sku.isBestseller ? 'BESTSELLER' : '+ BESTSELLER'}</span>
+                          </button>
+
+                          <button
                             onClick={() => handleEditClick(sku)}
                             disabled={isSyncing}
                             className="p-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-xs"
@@ -1261,23 +1350,225 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
               </div>
 
               <form onSubmit={handleSaveSettings} className="space-y-5 font-mono">
-                <div className="space-y-3 bg-neutral-50 dark:bg-neutral-950 p-4 rounded-none border-2 border-neutral-900 dark:border-neutral-700">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
-                      Hero Banner Photo
-                    </label>
-                    <span className="text-[10px] text-red-600 font-mono font-black bg-red-50 dark:bg-red-950 px-2.5 py-1 border border-red-600 uppercase">
-                      EXACT SIZE: 1200 x 600 px (2:1 Banner)
-                    </span>
+                {/* DYNAMIC HERO SLIDES CAROUSEL MANAGER */}
+                <div className="space-y-4 p-5 bg-neutral-50 dark:bg-neutral-950 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                    <div>
+                      <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-red-600" /> DYNAMIC HERO SLIDES [{ (settings.heroSlides || DEFAULT_HERO_SLIDES).length }]
+                      </h4>
+                      <p className="text-[11px] font-mono text-neutral-400">
+                        Add, edit, or delete desktop & mobile auto-sliding hero banners and overlay copy text.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = settings.heroSlides || DEFAULT_HERO_SLIDES;
+                        const newSlide = {
+                          id: `slide-${Date.now()}`,
+                          desktopImageUrl: '/hero-banner.png',
+                          mobileImageUrl: '/hero-banner-mobile.png',
+                          badgeText: 'FEEL THE BLISS • NEW DROP',
+                          titleText: 'BUILT FOR THE ONES BALANCING LIFE.',
+                          subheadlineText: 'Comfort, contemporary style and dependable grip.',
+                          ctaText: 'SHOP NOW',
+                          ctaLink: '/collections',
+                        };
+                        setSettings({ ...settings, heroSlides: [...current, newSlide] });
+                        showStatus('info', 'New Hero Slide Added! Click Save below.');
+                      }}
+                      className="px-4 py-2 bg-red-600 text-white font-mono font-black text-xs uppercase rounded-xl hover:bg-neutral-950 transition-all shrink-0 shadow-xs"
+                    >
+                      + ADD HERO SLIDE
+                    </button>
                   </div>
 
-                  <ImagePlaceholder
-                    dimensions="1200 x 600 px (2:1 Wide Banner)"
-                    aspectRatio="aspect-[2/1]"
-                    label="HERO BANNER PHOTO DROPZONE"
-                    imageUrl={settings.heroImageUrl}
-                    onImageUploaded={(base64) => setSettings({ ...settings, heroImageUrl: base64 })}
-                  />
+                  {/* SLIDES LIST */}
+                  <div className="space-y-6 max-h-[550px] overflow-y-auto pr-1 pt-2">
+                    {(settings.heroSlides || DEFAULT_HERO_SLIDES).map((slide: HeroSlide, sIdx: number) => (
+                      <div key={slide.id || sIdx} className="p-4 bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm">
+                        <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2">
+                          <span className="text-xs font-black text-red-600 uppercase">
+                            SLIDE #{sIdx + 1}
+                          </span>
+                          {(settings.heroSlides || DEFAULT_HERO_SLIDES).length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const current = settings.heroSlides || DEFAULT_HERO_SLIDES;
+                                const updated = current.filter((_: HeroSlide, i: number) => i !== sIdx);
+                                setSettings({ ...settings, heroSlides: updated });
+                              }}
+                              className="px-2.5 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg hover:bg-neutral-900 transition-all"
+                            >
+                              DELETE SLIDE ✕
+                            </button>
+                          )}
+                        </div>
+
+                        {/* DESKTOP & MOBILE IMAGE INPUTS */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-600 dark:text-neutral-400 mb-1">
+                              Desktop Banner Photo (1200 x 600 px)
+                            </label>
+                            <ImagePlaceholder
+                              dimensions="1200 x 600 px (Desktop Banner)"
+                              aspectRatio="aspect-[2/1]"
+                              label={`DESKTOP SLIDE #${sIdx + 1}`}
+                              imageUrl={slide.desktopImageUrl}
+                              onImageUploaded={(base64) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], desktopImageUrl: base64 };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-600 dark:text-neutral-400 mb-1">
+                              Mobile Banner Photo (800 x 800 px)
+                            </label>
+                            <ImagePlaceholder
+                              dimensions="800 x 800 px (Mobile Square Banner)"
+                              aspectRatio="aspect-square"
+                              label={`MOBILE SLIDE #${sIdx + 1}`}
+                              imageUrl={slide.mobileImageUrl}
+                              onImageUploaded={(base64) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], mobileImageUrl: base64 };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* SLIDE TEXT FIELDS */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              Badge Pill Text
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.badgeText || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], badgeText: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="FEEL THE BLISS • MADE IN INDIA"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              Headline Title Text
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.titleText || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], titleText: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="BUILT FOR THE ONES BALANCING LIFE."
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              Subheadline Copy
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.subheadlineText || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], subheadlineText: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="Comfort, contemporary style, lightweight construction..."
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              CTA Button 1 Label
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.ctaText || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], ctaText: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="SHOP MEN"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              CTA Button 1 Target Link
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.ctaLink || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], ctaLink: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="/men or /collections"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              CTA Button 2 Label
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.ctaText2 || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], ctaText2: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="SHOP WOMEN"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-black uppercase text-neutral-500 mb-1">
+                              CTA Button 2 Target Link
+                            </label>
+                            <input
+                              type="text"
+                              value={slide.ctaLink2 || ''}
+                              onChange={(e) => {
+                                const current = [...(settings.heroSlides || DEFAULT_HERO_SLIDES)];
+                                current[sIdx] = { ...current[sIdx], ctaLink2: e.target.value };
+                                setSettings({ ...settings, heroSlides: current });
+                              }}
+                              placeholder="/women"
+                              className="w-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-neutral-950 dark:text-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* DYNAMIC TICKER OFFER MANAGER */}

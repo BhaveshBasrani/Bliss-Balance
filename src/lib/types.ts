@@ -66,12 +66,27 @@ export interface CollectionItem {
   slug: string;
 }
 
+export interface HeroSlide {
+  id: string;
+  desktopImageUrl: string;
+  mobileImageUrl: string;
+  badgeText?: string;
+  titleText?: string;
+  subheadlineText?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  ctaText2?: string;
+  ctaLink2?: string;
+}
+
 export interface SiteSettings {
   announcementText: string;
   heroHeadline: string;
   heroSubheadline: string;
   heroImageDimensions: string;
   heroImageUrl: string;
+  heroMobileImageUrl?: string;
+  heroSlides?: HeroSlide[];
   appScriptUrl: string;
   googleDriveFolderId: string;
   recaptchaSiteKey: string;

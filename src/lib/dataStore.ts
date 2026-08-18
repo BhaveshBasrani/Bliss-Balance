@@ -1,5 +1,44 @@
-import { FootwearSKU, SiteSettings, CollectionItem } from './types';
+import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide } from './types';
 import { fetchSupabaseSKUs } from './supabaseClient';
+
+export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
+  {
+    id: 'slide-1',
+    desktopImageUrl: '/hero-banner.png',
+    mobileImageUrl: '/hero-banner-mobile.png',
+    badgeText: 'FEEL THE BLISS • MADE IN INDIA',
+    titleText: 'BUILT FOR THE ONES BALANCING LIFE.',
+    subheadlineText: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
+    ctaText: 'SHOP MEN',
+    ctaLink: '/men',
+    ctaText2: 'SHOP WOMEN',
+    ctaLink2: '/women',
+  },
+  {
+    id: 'slide-2',
+    desktopImageUrl: '/hero-banner.png',
+    mobileImageUrl: '/hero-banner-mobile.png',
+    badgeText: 'ULTRA-CUSHIONED DROP • NEW ARRIVALS',
+    titleText: 'EVERYDAY COMFORT. ZERO COMPROMISE.',
+    subheadlineText: 'Experience high-density EVA memory foam cushioning engineered for effortless steps all day long.',
+    ctaText: 'EXPLORE SLIDES',
+    ctaLink: '/collections?cat=Slides',
+    ctaText2: 'EXPLORE CLOGS',
+    ctaLink2: '/collections?cat=Clogs',
+  },
+  {
+    id: 'slide-3',
+    desktopImageUrl: '/hero-banner.png',
+    mobileImageUrl: '/hero-banner-mobile.png',
+    badgeText: 'OFFICIAL STREETWEAR COLLECTION',
+    titleText: 'UNISEX SNEAKERS & CLOGS.',
+    subheadlineText: 'Anti-skid rubber traction meets modern streetwear silhouettes.',
+    ctaText: 'SHOP WOMEN',
+    ctaLink: '/women',
+    ctaText2: 'SHOP MEN',
+    ctaLink2: '/men',
+  },
+];
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   announcementText: 'EASY 7-DAY RETURNS & REPLACEMENTS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL ONLINE STORE • MADE IN INDIA',
@@ -7,6 +46,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',
   heroImageUrl: '/hero-banner.png',
+  heroMobileImageUrl: '/hero-banner-mobile.png',
+  heroSlides: DEFAULT_HERO_SLIDES,
   appScriptUrl: 'https://script.google.com/macros/s/AKfycbzNcXkMYw4FyfMeU7WQbSuTah5HUd1kTTSeq95ASxmgLsbR28rxIUbG0wHGkuZrDM0DXA/exec',
   recaptchaSiteKey: '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa',
   adminEmail: 'admin@blissbalance.co',
