@@ -16,10 +16,10 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '
   }[size];
 
   const imgDimensions = {
-    sm: 'w-5 h-5 sm:w-6 sm:h-6',
-    md: 'w-6 h-6 sm:w-7 sm:h-7',
-    lg: 'w-8 h-8 sm:w-10 sm:h-10',
-    xl: 'w-14 h-14 sm:w-18 sm:h-18',
+    sm: 'w-6 h-6 sm:w-7 sm:h-7',
+    md: 'w-7 h-7 sm:w-9 sm:h-9',
+    lg: 'w-10 h-10 sm:w-12 sm:h-12',
+    xl: 'w-16 h-16 sm:w-20 sm:h-20',
   }[size];
 
   return (
@@ -27,7 +27,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '
       <img
         src="/Logo.svg"
         alt="Bliss Balance Emblem"
-        className={`object-contain filter brightness-0 invert scale-110 ${imgDimensions}`}
+        className={`object-contain filter brightness-0 invert scale-[1.55] ${imgDimensions}`}
       />
     </div>
   );
