@@ -9,7 +9,6 @@ import { SkuCard } from '@/components/SkuCard';
 import { PressMarquee } from '@/components/PressMarquee';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
-import { IntroLoader } from '@/components/IntroLoader';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
@@ -54,9 +53,6 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300 select-none">
-      {/* Comet Pitch Black Intro Loader */}
-      <IntroLoader />
-
       {/* Top Infinite Marquee Ticker */}
       <AnnouncementBar announcementText={settings.announcementText} />
 

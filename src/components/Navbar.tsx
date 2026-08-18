@@ -115,8 +115,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white dark:bg-black border-b-2 border-neutral-900 dark:border-neutral-100 transition-colors duration-300 select-none shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-900 transition-colors duration-300 select-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             
             {/* BRAND LOGO & TITLE */}
@@ -126,74 +126,74 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </Link>
 
             {/* DESKTOP CATEGORY LINKS */}
-            <nav className="hidden lg:flex items-center space-x-6 font-mono">
+            <nav className="hidden lg:flex items-center space-x-7 font-mono">
               {desktopNavLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-xs font-black tracking-widest text-neutral-900 dark:text-neutral-100 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 relative group uppercase"
+                  className="text-xs font-bold tracking-widest text-neutral-800 dark:text-neutral-200 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 relative group uppercase"
                 >
                   {link.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:w-full" />
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
             </nav>
 
-            {/* RIGHT HEADER ACTIONS */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0 font-mono">
+            {/* MINIMALIST RIGHT HEADER ACTIONS */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 font-mono">
               <Link
                 href="/about"
-                className="hidden md:inline-block text-xs font-black text-neutral-900 dark:text-neutral-100 hover:text-red-600 transition-colors uppercase tracking-wider px-2 py-1 border border-transparent hover:border-neutral-900 dark:hover:border-neutral-100"
+                className="hidden md:inline-block text-xs font-bold text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors uppercase tracking-wider px-2 py-1"
               >
                 ABOUT US
               </Link>
 
-              {/* Wishlist Button */}
+              {/* Minimal Wishlist Icon */}
               <button
                 onClick={() => setWishlistModalOpen(true)}
-                className="relative p-2.5 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                className="relative p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
                 title="View Wishlist"
               >
                 <Heart className="w-4 h-4" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white font-mono text-[9px] font-black w-5 h-5 border border-black flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                     {wishlistCount}
                   </span>
                 )}
               </button>
 
-              {/* Search Button */}
+              {/* Minimal Search Icon */}
               <button
                 onClick={onOpenSearch}
-                className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
                 title="Search Footwear"
               >
                 <Search className="w-4 h-4" />
               </button>
 
-              {/* User Account Avatar Dropdown (Desktop Only) */}
+              {/* Minimal User Account Icon */}
               <div className="relative hidden sm:block">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
-                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex items-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                  className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors flex items-center gap-1"
                   title="Account Menu"
                 >
                   <UserIcon className="w-4 h-4" />
-                  <ChevronDown className="w-3 h-3" />
+                  <ChevronDown className="w-3 h-3 text-neutral-400" />
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Minimal Dropdown Menu */}
                 {userDropdownOpen && (
                   <div
                     onMouseLeave={() => setUserDropdownOpen(false)}
-                    className="absolute right-0 mt-2 w-64 rounded-none bg-white dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-100 shadow-2xl p-4 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-150 font-mono"
+                    className="absolute right-0 mt-2 w-60 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 shadow-xl p-4 space-y-3 z-50 font-mono text-xs"
                   >
                     {currentUser ? (
                       <>
-                        <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
-                          <p className="text-[10px] font-bold text-neutral-400 uppercase">LOGGED IN AS</p>
-                          <p className="text-xs font-black text-neutral-950 dark:text-white truncate">
+                        <div className="border-b border-neutral-200 dark:border-neutral-800 pb-2.5">
+                          <p className="text-[9px] font-bold text-neutral-400 uppercase">LOGGED IN AS</p>
+                          <p className="text-xs font-bold text-neutral-950 dark:text-white truncate">
                             {currentUser.displayName || currentUser.email || 'Customer'}
                           </p>
                         </div>
@@ -201,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                         <Link
                           href="/account"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center gap-2 p-2 rounded-none hover:bg-neutral-100 dark:hover:bg-neutral-900 text-xs font-bold uppercase transition-all"
+                          className="flex items-center gap-2 p-1.5 hover:text-red-600 font-bold uppercase transition-all"
                         >
                           <UserIcon className="w-4 h-4 text-red-600" />
                           <span>MY ORDERS & PROFILE</span>
@@ -209,7 +209,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 p-2 rounded-none hover:bg-red-600 hover:text-white text-xs font-bold uppercase text-red-600 transition-all"
+                          className="w-full flex items-center gap-2 p-1.5 hover:text-red-600 font-bold uppercase text-red-600 transition-all"
                         >
                           <LogOut className="w-4 h-4" />
                           <span>SIGN OUT</span>
@@ -218,10 +218,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                     ) : (
                       <>
                         <div className="space-y-1">
-                          <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white">
+                          <h4 className="font-heading text-xs font-bold uppercase text-neutral-950 dark:text-white">
                             WELCOME TO BLISS BALANCE
                           </h4>
-                          <p className="text-[11px] text-neutral-500 font-body">
+                          <p className="text-[11px] text-neutral-500">
                             Sign in to track orders, save wishlist items, and manage addresses.
                           </p>
                         </div>
@@ -231,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                             setUserDropdownOpen(false);
                             setAuthModalOpen(true);
                           }}
-                          className="w-full py-2.5 bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-red-500 transition-all shadow-md"
+                          className="w-full py-2 bg-red-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-red-500 transition-all"
                         >
                           SIGN IN / REGISTER
                         </button>
@@ -241,26 +241,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 )}
               </div>
 
-              {/* ULTRA-FLUID CUBIC-BEZIER HAMBURGER MENU BUTTON */}
+              {/* Minimal Mobile Menu Toggle Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2.5 rounded-none bg-red-600 hover:bg-neutral-950 text-white border-2 border-black transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] hover:-translate-y-0.5 active:scale-90 group relative overflow-hidden flex items-center justify-center w-10 h-10"
+                className="lg:hidden p-2 rounded-none text-neutral-900 dark:text-white hover:text-red-600 transition-colors"
                 aria-label="Toggle Navigation Menu"
               >
-                <div className="w-5 h-4 flex flex-col justify-between items-center relative z-10">
+                <div className="w-5 h-4 flex flex-col justify-between items-center relative">
                   <span
-                    className={`w-full h-0.5 bg-white transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
-                      mobileMenuOpen ? 'rotate-45 translate-y-[7px] bg-red-500' : 'group-hover:translate-x-1'
+                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
+                      mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
                     }`}
                   />
                   <span
-                    className={`w-full h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      mobileMenuOpen ? 'opacity-0 scale-x-0' : 'group-hover:-translate-x-1'
+                    className={`w-full h-0.5 bg-current transition-all duration-300 ${
+                      mobileMenuOpen ? 'opacity-0 scale-x-0' : ''
                     }`}
                   />
                   <span
-                    className={`w-full h-0.5 bg-white transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
-                      mobileMenuOpen ? '-rotate-45 -translate-y-[7px] bg-red-500' : 'group-hover:translate-x-1'
+                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
+                      mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
                     }`}
                   />
                 </div>
