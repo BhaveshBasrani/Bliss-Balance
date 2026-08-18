@@ -714,9 +714,17 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
               <div className="p-5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-sm">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">HTML EMAIL NOTIFIER</span>
-                  <span className="font-heading text-lg font-black text-blue-600 dark:text-blue-400">ENABLED</span>
+                  <span className={`font-heading text-lg font-black ${
+                    settings.isEmailEnabled !== false
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-neutral-400 dark:text-neutral-500'
+                  }`}>
+                    {settings.isEmailEnabled !== false ? 'ENABLED' : 'DISABLED'}
+                  </span>
                 </div>
-                <Mail className="w-8 h-8 text-blue-600" />
+                <Mail className={`w-8 h-8 ${
+                  settings.isEmailEnabled !== false ? 'text-emerald-600' : 'text-neutral-400'
+                }`} />
               </div>
             </div>
           </div>
@@ -1421,7 +1429,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       value={settings.appScriptUrl}
                       onChange={(e) => setSettings({ ...settings, appScriptUrl: e.target.value })}
                       placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
-                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
 
@@ -1434,16 +1442,16 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       value={settings.adminEmail}
                       onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
                       placeholder="admin@blissbalance.co"
-                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 {/* EMAIL SYSTEM TOGGLE SWITCH */}
-                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none flex items-center justify-between gap-4 font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-2xl flex items-center justify-between gap-4 font-mono shadow-xs">
                   <div>
                     <span className="block text-xs font-black uppercase text-neutral-950 dark:text-white flex items-center gap-1.5">
-                      <Mail className="w-4 h-4 text-blue-600" /> AUTOMATIC HTML EMAIL NOTIFICATIONS
+                      <Mail className="w-4 h-4 text-emerald-600" /> AUTOMATIC HTML EMAIL NOTIFICATIONS
                     </span>
                     <span className="text-[10px] text-neutral-400 font-bold">
                       Sends real-time email order alerts & SKU updates to <strong className="text-red-600">{settings.adminEmail || 'admin'}</strong>
@@ -1460,15 +1468,15 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       addLog(`Admin email notification system ${nextState ? 'ENABLED' : 'DISABLED'}`, 'CONFIG');
                       showStatus('info', `Email notifications ${nextState ? 'Enabled ✓' : 'Disabled ✕'}`);
                     }}
-                    className={`px-4 py-2 border-2 border-black font-black text-xs uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all shrink-0 ${
-                      settings.isEmailEnabled !== false ? 'bg-emerald-600 text-white' : 'bg-neutral-300 text-neutral-900'
+                    className={`px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 font-black text-xs uppercase shadow-xs transition-all shrink-0 ${
+                      settings.isEmailEnabled !== false ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700'
                     }`}
                   >
                     {settings.isEmailEnabled !== false ? 'SYSTEM ENABLED ✓' : 'SYSTEM DISABLED ✕'}
                   </button>
                 </div>
 
-                <div className="p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-3">
+                <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 shadow-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-black text-red-600 uppercase flex items-center gap-1">
                       <Mail className="w-4 h-4 text-red-600" /> LIVE SYNC APPSCRIPT CODE:
@@ -1477,7 +1485,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     <button
                       type="button"
                       onClick={copyCode}
-                      className="px-3.5 py-1.5 rounded-none bg-black hover:bg-red-600 text-white text-xs font-mono font-black border-2 border-black flex items-center gap-1.5 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      className="px-3.5 py-1.5 rounded-xl bg-neutral-950 hover:bg-red-600 text-white text-xs font-mono font-black border border-neutral-900 flex items-center gap-1.5 transition-all shadow-xs"
                     >
                       {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copiedCode ? 'COPIED!' : 'COPY CODE'}</span>
