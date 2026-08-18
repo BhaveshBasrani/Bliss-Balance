@@ -117,16 +117,92 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
     <>
       <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-900 transition-colors duration-300 select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+          
+          {/* MOBILE HEADER (lg:hidden) - MATCHING COMET REFERENCE EXACTLY */}
+          <div className="flex lg:hidden items-center justify-between h-16 w-full font-mono">
+            {/* Mobile Left: 3-Bar Hamburger Menu + Search */}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-none text-neutral-900 dark:text-white hover:text-red-600 transition-colors"
+                aria-label="Toggle Navigation Menu"
+              >
+                <div className="w-5 h-4 flex flex-col justify-between items-center relative">
+                  <span
+                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
+                      mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
+                    }`}
+                  />
+                  <span
+                    className={`w-full h-0.5 bg-current transition-all duration-300 ${
+                      mobileMenuOpen ? 'opacity-0 scale-x-0' : ''
+                    }`}
+                  />
+                  <span
+                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
+                      mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
+                    }`}
+                  />
+                </div>
+              </button>
+
+              <button
+                onClick={onOpenSearch}
+                className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
+                title="Search Footwear"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Mobile Center: Centered Logo & Title */}
+            <Link href="/" className="flex items-center gap-2 group mx-auto">
+              <BrandLogo size="sm" />
+              <BrandTitleText size="sm" showSubtitle={false} />
+            </Link>
+
+            {/* Mobile Right: Account Profile + Wishlist */}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => {
+                  if (currentUser) {
+                    window.location.href = '/account';
+                  } else {
+                    setAuthModalOpen(true);
+                  }
+                }}
+                className="p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
+                title="Account Profile"
+              >
+                <UserIcon className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setWishlistModalOpen(true)}
+                className="relative p-2 rounded-none text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors"
+                title="View Wishlist"
+              >
+                <Heart className="w-4 h-4" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* DESKTOP HEADER (hidden on mobile, lg:flex) - LEAVE DESKTOP ALONE */}
+          <div className="hidden lg:flex items-center justify-between h-20">
             
             {/* BRAND LOGO & TITLE */}
-            <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0 pr-1">
+            <Link href="/" className="flex items-center gap-3 group shrink min-w-0 pr-1">
               <BrandLogo size="md" />
               <BrandTitleText size="md" showSubtitle={true} className="shrink min-w-0" />
             </Link>
 
             {/* DESKTOP CATEGORY LINKS */}
-            <nav className="hidden lg:flex items-center space-x-7 font-mono">
+            <nav className="flex items-center space-x-7 font-mono">
               {desktopNavLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -140,10 +216,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </nav>
 
             {/* MINIMALIST RIGHT HEADER ACTIONS */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 font-mono">
+            <div className="flex items-center gap-2 shrink-0 font-mono">
               <Link
                 href="/about"
-                className="hidden md:inline-block text-xs font-bold text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors uppercase tracking-wider px-2 py-1"
+                className="text-xs font-bold text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors uppercase tracking-wider px-2 py-1"
               >
                 ABOUT US
               </Link>
@@ -172,7 +248,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               </button>
 
               {/* Minimal User Account Icon */}
-              <div className="relative hidden sm:block">
+              <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
@@ -240,31 +316,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                   </div>
                 )}
               </div>
-
-              {/* Minimal Mobile Menu Toggle Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-none text-neutral-900 dark:text-white hover:text-red-600 transition-colors"
-                aria-label="Toggle Navigation Menu"
-              >
-                <div className="w-5 h-4 flex flex-col justify-between items-center relative">
-                  <span
-                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
-                      mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
-                    }`}
-                  />
-                  <span
-                    className={`w-full h-0.5 bg-current transition-all duration-300 ${
-                      mobileMenuOpen ? 'opacity-0 scale-x-0' : ''
-                    }`}
-                  />
-                  <span
-                    className={`w-full h-0.5 bg-current transition-all duration-300 origin-center ${
-                      mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
-                    }`}
-                  />
-                </div>
-              </button>
 
             </div>
 
