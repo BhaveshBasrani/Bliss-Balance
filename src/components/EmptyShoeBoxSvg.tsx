@@ -7,7 +7,7 @@ export const EmptyShoeBoxSvg: React.FC<{ className?: string }> = ({ className = 
         viewBox="0 0 400 240"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full text-neutral-900 dark:text-white"
+        className="w-full h-full text-neutral-950 dark:text-white"
       >
         {/* Shoe Box Top Lid Outline */}
         <rect
@@ -15,9 +15,9 @@ export const EmptyShoeBoxSvg: React.FC<{ className?: string }> = ({ className = 
           y="40"
           width="320"
           height="34"
-          rx="4"
+          rx="0"
           stroke="currentColor"
-          strokeWidth="6"
+          strokeWidth="7"
           fill="none"
         />
 
@@ -27,9 +27,9 @@ export const EmptyShoeBoxSvg: React.FC<{ className?: string }> = ({ className = 
           y="74"
           width="288"
           height="130"
-          rx="4"
+          rx="0"
           stroke="currentColor"
-          strokeWidth="6"
+          strokeWidth="7"
           fill="none"
         />
 
@@ -40,23 +40,16 @@ export const EmptyShoeBoxSvg: React.FC<{ className?: string }> = ({ className = 
           x2="360"
           y2="74"
           stroke="currentColor"
-          strokeWidth="6"
+          strokeWidth="7"
         />
-
-        {/* Brand Logo Emblem Inside Shoe Box (Matching User Image 3) */}
-        <g transform="translate(200, 140) scale(1.2)">
-          {/* Four-Pointed Starburst Emblem */}
-          <path
-            d="M0 -30 C3 -10 10 -3 30 0 C10 3 3 10 0 30 C-3 10 -10 3 -30 0 C-10 -3 -3 -10 0 -30 Z"
-            fill="currentColor"
-          />
-          {/* Subtle Horizontal Extension Tail */}
-          <path
-            d="M-70 0 C-40 -4 -20 0 -15 0 C-20 0 -40 4 -70 0 Z"
-            fill="currentColor"
-          />
-        </g>
       </svg>
+
+      {/* Official Crisp Solid Black/White Emblem Stroke inside Shoe Box */}
+      <img
+        src="/Logo.svg"
+        alt="Bliss Balance Official Logo Emblem"
+        className="absolute w-16 h-16 object-contain filter brightness-0 dark:invert top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-100 font-bold"
+      />
     </div>
   );
 };

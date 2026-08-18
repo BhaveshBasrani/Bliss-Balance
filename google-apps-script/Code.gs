@@ -1,13 +1,14 @@
 /**
  * BLISS BALANCE FOOTWEAR - COMPLETE GOOGLE SHEETS LIVE SYNC ENGINE
- * Modeled after Brindavanam Nature Centre Google Apps Script Architecture
  * Official Tagline: Feel The Bliss
  * 
  * Google Sheets Tabs:
  * - Products: Stores all active footwear products (SKU ID, JSON Payload, Title, Category, Price)
  * - Announcements: Stores ticker offers & messages
  * - Settings: Stores site configuration (Hero Image, Subheadline, Admin Email)
- * - Reviews: Stores verified customer reviews (Review ID, Product ID, Author Name, Rating, Headline, Comment, Date)
+ * - Reviews: Stores verified customer reviews
+ * - Wishlists: Stores customer saved wishlist items & analytics
+ * - Orders: Stores customer orders & fulfillment tracking
  */
 
 var RECAPTCHA_SECRET_KEY = "6LfVFIktAAAAAMikxqzFCZ7JzDQgL48CjybCUs8s";
@@ -35,7 +36,11 @@ function doGet(e) {
     return handleGetReviews(ss);
   }
 
-  // Default response returning status, products, announcements, settings & reviews
+  if (action === "getOrders" || action === "get_orders") {
+    return handleGetOrders(ss);
+  }
+
+  // Default response returning status, products, announcements & settings
   var products = getProductsFromSheet(ss);
   var announcements = getAnnouncementsFromSheet(ss);
   var settings = getSettingsFromSheet(ss);
@@ -100,6 +105,14 @@ function doPost(e) {
       return handleSubmitReview(ss, postData);
     }
 
+    if (action === "SYNC_WISHLIST" || action === "sync_wishlist") {
+      return handleSyncWishlist(ss, postData);
+    }
+
+    if (action === "CREATE_ORDER" || action === "submit_order") {
+      return handleCreateOrder(ss, postData);
+    }
+
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
       message: "Action processed successfully"
@@ -161,19 +174,35 @@ function ensureAndRepairSheetStructure(ss) {
     formatHeaderRow(setSheet, 3);
   }
 
-  // 4. Repair Reviews Tab (Brindavanam Engine)
+  // 4. Repair Reviews Tab
   var revSheet = ss.getSheetByName("Reviews");
   if (!revSheet) {
     revSheet = ss.insertSheet("Reviews");
     revSheet.appendRow(["Review ID", "Product ID", "Author Name", "Rating", "Headline", "Comment Text", "Is Verified", "Created Date"]);
     formatHeaderRow(revSheet, 8);
   }
+
+  // 5. Repair Wishlists Tab
+  var wishSheet = ss.getSheetByName("Wishlists");
+  if (!wishSheet) {
+    wishSheet = ss.insertSheet("Wishlists");
+    wishSheet.appendRow(["User Email / Session ID", "Product SKUs JSON", "Last Saved"]);
+    formatHeaderRow(wishSheet, 3);
+  }
+
+  // 6. Repair Orders Tab
+  var ordSheet = ss.getSheetByName("Orders");
+  if (!ordSheet) {
+    ordSheet = ss.insertSheet("Orders");
+    ordSheet.appendRow(["Order ID", "Customer Name", "Email", "Phone", "Total (INR)", "Channel / Marketplace", "Status", "Created At"]);
+    formatHeaderRow(ordSheet, 8);
+  }
 }
 
 function formatHeaderRow(sheet, colCount) {
   try {
     var range = sheet.getRange(1, 1, 1, colCount);
-    range.setBackground("#E50914");
+    range.setBackground("#DC2626");
     range.setFontColor("#FFFFFF");
     range.setFontWeight("bold");
     range.setFontFamily("Arial");
@@ -314,6 +343,78 @@ function handleSubmitReview(ss, postData) {
   return ContentService.createTextOutput(JSON.stringify({
     status: "success",
     message: "Thank you! Your review has been saved to Google Sheets!"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleSyncWishlist(ss, postData) {
+  var wishSheet = ss.getSheetByName("Wishlists");
+  if (!wishSheet) wishSheet = ss.insertSheet("Wishlists");
+
+  var email = postData.userEmail || postData.email || "anonymous_patron";
+  var wishlistItems = postData.wishlist || [];
+
+  wishSheet.appendRow([
+    email,
+    JSON.stringify(wishlistItems),
+    new Date().toISOString()
+  ]);
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Wishlist analytics synced to Google Sheets!"
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleGetOrders(ss) {
+  var ordSheet = ss.getSheetByName("Orders");
+  if (!ordSheet) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", orders: [] })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var data = ordSheet.getDataRange().getValues();
+  var orders = [];
+  for (var i = 1; i < data.length; i++) {
+    if (!data[i][0]) continue;
+    orders.push({
+      id: data[i][0].toString(),
+      customerName: data[i][1] ? data[i][1].toString() : "",
+      email: data[i][2] ? data[i][2].toString() : "",
+      phone: data[i][3] ? data[i][3].toString() : "",
+      total: parseFloat(data[i][4]) || 0,
+      channel: data[i][5] ? data[i][5].toString() : "Official Store",
+      status: data[i][6] ? data[i][6].toString() : "CONFIRMED",
+      createdAt: data[i][7] ? data[i][7].toString() : new Date().toISOString()
+    });
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    orders: orders.reverse()
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleCreateOrder(ss, postData) {
+  var ordSheet = ss.getSheetByName("Orders");
+  if (!ordSheet) ordSheet = ss.insertSheet("Orders");
+
+  var ord = postData.orderData || {};
+  var ordId = ord.id || ("ORD-BB-" + Date.now().toString().slice(-6));
+
+  ordSheet.appendRow([
+    ordId,
+    ord.customerName || "Patron",
+    ord.email || "",
+    ord.phone || "",
+    ord.total || 0,
+    ord.channel || "Official Store",
+    "CONFIRMED",
+    new Date().toISOString()
+  ]);
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Order #" + ordId + " recorded successfully!",
+    orderId: ordId
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -495,7 +596,7 @@ function sendBeautifulEmailNotification(adminEmail, sku) {
   if (!adminEmail) return;
   var subject = "✨ New Product Published: " + (sku.title || "Footwear") + " (Bliss Balance)";
   var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; border-radius: 16px; overflow: hidden;">' +
-    '<div style="background-color: #E50914; padding: 24px; text-align: center; color: white;">' +
+    '<div style="background-color: #DC2626; padding: 24px; text-align: center; color: white;">' +
       '<h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">BLISS BALANCE</h1>' +
       '<p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Feel The Bliss</p>' +
     '</div>' +

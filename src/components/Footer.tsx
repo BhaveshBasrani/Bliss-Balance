@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
+import { BrandTitleText } from './BrandTitleText';
+import { PaymentLogos } from './PaymentLogos';
 import { Truck, ShieldCheck, RefreshCw, Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube } from 'lucide-react';
 
 export const Footer: React.FC = () => {
@@ -68,50 +70,50 @@ export const Footer: React.FC = () => {
   }, [isVisible]);
 
   return (
-    <footer ref={footerRef} className="w-full bg-neutral-100 dark:bg-black text-neutral-900 dark:text-white border-t border-neutral-200 dark:border-neutral-800 transition-colors duration-300 font-body relative overflow-hidden select-none">
+    <footer ref={footerRef} className="w-full bg-white dark:bg-black text-neutral-900 dark:text-white border-t-2 border-neutral-900 dark:border-neutral-800 transition-colors duration-300 font-mono relative overflow-hidden select-none">
       
-      {/* Brand Value Highlights */}
-      <div className="border-b border-neutral-200 dark:border-neutral-900">
+      {/* Brand Value Highlights (Gumroad Brutalist Cards) */}
+      <div className="border-b-2 border-neutral-900 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800/80 shadow-xs">
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <div className="p-3 rounded-none bg-red-600 text-white shrink-0">
                 <Truck className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-heading text-sm font-bold uppercase tracking-wider text-neutral-950 dark:text-white">
+                <h4 className="font-heading text-sm font-black uppercase tracking-wider text-neutral-950 dark:text-white">
                   FAST PAN-INDIA SHIPPING
                 </h4>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed">
+                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
                   Complimentary free shipping on all orders over ₹799 across India.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800/80 shadow-xs">
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <div className="p-3 rounded-none bg-red-600 text-white shrink-0">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-heading text-sm font-bold uppercase tracking-wider text-neutral-950 dark:text-white">
+                <h4 className="font-heading text-sm font-black uppercase tracking-wider text-neutral-950 dark:text-white">
                   CUSHIONED & ANTI-SKID
                 </h4>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed">
+                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
                   Engineered with premium EVA and dependable outer soles for everyday life.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800/80 shadow-xs">
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 shrink-0">
+            <div className="flex items-start gap-4 p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <div className="p-3 rounded-none bg-red-600 text-white shrink-0">
                 <RefreshCw className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-heading text-sm font-bold uppercase tracking-wider text-neutral-950 dark:text-white">
+                <h4 className="font-heading text-sm font-black uppercase tracking-wider text-neutral-950 dark:text-white">
                   7-DAY EASY RETURNS
                 </h4>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed">
+                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
                   Hassle-free 7-day doorstep returns and size exchanges guaranteed.
                 </p>
               </div>
@@ -122,33 +124,26 @@ export const Footer: React.FC = () => {
       </div>
 
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-18 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
           
           {/* Brand Info & Address Details */}
           <div className="md:col-span-5 space-y-4">
             <Link href="/" className="flex items-center gap-3 group">
-              <BrandLogo size="md" />
-              <div className="flex flex-col">
-                <span className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  BLISS BALANCE
-                </span>
-                <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase font-bold">
-                  Feel The Bliss
-                </span>
-              </div>
+              <BrandLogo size="md" className="rounded-none border border-black dark:border-white" />
+              <BrandTitleText size="md" showSubtitle={true} />
             </Link>
 
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm font-body">
+            <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-sm font-bold">
               Bliss Balance is a modern Indian footwear brand combining soft comfort, contemporary style, lightweight construction, and dependable anti-skid grip for everyday life.
             </p>
 
             {/* Detailed Head Office Address Card */}
-            <div className="p-3.5 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-1.5 font-mono text-[11px]">
-              <span className="text-[10px] font-bold text-red-600 uppercase flex items-center gap-1.5">
+            <div className="p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 space-y-1.5 text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
+              <span className="text-[10px] font-black text-red-600 uppercase flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-red-600" /> REGISTERED HEAD OFFICE ADDRESS
               </span>
-              <p className="text-neutral-800 dark:text-neutral-200 leading-relaxed font-semibold">
+              <p className="text-neutral-900 dark:text-neutral-100 leading-relaxed font-black">
                 Novel House, Iskon Temple, Road No. 1,<br />
                 Muralidhar Bagh, Abids, Hyderabad,<br />
                 Telangana 500012, India
@@ -156,8 +151,8 @@ export const Footer: React.FC = () => {
             </div>
 
             {/* Social Media Links */}
-            <div className="pt-1 space-y-2 font-mono">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 block">
+            <div className="pt-2 space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 block">
                 OFFICIAL SOCIAL CHANNELS
               </span>
               <div className="flex items-center gap-2">
@@ -165,7 +160,7 @@ export const Footer: React.FC = () => {
                   href="https://www.facebook.com/share/1Bhmz8KL1w/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                   aria-label="Facebook Page"
                 >
                   <Facebook className="w-4 h-4" />
@@ -174,7 +169,7 @@ export const Footer: React.FC = () => {
                   href="https://x.com/blissbalance_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                   aria-label="Twitter X Profile"
                 >
                   <Twitter className="w-4 h-4" />
@@ -183,7 +178,7 @@ export const Footer: React.FC = () => {
                   href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:text-red-600 hover:border-red-600 transition-all"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                   aria-label="YouTube Channel"
                 >
                   <Youtube className="w-4 h-4" />
@@ -193,11 +188,11 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="md:col-span-2 space-y-3 font-mono text-xs">
-            <span className="font-bold text-neutral-950 dark:text-white uppercase tracking-widest block text-[11px]">
+          <div className="md:col-span-2 space-y-3 text-xs">
+            <span className="font-black text-neutral-950 dark:text-white uppercase tracking-widest block text-xs border-b-2 border-red-600 pb-1">
               SHOP COLLECTION
             </span>
-            <ul className="space-y-2 text-neutral-600 dark:text-neutral-400">
+            <ul className="space-y-2 font-bold text-neutral-700 dark:text-neutral-300">
               <li><Link href="/men" className="hover:text-red-600 transition-colors">Men's Footwear</Link></li>
               <li><Link href="/women" className="hover:text-red-600 transition-colors">Women's Footwear</Link></li>
               <li><Link href="/collections?cat=Slippers" className="hover:text-red-600 transition-colors">Slippers</Link></li>
@@ -208,20 +203,20 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Customer Help */}
-          <div className="md:col-span-2 space-y-3 font-mono text-xs">
-            <span className="font-bold text-neutral-950 dark:text-white uppercase tracking-widest block text-[11px]">
+          <div className="md:col-span-2 space-y-3 text-xs">
+            <span className="font-black text-neutral-950 dark:text-white uppercase tracking-widest block text-xs border-b-2 border-red-600 pb-1">
               CUSTOMER HELP
             </span>
-            <ul className="space-y-2 text-neutral-600 dark:text-neutral-400">
+            <ul className="space-y-2 font-bold text-neutral-700 dark:text-neutral-300">
               <li><Link href="/account" className="hover:text-red-600 transition-colors">Track Order</Link></li>
               <li><Link href="/faq" className="hover:text-red-600 transition-colors">FAQ & Support</Link></li>
               <li><Link href="/about" className="hover:text-red-600 transition-colors">About Us</Link></li>
             </ul>
           </div>
 
-          {/* Official Contact & Amazon Store Details */}
-          <div className="md:col-span-3 space-y-3 font-mono text-xs relative">
-            <span className="font-bold text-neutral-950 dark:text-white uppercase tracking-widest block text-[11px]">
+          {/* Official Direct Contact Channels */}
+          <div className="md:col-span-3 space-y-3 text-xs">
+            <span className="font-black text-neutral-950 dark:text-white uppercase tracking-widest block text-xs border-b-2 border-red-600 pb-1">
               OFFICIAL CHANNELS
             </span>
 
@@ -230,7 +225,7 @@ export const Footer: React.FC = () => {
               href="https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3?lp_asin=B0GV6T919J&ref_=cm_sw_r_apann_ast_store_DTJ19G6CEXMFCXTTDYBR"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl bg-amber-50 dark:bg-amber-950/70 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 hover:bg-amber-500 hover:text-black transition-all group relative z-10"
+              className="flex items-center justify-between p-3 rounded-none bg-amber-50 dark:bg-amber-950/70 border-2 border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 hover:bg-amber-500 hover:text-black transition-all group shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             >
               <div className="flex items-center gap-2">
                 <span className="font-black text-xs uppercase">AMAZON BRAND STORE</span>
@@ -243,53 +238,44 @@ export const Footer: React.FC = () => {
               href="https://wa.me/919440961776?text=Hi%20Bliss%20Balance%20Team%2C%20I%20have%20a%20query"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition-all group relative z-10"
+              className="flex items-center gap-2 p-3 rounded-none bg-emerald-50 dark:bg-emerald-950/60 border-2 border-emerald-400 dark:border-emerald-700/60 text-emerald-900 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white transition-all group shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             >
               <MessageSquare className="w-4 h-4 text-emerald-600 group-hover:text-white shrink-0" />
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold uppercase">WhatsApp Support</span>
-                <span className="text-xs font-mono font-black">+91 9440961776</span>
+                <span className="text-[10px] font-black uppercase">WhatsApp Support</span>
+                <span className="text-xs font-black">+91 9440961776</span>
               </div>
             </a>
 
             {/* Official Gmail */}
             <a
               href="mailto:blissbalance.in@gmail.com"
-              className="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 hover:border-red-600 hover:text-red-600 transition-all relative z-10"
+              className="flex items-center gap-2 p-3 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 text-neutral-900 dark:text-white hover:border-red-600 hover:text-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             >
               <Mail className="w-4 h-4 text-red-600 shrink-0" />
-              <span className="text-xs font-mono font-bold">blissbalance.in@gmail.com</span>
+              <span className="text-xs font-black">blissbalance.in@gmail.com</span>
             </a>
-
-            {/* RAW GRAPHITE PENCIL SKETCHED LOGO EMBLEM ETCHED IN THE BACKGROUND (NO BOX) */}
-            <div className="pt-4 flex items-center justify-center pointer-events-none select-none relative z-0">
-              <img
-                src="/Logo.svg"
-                alt="Bliss Balance Raw Pencil Sketched Logo"
-                className="w-48 h-48 sm:w-56 sm:h-56 object-contain filter contrast-200 grayscale opacity-60 dark:opacity-75 dark:invert mix-blend-multiply dark:mix-blend-screen drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all"
-              />
-            </div>
 
           </div>
 
         </div>
 
+        {/* GIANT ONE8-STYLE WATERMARK LOGO AT FOOTER BOTTOM (USER IMAGE 1 REPLICATED) */}
+        <div className="w-full overflow-hidden select-none pointer-events-none opacity-[0.08] dark:opacity-[0.14] pt-10 pb-4 text-center">
+          <span className="font-heading font-black text-6xl sm:text-8xl lg:text-[11rem] tracking-tighter uppercase text-neutral-950 dark:text-white leading-none block whitespace-nowrap">
+            bliss balance
+          </span>
+        </div>
+
         {/* Payment Method Badges & Copyright Line */}
-        <div className="mt-10 pt-6 border-t border-neutral-200 dark:border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px] text-neutral-500">
-          <div className="flex items-center gap-2">
-            <span className="font-mono font-bold text-neutral-900 dark:text-white text-xs">© {new Date().getFullYear()} BLISS BALANCE FOOTWEAR.</span>
-            <span>HYDERABAD, TELANGANA 500012.</span>
+        <div className="pt-6 border-t-2 border-neutral-900 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 font-black">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-neutral-950 dark:text-white text-xs uppercase">© {new Date().getFullYear()} BLISS BALANCE FOOTWEAR.</span>
+            <span className="text-neutral-400">HYDERABAD, TELANGANA 500012.</span>
           </div>
 
-          {/* Actual UI Payment Method Badges */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="px-2 py-0.5 bg-blue-600 text-white font-black text-[9px] rounded uppercase shadow-xs">AMEX</span>
-            <span className="px-2 py-0.5 bg-blue-800 text-white font-black text-[9px] rounded uppercase shadow-xs">DINERS</span>
-            <span className="px-2 py-0.5 bg-red-600 text-white font-black text-[9px] rounded uppercase shadow-xs">MASTERCARD</span>
-            <span className="px-2 py-0.5 bg-amber-600 text-black font-black text-[9px] rounded uppercase shadow-xs">VISA</span>
-            <span className="px-2 py-0.5 bg-emerald-700 text-white font-black text-[9px] rounded uppercase shadow-xs">RUPAY</span>
-            <span className="px-2 py-0.5 bg-neutral-900 dark:bg-neutral-800 text-white font-black text-[9px] rounded uppercase shadow-xs border border-neutral-700">UPI</span>
-          </div>
+          {/* Graphical Payment Method Badges */}
+          <PaymentLogos />
         </div>
 
       </div>
@@ -299,7 +285,7 @@ export const Footer: React.FC = () => {
         id="waveContainer"
         aria-hidden="true"
         style={{ overflow: 'hidden', height: 160 }}
-        className="w-full opacity-90"
+        className="w-full opacity-95"
       >
         <div style={{ marginTop: 0 }}>
           {Array.from({ length: barCount }).map((_, index) => (

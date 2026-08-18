@@ -9,21 +9,21 @@ interface BrandLogoProps {
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '' }) => {
   const dimensions = {
-    sm: 'w-9 h-9 rounded-xl',
-    md: 'w-11 h-11 rounded-2xl',
-    lg: 'w-14 h-14 rounded-2xl',
-    xl: 'w-24 h-24 rounded-3xl',
+    sm: 'w-10 h-10 rounded-none border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]',
+    md: 'w-12 h-12 rounded-none border-2 border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]',
+    lg: 'w-16 h-16 rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]',
+    xl: 'w-28 h-28 rounded-none border-3 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
   }[size];
 
   const imgDimensions = {
-    sm: 'w-8 h-8',
-    md: 'w-10 h-10',
+    sm: 'w-7 h-7',
+    md: 'w-9 h-9',
     lg: 'w-12 h-12',
     xl: 'w-22 h-22',
   }[size];
 
   return (
-    <div className={`relative bg-[#E50914] flex items-center justify-center shadow-sm overflow-hidden shrink-0 ${dimensions} ${className}`}>
+    <div className={`relative bg-red-600 flex items-center justify-center overflow-hidden shrink-0 ${dimensions} ${className}`}>
       <img
         src="/Logo.svg"
         alt="Bliss Balance Emblem"

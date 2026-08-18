@@ -66,32 +66,32 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 font-mono">
       
-      {/* Comet-Style Minimalist Auth Box */}
-      <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-2xl p-8 space-y-6">
+      {/* Gumroad Neo-Brutalist Auth Box */}
+      <div className="relative w-full max-w-md bg-white dark:bg-black rounded-none border-2 border-neutral-900 dark:border-neutral-100 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] p-8 space-y-6">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-none bg-neutral-100 dark:bg-neutral-900 border border-black hover:bg-red-600 hover:text-white transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Brand Emblem & Welcome Header */}
         <div className="text-center space-y-3 pt-2">
-          <BrandLogo size="lg" className="mx-auto" />
-          <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white">
+          <BrandLogo size="lg" className="mx-auto rounded-none border border-black" />
+          <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
             {isSignUp ? 'JOIN BLISS BALANCE' : 'WELCOME TO BLISS BALANCE'}
           </h3>
-          <p className="font-mono text-xs text-neutral-500 max-w-xs mx-auto">
+          <p className="font-mono text-xs text-neutral-500 max-w-xs mx-auto font-bold">
             {isSignUp ? 'Create an account to track orders & express checkout' : 'Sign in to access your account & saved items'}
           </p>
         </div>
 
         {successMsg ? (
-          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-bold text-center flex items-center justify-center gap-2">
+          <div className="p-4 rounded-none bg-emerald-50 border-2 border-emerald-500 text-emerald-900 text-xs font-mono font-black text-center flex items-center justify-center gap-2">
             <CheckCircle className="w-5 h-5 text-emerald-600" />
             <span>{successMsg}</span>
           </div>
@@ -101,7 +101,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
             {/* Google Quick Sign-In */}
             <button
               onClick={handleGoogleAuth}
-              className="w-full py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 text-neutral-900 dark:text-white font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-3 border border-neutral-200 dark:border-neutral-700 shadow-xs"
+              className="w-full py-3.5 rounded-none bg-white dark:bg-black hover:bg-neutral-100 text-neutral-900 dark:text-white font-mono font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-3 border-2 border-neutral-900 dark:border-neutral-100 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -113,12 +113,12 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
             </button>
 
             <div className="relative flex items-center justify-center">
-              <div className="border-t border-neutral-200 dark:border-neutral-800 w-full" />
-              <span className="bg-white dark:bg-neutral-900 px-3 text-[10px] font-mono text-neutral-400 uppercase">OR EMAIL SIGN IN</span>
+              <div className="border-t-2 border-neutral-200 dark:border-neutral-800 w-full" />
+              <span className="bg-white dark:bg-black px-3 text-[10px] font-mono text-neutral-400 uppercase font-black">OR EMAIL SIGN IN</span>
             </div>
 
             {error && (
-              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-600 text-xs font-mono flex items-center gap-2">
+              <div className="p-3.5 rounded-none bg-red-50 dark:bg-red-950 border-2 border-red-600 text-red-600 text-xs font-mono font-bold flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -126,7 +126,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
 
             <form onSubmit={handleEmailAuth} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
@@ -137,13 +137,13 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-10 pr-4 py-3 text-xs font-mono text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none pl-10 pr-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-mono font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+                <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                   Password
                 </label>
                 <div className="relative">
@@ -154,7 +154,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-10 pr-4 py-3 text-xs font-mono text-neutral-900 dark:text-white focus:border-red-600 focus:outline-none"
+                    className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none pl-10 pr-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                   />
                 </div>
               </div>
@@ -162,25 +162,25 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 rounded-2xl bg-[#E50914] hover:bg-red-500 text-white font-mono font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
               >
                 <span>{loading ? 'PROCESSING...' : isSignUp ? 'CREATE ACCOUNT' : 'LOGIN / SIGNUP'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 
-            <div className="pt-2 text-center text-xs font-mono text-neutral-500">
+            <div className="pt-2 text-center text-xs font-mono text-neutral-500 font-bold">
               {isSignUp ? (
                 <span>
                   Already registered?{' '}
-                  <button onClick={() => setIsSignUp(false)} className="text-red-600 font-bold underline">
+                  <button onClick={() => setIsSignUp(false)} className="text-red-600 font-black underline uppercase">
                     Sign In
                   </button>
                 </span>
               ) : (
                 <span>
                   New to Bliss Balance?{' '}
-                  <button onClick={() => setIsSignUp(true)} className="text-red-600 font-bold underline">
+                  <button onClick={() => setIsSignUp(true)} className="text-red-600 font-black underline uppercase">
                     Create Account
                   </button>
                 </span>

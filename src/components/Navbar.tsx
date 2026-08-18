@@ -20,6 +20,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
+import { BrandTitleText } from './BrandTitleText';
 import { CustomerAuthModal } from './CustomerAuthModal';
 import { WishlistModal } from './WishlistModal';
 import { auth } from '@/lib/firebase';
@@ -106,23 +107,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 transition-colors duration-300">
+      <header className="sticky top-0 z-40 w-full bg-white dark:bg-black border-b-2 border-neutral-900 dark:border-neutral-100 transition-colors duration-300 select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             
-            {/* Brand Logo & Title */}
-            <Link href="/" className="flex items-center gap-2 sm:gap-3.5 group shrink-0">
-              <BrandLogo size="sm" className="sm:hidden" />
-              <BrandLogo size="md" className="hidden sm:flex group-hover:scale-105 transition-transform duration-300" />
+            {/* Brand Logo & Title with Custom Pi-Arch 'A' */}
+            <Link href="/" className="flex items-center gap-3 group shrink-0">
+              <BrandLogo size="md" className="group-hover:scale-105 transition-transform duration-300 rounded-none border border-black dark:border-white" />
 
-              <div className="flex flex-col">
-                <span className="font-heading text-base sm:text-2xl lg:text-3xl font-black tracking-tight text-neutral-950 dark:text-white uppercase leading-none">
-                  BLISS BALANCE
-                </span>
-                <span className="hidden sm:block text-[9px] font-mono tracking-widest text-neutral-500 dark:text-neutral-400 uppercase font-semibold mt-0.5">
-                  Feel The Bliss
-                </span>
-              </div>
+              <BrandTitleText size="md" showSubtitle={true} />
             </Link>
 
             {/* Desktop Category Links */}
@@ -131,32 +124,32 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-xs font-heading font-bold tracking-widest text-neutral-800 dark:text-neutral-200 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 relative group uppercase"
+                  className="text-xs font-mono font-black tracking-widest text-neutral-900 dark:text-neutral-100 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 relative group uppercase"
                 >
                   {link.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-200 group-hover:w-full" />
                 </Link>
               ))}
             </nav>
 
             {/* Right Header Actions */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <div className="flex items-center gap-2">
               <Link
                 href="/about"
-                className="hidden md:inline-block text-xs font-heading font-bold text-neutral-700 dark:text-neutral-300 hover:text-red-600 transition-colors uppercase tracking-wider"
+                className="hidden md:inline-block text-xs font-mono font-black text-neutral-900 dark:text-neutral-100 hover:text-red-600 transition-colors uppercase tracking-wider px-2 py-1 border border-transparent hover:border-neutral-900 dark:hover:border-neutral-100"
               >
-                About Us
+                ABOUT US
               </Link>
 
               {/* Wishlist Button */}
               <button
                 onClick={() => setWishlistModalOpen(true)}
-                className="relative p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all"
+                className="relative p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                 title="View Wishlist"
               >
                 <Heart className="w-4 h-4" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white font-mono text-[9px] font-black w-5 h-5 border border-black flex items-center justify-center">
                     {wishlistCount}
                   </span>
                 )}
@@ -165,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               {/* Search Button */}
               <button
                 onClick={onOpenSearch}
-                className="p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all"
+                className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all"
                 title="Search Footwear"
               >
                 <Search className="w-4 h-4" />
@@ -176,66 +169,53 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
-                  className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 hover:text-red-600 hover:border-red-500 transition-all flex items-center gap-1.5"
+                  className="p-2.5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex items-center gap-1.5"
                   title="Account Menu"
                 >
-                  {currentUser && currentUser.photoURL ? (
-                    <img
-                      src={currentUser.photoURL}
-                      alt={currentUser.displayName || 'Profile'}
-                      className="w-6 h-6 rounded-full object-cover border border-red-500"
-                    />
-                  ) : currentUser ? (
-                    <div className="w-6 h-6 rounded-full bg-red-600 text-white font-mono font-bold text-[10px] flex items-center justify-center uppercase">
-                      {currentUser.displayName ? currentUser.displayName[0] : (currentUser.email ? currentUser.email[0] : 'U')}
-                    </div>
-                  ) : (
-                    <UserIcon className="w-4 h-4" />
-                  )}
-                  <ChevronDown className="w-3 h-3 text-neutral-400" />
+                  <UserIcon className="w-4 h-4" />
+                  <ChevronDown className="w-3 h-3" />
                 </button>
 
-                {/* Dropdown Card */}
+                {/* Dropdown Menu */}
                 {userDropdownOpen && (
                   <div
                     onMouseLeave={() => setUserDropdownOpen(false)}
-                    className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl p-5 space-y-4 animate-in fade-in duration-150 z-50 font-body text-xs"
+                    className="absolute right-0 mt-2 w-64 rounded-none bg-white dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-100 shadow-2xl p-4 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-150 font-mono"
                   >
                     {currentUser ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 p-2 bg-neutral-50 dark:bg-neutral-950 rounded-xl border border-neutral-100 dark:border-neutral-800">
-                          {currentUser.photoURL ? (
-                            <img src={currentUser.photoURL} alt="User PFP" className="w-10 h-10 rounded-full object-cover" />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-red-600 text-white font-mono font-bold text-sm flex items-center justify-center uppercase">
-                              {currentUser.displayName ? currentUser.displayName[0] : (currentUser.email ? currentUser.email[0] : 'U')}
-                            </div>
-                          )}
-                          <div className="space-y-0.5 overflow-hidden">
-                            <h4 className="font-heading text-sm font-bold text-neutral-950 dark:text-white uppercase truncate">
-                              {currentUser.displayName || 'Valued Patron'}
-                            </h4>
-                            <p className="font-mono text-[10px] text-neutral-500 truncate">
-                              {currentUser.email}
-                            </p>
-                          </div>
+                      <>
+                        <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                          <p className="text-[10px] font-bold text-neutral-400 uppercase">LOGGED IN AS</p>
+                          <p className="text-xs font-black text-neutral-950 dark:text-white truncate">
+                            {currentUser.displayName || currentUser.email || 'Customer'}
+                          </p>
                         </div>
+
+                        <Link
+                          href="/account"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2 p-2 rounded-none hover:bg-neutral-100 dark:hover:bg-neutral-900 text-xs font-bold uppercase transition-all"
+                        >
+                          <UserIcon className="w-4 h-4 text-red-600" />
+                          <span>MY ORDERS & PROFILE</span>
+                        </Link>
 
                         <button
                           onClick={handleLogout}
-                          className="w-full py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-red-600 hover:text-white text-neutral-800 dark:text-neutral-200 font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                          className="w-full flex items-center gap-2 p-2 rounded-none hover:bg-red-600 hover:text-white text-xs font-bold uppercase text-red-600 transition-all"
                         >
-                          <LogOut className="w-4 h-4" /> LOGOUT SESSION
+                          <LogOut className="w-4 h-4" />
+                          <span>SIGN OUT</span>
                         </button>
-                      </div>
+                      </>
                     ) : (
-                      <div className="space-y-3">
+                      <>
                         <div className="space-y-1">
-                          <h4 className="font-heading text-lg font-bold text-neutral-950 dark:text-white uppercase">
-                            Welcome
+                          <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white">
+                            WELCOME TO BLISS BALANCE
                           </h4>
-                          <p className="font-mono text-[11px] text-neutral-500">
-                            To access account and manage orders
+                          <p className="text-[11px] text-neutral-500 font-body">
+                            Sign in to track orders, save wishlist items, and manage addresses.
                           </p>
                         </div>
 
@@ -244,282 +224,236 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                             setUserDropdownOpen(false);
                             setAuthModalOpen(true);
                           }}
-                          className="w-full py-3 rounded-xl bg-[#E50914] hover:bg-red-500 text-white font-mono font-extrabold text-xs uppercase tracking-widest shadow-md transition-all text-center"
+                          className="w-full py-2.5 bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-red-500 transition-all shadow-md"
                         >
-                          LOGIN / SIGNUP
+                          SIGN IN / REGISTER
                         </button>
-                      </div>
-                    )}
 
-                    <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800 space-y-2 font-mono font-bold text-neutral-700 dark:text-neutral-300 text-xs">
-                      <Link
-                        href="/collections"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="block py-1 hover:text-red-600 transition-colors"
-                      >
-                        Explore Collections
-                      </Link>
-                      <Link
-                        href="/faq"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="block py-1 hover:text-red-600 transition-colors"
-                      >
-                        FAQ
-                      </Link>
-                      <Link
-                        href="/about"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="block py-1 hover:text-red-600 transition-colors"
-                      >
-                        About Us
-                      </Link>
-                    </div>
+                        <Link
+                          href="/account"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="block text-center text-[10px] font-bold text-neutral-400 hover:text-neutral-950 dark:hover:text-white uppercase pt-1"
+                        >
+                          GUEST ORDER TRACKING
+                        </Link>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
 
-              {/* Mobile Drawer Toggle Button */}
+              {/* Mobile Menu Hamburger Trigger */}
               <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 sm:p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200"
-                aria-label="Toggle Mobile Menu"
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-100 text-neutral-950 dark:text-white"
+                aria-label="Open Navigation Drawer"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                <Menu className="w-5 h-5" />
               </button>
             </div>
+
           </div>
         </div>
       </header>
 
-      {/* ONE8 STYLE ULTRA-LUXURY FULL SCREEN MOBILE MENU DRAWER OVERLAY */}
+      {/* ONE8 / COMET STYLE DRAWER SIDEBAR NAVIGATION OVERLAY */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[99999] bg-[#0A0A0A] text-white flex flex-col justify-between overflow-y-auto lg:hidden animate-in fade-in duration-300 h-[100dvh] w-screen">
-          
-          {/* Top Bar: Brand Logo & Close Button */}
-          <div className="p-5 sm:p-6 border-b border-neutral-800/80 flex items-center justify-between sticky top-0 bg-[#0A0A0A] z-20">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
-              <BrandLogo size="sm" />
-              <span className="font-heading text-xl font-black text-white uppercase tracking-tight">
-                BLISS BALANCE
-              </span>
-            </Link>
+        <div className="fixed inset-0 z-50 flex font-mono select-none">
+          {/* Backdrop Blur Overlay */}
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+          />
 
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              className="p-2.5 rounded-full bg-neutral-900 text-neutral-300 hover:text-white transition-all border border-neutral-800"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          {/* Middle Section: ONE8 Style Accordion List */}
-          <div className="px-6 py-8 space-y-6 flex-1 font-heading">
+          {/* Drawer Sidebar Container */}
+          <div className="relative w-full max-w-md bg-white dark:bg-black border-r-2 border-neutral-900 dark:border-neutral-100 h-full flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-left duration-300">
             
-            {/* Accordion 1: SHOP */}
-            <div className="border-b border-neutral-800 pb-4 space-y-3">
-              <button
-                onClick={() => toggleAccordion('shop')}
-                className="w-full flex items-center justify-between text-2xl font-bold text-white uppercase tracking-wider text-left"
+            {/* Drawer Top Header Bar */}
+            <div className="flex items-center justify-between p-5 border-b-2 border-neutral-900 dark:border-neutral-100 bg-white dark:bg-black">
+              <Link
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2"
               >
-                <span>Shop</span>
-                {openAccordion === 'shop' ? <Minus className="w-5 h-5 text-red-500" /> : <Plus className="w-5 h-5 text-neutral-400" />}
-              </button>
+                <BrandLogo size="sm" />
+                <BrandTitleText size="sm" />
+              </Link>
 
-              {openAccordion === 'shop' && (
-                <div className="grid grid-cols-2 gap-2.5 pt-2 animate-in fade-in duration-200 font-mono text-xs">
-                  <Link
-                    href="/men"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-3 rounded-xl bg-neutral-900/80 text-neutral-200 hover:text-red-500 font-bold uppercase tracking-wider border border-neutral-800"
-                  >
-                    Men's Footwear
-                  </Link>
-                  <Link
-                    href="/women"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-3 rounded-xl bg-neutral-900/80 text-neutral-200 hover:text-red-500 font-bold uppercase tracking-wider border border-neutral-800"
-                  >
-                    Women's Footwear
-                  </Link>
-                  <Link
-                    href="/collections?cat=Slippers"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-3 rounded-xl bg-neutral-900/80 text-neutral-200 hover:text-red-500 font-bold uppercase tracking-wider border border-neutral-800"
-                  >
-                    Slippers & Slides
-                  </Link>
-                  <Link
-                    href="/collections?cat=Sandals"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-3 rounded-xl bg-neutral-900/80 text-neutral-200 hover:text-red-500 font-bold uppercase tracking-wider border border-neutral-800"
-                  >
-                    Sandals & Clogs
-                  </Link>
-                  <Link
-                    href="/collections?cat=Casual+Shoes"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-3 rounded-xl bg-neutral-900/80 text-neutral-200 hover:text-red-500 font-bold uppercase tracking-wider border border-neutral-800"
-                  >
-                    Sneakers & Shoes
-                  </Link>
-                  <Link
-                    href="/collections?filter=new"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-3 rounded-xl bg-red-950/40 text-red-400 font-bold uppercase tracking-wider border border-red-800/60"
-                  >
-                    ⚡ New Arrivals
-                  </Link>
-                </div>
-              )}
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-none bg-neutral-100 dark:bg-neutral-900 border border-neutral-900 dark:border-neutral-100 hover:bg-red-600 hover:text-white transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Accordion 2: BLISS BALANCE */}
-            <div className="border-b border-neutral-800 pb-4 space-y-3">
-              <button
-                onClick={() => toggleAccordion('brand')}
-                className="w-full flex items-center justify-between text-2xl font-bold text-white uppercase tracking-wider text-left"
-              >
-                <span>Bliss Balance</span>
-                {openAccordion === 'brand' ? <Minus className="w-5 h-5 text-red-500" /> : <Plus className="w-5 h-5 text-neutral-400" />}
-              </button>
-
-              {openAccordion === 'brand' && (
-                <div className="space-y-2 pt-2 animate-in fade-in duration-200 font-mono text-xs font-bold text-neutral-300">
-                  <Link
-                    href="/about"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block p-3 rounded-xl bg-neutral-900/80 hover:text-red-500 uppercase tracking-wider border border-neutral-800"
-                  >
-                    Our Footwear Philosophy
-                  </Link>
-                  <Link
-                    href="/faq"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block p-3 rounded-xl bg-neutral-900/80 hover:text-red-500 uppercase tracking-wider border border-neutral-800"
-                  >
-                    Frequently Asked Questions
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Accordion 3: CUSTOMER SUPPORT */}
-            <div className="border-b border-neutral-800 pb-4 space-y-3">
-              <button
-                onClick={() => toggleAccordion('support')}
-                className="w-full flex items-center justify-between text-2xl font-bold text-white uppercase tracking-wider text-left"
-              >
-                <span>Customer Support</span>
-                {openAccordion === 'support' ? <Minus className="w-5 h-5 text-red-500" /> : <Plus className="w-5 h-5 text-neutral-400" />}
-              </button>
-
-              {openAccordion === 'support' && (
-                <div className="space-y-2 pt-2 animate-in fade-in duration-200 font-mono text-xs font-bold text-neutral-300">
-                  <Link
-                    href="/faq"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block p-3 rounded-xl bg-neutral-900/80 hover:text-red-500 uppercase tracking-wider border border-neutral-800"
-                  >
-                    Frequently Asked Questions (FAQ)
-                  </Link>
-                  <div className="p-3 rounded-xl bg-neutral-900/80 uppercase tracking-wider border border-neutral-800 text-neutral-400">
-                    7-Day Returns & Exchanges
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Accordion 4: ACCOUNT */}
-            <div className="border-b border-neutral-800 pb-4 space-y-3">
-              <button
-                onClick={() => toggleAccordion('account')}
-                className="w-full flex items-center justify-between text-2xl font-bold text-white uppercase tracking-wider text-left"
-              >
-                <span>Account</span>
-                {openAccordion === 'account' ? <Minus className="w-5 h-5 text-red-500" /> : <Plus className="w-5 h-5 text-neutral-400" />}
-              </button>
-
-              {openAccordion === 'account' && (
-                <div className="space-y-2 pt-2 animate-in fade-in duration-200 font-mono text-xs font-bold text-neutral-300">
-                  {currentUser ? (
-                    <div className="space-y-2">
-                      <div className="p-3 rounded-xl bg-neutral-900/80 border border-neutral-800 flex items-center justify-between">
-                        <span className="truncate">{currentUser.email}</span>
-                        <span className="text-[10px] text-emerald-400 font-extrabold uppercase">ACTIVE</span>
-                      </div>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full p-3 rounded-xl bg-red-600 text-white font-black uppercase tracking-widest text-center"
-                      >
-                        LOGOUT SESSION
-                      </button>
+            {/* Scrollable Drawer Body with Accordion Navigation */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+              
+              {/* Account Quick Action Banner */}
+              <div className="p-4 rounded-none bg-neutral-50 dark:bg-neutral-950 border border-neutral-900 dark:border-neutral-100 flex items-center justify-between">
+                {currentUser ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-none bg-red-600 text-white font-black flex items-center justify-center text-sm border border-black">
+                      {(currentUser.displayName || currentUser.email || 'U')[0].toUpperCase()}
                     </div>
-                  ) : (
+                    <div>
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase block">LOGGED IN</span>
+                      <span className="text-xs font-black text-neutral-950 dark:text-white line-clamp-1">
+                        {currentUser.displayName || currentUser.email}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-xs font-black uppercase text-neutral-950 dark:text-white">CUSTOMER ACCOUNT</span>
                     <button
                       onClick={() => {
                         setMobileMenuOpen(false);
                         setAuthModalOpen(true);
                       }}
-                      className="w-full p-3 rounded-xl bg-red-600 text-white font-black uppercase tracking-widest text-center"
+                      className="px-4 py-2 bg-red-600 text-white font-black text-xs uppercase"
                     >
-                      LOGIN / SIGNUP
+                      LOGIN / REGISTER
                     </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Accordions */}
+              <div className="space-y-4">
+                
+                {/* 1. SHOP FOOTWEAR ACCORDION */}
+                <div className="border border-neutral-900 dark:border-neutral-100 rounded-none overflow-hidden">
+                  <button
+                    onClick={() => toggleAccordion('shop')}
+                    className="w-full p-4 flex items-center justify-between bg-neutral-100 dark:bg-neutral-900 font-heading font-black text-sm uppercase tracking-wider text-neutral-950 dark:text-white"
+                  >
+                    <span>SHOP FOOTWEAR</span>
+                    {openAccordion === 'shop' ? <Minus className="w-4 h-4 text-red-600" /> : <Plus className="w-4 h-4" />}
+                  </button>
+
+                  {openAccordion === 'shop' && (
+                    <div className="p-4 bg-white dark:bg-black space-y-2 border-t border-neutral-900 dark:border-neutral-100 font-mono text-xs font-bold">
+                      <Link
+                        href="/men"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors border-b border-neutral-200 dark:border-neutral-900"
+                      >
+                        ⚡ MEN'S FOOTWEAR
+                      </Link>
+                      <Link
+                        href="/women"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors border-b border-neutral-200 dark:border-neutral-900"
+                      >
+                        ⚡ WOMEN'S FOOTWEAR
+                      </Link>
+                      <Link
+                        href="/collections?cat=Slippers"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        SLIPPERS & FLIP-FLOPS
+                      </Link>
+                      <Link
+                        href="/collections?cat=Slides"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        SLIDES & SANDALS
+                      </Link>
+                      <Link
+                        href="/collections?cat=Clogs"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        CLOGS & CROCS
+                      </Link>
+                      <Link
+                        href="/collections?cat=Casual+Shoes"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        SNEAKERS & SHOES
+                      </Link>
+                    </div>
                   )}
                 </div>
+
+                {/* 2. CUSTOMER HELP ACCORDION */}
+                <div className="border border-neutral-900 dark:border-neutral-100 rounded-none overflow-hidden">
+                  <button
+                    onClick={() => toggleAccordion('help')}
+                    className="w-full p-4 flex items-center justify-between bg-neutral-100 dark:bg-neutral-900 font-heading font-black text-sm uppercase tracking-wider text-neutral-950 dark:text-white"
+                  >
+                    <span>CUSTOMER SUPPORT</span>
+                    {openAccordion === 'help' ? <Minus className="w-4 h-4 text-red-600" /> : <Plus className="w-4 h-4" />}
+                  </button>
+
+                  {openAccordion === 'help' && (
+                    <div className="p-4 bg-white dark:bg-black space-y-2 border-t border-neutral-900 dark:border-neutral-100 font-mono text-xs font-bold">
+                      <Link
+                        href="/account"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        TRACK MY ORDER
+                      </Link>
+                      <Link
+                        href="/faq"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        FAQ & RETURNS POLICY
+                      </Link>
+                      <Link
+                        href="/about"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block py-2 hover:text-red-600 transition-colors"
+                      >
+                        ABOUT BLISS BALANCE
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Drawer Bottom Bar */}
+            <div className="p-5 border-t-2 border-neutral-900 dark:border-neutral-100 bg-neutral-50 dark:bg-neutral-950 space-y-4">
+              <div className="flex items-center justify-between text-xs font-bold">
+                <span className="text-neutral-500 uppercase">CONNECT WITH US</span>
+                <div className="flex items-center gap-3">
+                  <a href="https://www.facebook.com/share/1Bhmz8KL1w/" target="_blank" rel="noopener noreferrer" className="hover:text-red-600"><Facebook className="w-4 h-4" /></a>
+                  <a href="https://x.com/blissbalance_" target="_blank" rel="noopener noreferrer" className="hover:text-red-600"><Twitter className="w-4 h-4" /></a>
+                  <a href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9" target="_blank" rel="noopener noreferrer" className="hover:text-red-600"><Youtube className="w-4 h-4" /></a>
+                </div>
+              </div>
+
+              {currentUser && (
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-2.5 rounded-none bg-neutral-900 text-white dark:bg-neutral-100 dark:text-black font-black text-xs uppercase"
+                >
+                  LOGOUT ACCOUNT
+                </button>
               )}
             </div>
 
           </div>
-
-          {/* Bottom Social Channels Bar (ONE8 Style) */}
-          <div className="p-6 border-t border-neutral-800 space-y-6 font-mono bg-[#0A0A0A]">
-            
-            <div className="space-y-3">
-              <h4 className="font-heading text-lg font-bold uppercase text-white tracking-wider">
-                Follow Us
-              </h4>
-              <p className="text-xs text-neutral-400">
-                Connect with Bliss Balance across our official social channels:
-              </p>
-
-              <div className="flex items-center gap-3">
-                <a href="https://www.facebook.com/share/1Bhmz8KL1w/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800" aria-label="Facebook Page">
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a href="https://x.com/blissbalance_" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800" aria-label="Twitter X Profile">
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a href="https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-neutral-900 hover:bg-red-600 text-white transition-all border border-neutral-800" aria-label="YouTube Channel">
-                  <Youtube className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Copyright & Accepted Payment Methods */}
-            <div className="pt-4 border-t border-neutral-800/80 text-center space-y-3">
-              <span className="text-xs text-neutral-500 font-bold block">
-                © Bliss Balance 2026 • Feel The Bliss
-              </span>
-
-              <div className="flex items-center justify-center gap-2 text-[9px] font-bold text-neutral-400 uppercase flex-wrap">
-                <span className="px-2 py-1 bg-neutral-900 rounded border border-neutral-800">AMEX</span>
-                <span className="px-2 py-1 bg-neutral-900 rounded border border-neutral-800">MASTERCARD</span>
-                <span className="px-2 py-1 bg-neutral-900 rounded border border-neutral-800">VISA</span>
-                <span className="px-2 py-1 bg-neutral-900 rounded border border-neutral-800">UPI</span>
-                <span className="px-2 py-1 bg-neutral-900 rounded border border-neutral-800">RU PAY</span>
-              </div>
-            </div>
-
-          </div>
-
         </div>
       )}
 
+      {/* Customer Auth Modal */}
       <CustomerAuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
       />
 
+      {/* Wishlist Modal */}
       <WishlistModal
         isOpen={wishlistModalOpen}
         onClose={() => setWishlistModalOpen(false)}

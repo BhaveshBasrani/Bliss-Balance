@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
 import { getStoredSKUs, saveStoredSKUs, getStoredSettings, saveStoredSettings } from '@/lib/dataStore';
+import { upsertSupabaseSKU, deleteSupabaseSKU, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
 import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, SizeMarketplaceUrl } from '@/lib/types';
 import {
@@ -93,14 +94,23 @@ export default function AdminPage() {
 
   const availableSizeOptions = ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11', 'UK 12'];
 
+  const [quotaStats, setQuotaStats] = useState<StorageQuotaStats | null>(null);
+
   useEffect(() => {
-    setSkus(getStoredSKUs());
+    const currentSkus = getStoredSKUs();
+    setSkus(currentSkus);
     setSettings(getStoredSettings());
+    getStorageQuotaStats(currentSkus).then(setQuotaStats);
+
     const session = sessionStorage.getItem('bliss_balance_admin_auth');
     if (session === 'true') {
       setIsAuthenticated(true);
     }
   }, []);
+
+  useEffect(() => {
+    getStorageQuotaStats(skus).then(setQuotaStats);
+  }, [skus]);
 
   const addLog = (msg: string, type: string = 'INFO') => {
     setLogs(prev => [{ time: new Date().toLocaleTimeString(), msg, type }, ...prev]);
@@ -294,6 +304,9 @@ export default function AdminPage() {
     setSkus(updatedSkus);
     saveStoredSKUs(updatedSkus);
 
+    setSyncStepText('Writing Record to Supabase PostgreSQL Database...');
+    await upsertSupabaseSKU(savedSku);
+
     setSyncStepText('Generating reCAPTCHA v3 Security Token...');
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'save_sku');
 
@@ -307,8 +320,8 @@ export default function AdminPage() {
     });
 
     setIsSyncing(false);
-    addLog(`Product "${savedSku.title}" saved & synced to Google Sheets`, 'ACTION');
-    showStatus('success', `Product "${savedSku.title}" saved to Google Sheets! ${syncRes.message}`);
+    addLog(`Product "${savedSku.title}" saved to Supabase & Google Sheets`, 'ACTION');
+    showStatus('success', `Product "${savedSku.title}" saved to Supabase & Google Sheets!`);
 
     handleCancelEdit();
   };
@@ -317,11 +330,13 @@ export default function AdminPage() {
     if (!confirm(`Are you sure you want to delete product "${title}"?`)) return;
 
     setIsSyncing(true);
-    setSyncStepText(`Deleting "${title}" from Google Sheets...`);
+    setSyncStepText(`Deleting "${title}" from Supabase & Google Sheets...`);
 
     const updatedSkus = skus.filter(s => s.id !== id);
     setSkus(updatedSkus);
     saveStoredSKUs(updatedSkus);
+
+    await deleteSupabaseSKU(id);
 
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'delete_sku');
 
@@ -419,27 +434,27 @@ function doPost(e) {
   // PASSWORD GATE OVERLAY
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white flex flex-col justify-between font-mono p-4 transition-colors">
+      <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white flex flex-col justify-between font-mono p-4 transition-colors select-none">
         <div className="flex items-center justify-between py-4 max-w-xl mx-auto w-full">
           <Link
             href="/"
-            className="text-xs font-bold uppercase tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-red-600 flex items-center gap-2"
+            className="text-xs font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300 hover:text-red-600 flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" /> CLIENT STOREFRONT
           </Link>
-          <span className="text-[10px] text-red-600 font-bold border border-red-200 dark:border-red-800 px-2 py-0.5 rounded bg-red-50 dark:bg-red-950/60">
+          <span className="text-[10px] text-red-600 font-black border-2 border-red-600 px-2 py-0.5 rounded-none bg-red-50 dark:bg-red-950">
             SECURITY GATE // CONTROL STATION
           </span>
         </div>
 
-        <div className="w-full max-w-md mx-auto bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-8 space-y-6 shadow-xl relative">
+        <div className="w-full max-w-md mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] relative">
           <div className="text-center space-y-3">
-            <BrandLogo size="lg" className="mx-auto shadow-md" />
+            <BrandLogo size="lg" className="mx-auto rounded-none border border-black shadow-sm" />
             <div className="space-y-1">
               <h2 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-wider">
                 BLISS BALANCE // ADMIN
               </h2>
-              <p className="text-[10px] text-red-600 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-red-600 font-black uppercase tracking-widest">
                 SECURITY SHIELD ACTIVATED
               </p>
             </div>
@@ -447,7 +462,7 @@ function doPost(e) {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-mono font-bold uppercase text-neutral-700 dark:text-neutral-300 mb-1">
+              <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
                 DECRYPT SECURITY PASSWORD KEY
               </label>
               <div className="relative">
@@ -458,16 +473,16 @@ function doPost(e) {
                   onChange={(e) => setAdminPin(e.target.value)}
                   placeholder="••••••••"
                   autoFocus
-                  className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-10 pr-4 py-3 text-xs font-mono text-neutral-900 dark:text-white focus:outline-none focus:border-red-600"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none pl-10 pr-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:outline-none focus:border-red-600"
                 />
               </div>
-              <span className="block text-[10px] text-neutral-500 mt-1">
-                Developer Key: <strong className="text-red-600">8088</strong>
+              <span className="block text-[10px] text-neutral-500 font-bold mt-1">
+                Developer Key: <strong className="text-red-600 font-black">8088</strong>
               </span>
             </div>
 
             {loginError && (
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-500/50 text-red-600 dark:text-red-400 text-xs font-mono flex items-center gap-2">
+              <div className="p-3.5 rounded-none bg-red-50 dark:bg-red-950 border-2 border-red-600 text-red-600 text-xs font-mono font-bold flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{loginError}</span>
               </div>
@@ -475,18 +490,18 @@ function doPost(e) {
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             >
               <span>DECRYPT & UNLOCK STATION</span>
             </button>
           </form>
 
-          <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500">
+          <div className="pt-4 border-t-2 border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500 font-bold">
             SYSTEM STATUS: RECAPTCHA V3 & APPSCRIPT SECURED
           </div>
         </div>
 
-        <div className="text-center text-[10px] text-neutral-500 py-4">
+        <div className="text-center text-[10px] text-neutral-500 font-black py-4">
           © {new Date().getFullYear()} BLISS BALANCE CONTROL STATION
         </div>
       </div>
@@ -560,27 +575,51 @@ function doPost(e) {
               </h1>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
                 <div>
-                  <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase font-bold block">TOTAL PRODUCTS</span>
+                  <span className="text-[10px] text-neutral-500 uppercase font-black block">TOTAL PRODUCTS</span>
                   <span className="font-heading text-3xl font-black text-neutral-950 dark:text-white">{skus.length}</span>
                 </div>
                 <Layers className="w-8 h-8 text-red-600" />
               </div>
 
-              <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-xs">
+              {/* 1GB SUPABASE STORAGE MONITOR */}
+              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex flex-col justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-neutral-500 uppercase font-black">SUPABASE 1GB STORAGE</span>
+                  <Database className="w-5 h-5 text-emerald-600" />
+                </div>
                 <div>
-                  <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase font-bold block">APPSCRIPT EXCEL</span>
-                  <span className="font-heading text-xl font-black text-emerald-600 dark:text-emerald-400">ACTIVE & SYNCED</span>
+                  <div className="flex items-baseline justify-between text-xs font-black">
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      {quotaStats ? `${(quotaStats.remainingBytes / (1024 * 1024)).toFixed(1)} MB LEFT` : '998.4 MB LEFT'}
+                    </span>
+                    <span className="text-[10px] text-neutral-400">
+                      {quotaStats ? `${quotaStats.usedPercentage}% USED` : '0.1% USED'}
+                    </span>
+                  </div>
+                  <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-2 rounded-none mt-1.5 overflow-hidden border border-black">
+                    <div
+                      className="bg-emerald-600 h-full transition-all duration-500"
+                      style={{ width: `${quotaStats ? Math.max(2, quotaStats.usedPercentage) : 2}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
+                <div>
+                  <span className="text-[10px] text-neutral-500 uppercase font-black block">APPSCRIPT SPREADSHEET</span>
+                  <span className="font-heading text-lg font-black text-emerald-600 dark:text-emerald-400">ACTIVE & SYNCED</span>
                 </div>
                 <FileSpreadsheet className="w-8 h-8 text-emerald-600" />
               </div>
 
-              <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-xs">
+              <div className="p-5 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-800 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
                 <div>
-                  <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase font-bold block">HTML EMAIL NOTIFIER</span>
-                  <span className="font-heading text-xl font-black text-blue-600 dark:text-blue-400">ENABLED</span>
+                  <span className="text-[10px] text-neutral-500 uppercase font-black block">HTML EMAIL NOTIFIER</span>
+                  <span className="font-heading text-lg font-black text-blue-600 dark:text-blue-400">ENABLED</span>
                 </div>
                 <Mail className="w-8 h-8 text-blue-600" />
               </div>

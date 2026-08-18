@@ -15,6 +15,14 @@
   }
 }
 
+.font-heading {
+  font-family: var(--font-syne), var(--font-outfit), sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-space), var(--font-jakarta), monospace;
+}
+
 /* Hide invalid Google reCAPTCHA floating error badge on mobile screens */
 .grecaptcha-badge {
   visibility: hidden !important;

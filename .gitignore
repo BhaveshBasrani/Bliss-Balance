@@ -14,11 +14,13 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# Environment Config
+# Environment & MCP Config
 .env
 .env*.local
 .env.production
 .env.development
+.agents/mcp_config.json
+
 
 # Vercel & IDE
 .vercel

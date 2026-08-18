@@ -1,4 +1,5 @@
 import { FootwearSKU, CollectionItem, SiteSettings } from './types';
+import { fetchSupabaseSKUs, upsertSupabaseSKU, deleteSupabaseSKU } from './supabaseClient';
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   announcementText: 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL STORE',
@@ -69,14 +70,13 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
   },
 ];
 
-// ZERO HARDCODED / DEFAULT PRODUCTS - STRICTLY READS FROM LIVE ADMIN / GOOGLE SHEETS
 export const INITIAL_SKUS: FootwearSKU[] = [];
 
 // Persistence Storage Keys
 const SKUS_STORAGE_KEY = 'bliss_balance_skus_v2';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v2';
 
-// TURBO SPEED MEMORY CACHE & PROMISE DEDUPLICATION ENGINE
+// TURBO SPEED MEMORY CACHE
 let memorySkusCache: FootwearSKU[] | null = null;
 let lastSkusFetchTime = 0;
 let inFlightSkusPromise: Promise<FootwearSKU[]> | null = null;
@@ -85,7 +85,7 @@ let memorySettingsCache: SiteSettings | null = null;
 let lastSettingsFetchTime = 0;
 let inFlightSettingsPromise: Promise<SiteSettings> | null = null;
 
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2-minute high-speed in-memory TTL
+const CACHE_TTL_MS = 2 * 60 * 1000;
 
 export function getStoredSKUs(): FootwearSKU[] {
   if (typeof window === 'undefined') return [];
@@ -143,66 +143,55 @@ export function saveStoredSettings(settings: SiteSettings) {
 }
 
 /**
- * ⚡ BULLETPROOF NO-DATA-LOSS PRODUCT SYNC & FETCH ENGINE
- * Seamlessly merges live Google Sheets products with local storage.
- * Prevents cold-start empty responses from wiping uploaded products!
+ * ⚡ SUPABASE DATABASE HIGH-SPEED FETCH ENGINE WITH NO-DATA-LOSS FALLBACK
  */
 export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false): Promise<FootwearSKU[]> {
   const local = getStoredSKUs();
   const now = Date.now();
 
-  // 1. INSTANT RETURN (0ms): Return in-memory cache if fresh
   if (!forceRefresh && memorySkusCache && (now - lastSkusFetchTime < CACHE_TTL_MS)) {
     return memorySkusCache;
   }
 
-  // 2. DEDUPLICATED IN-FLIGHT PROMISE: Re-use network request if already in progress
   if (inFlightSkusPromise && !forceRefresh) {
     return inFlightSkusPromise;
   }
 
-  const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
-  if (!url || url.includes('EXAMPLE')) {
-    memorySkusCache = local;
-    return local;
-  }
-
   inFlightSkusPromise = (async () => {
     try {
-      const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
-      const data = await res.json();
-      
-      if (data && data.products && Array.isArray(data.products)) {
-        const cloudProducts: FootwearSKU[] = data.products;
+      // 1. PRIMARY FETCH FROM SUPABASE DATABASE
+      const supabaseProducts = await fetchSupabaseSKUs();
 
-        // If cloud returns empty list but local has uploaded products, do NOT wipe local products!
-        if (cloudProducts.length === 0 && local.length > 0) {
-          memorySkusCache = local;
-          return local;
-        }
-
-        // NO-DATA-LOSS MERGE: Combine local products & cloud products using a Map by SKU ID
-        const mergedMap = new Map<string, FootwearSKU>();
-        
-        // Put local SKUs into map first
-        local.forEach(sku => mergedMap.set(sku.id, sku));
-        
-        // Merge cloud SKUs into map (cloud updates existing or adds new)
-        cloudProducts.forEach(sku => mergedMap.set(sku.id, sku));
-
-        const mergedSkus = Array.from(mergedMap.values());
-
-        memorySkusCache = mergedSkus;
+      if (supabaseProducts && supabaseProducts.length > 0) {
+        memorySkusCache = supabaseProducts;
         lastSkusFetchTime = Date.now();
-        localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(mergedSkus));
-        window.dispatchEvent(new Event('skus-updated'));
-        return mergedSkus;
+        saveStoredSKUs(supabaseProducts);
+        return supabaseProducts;
+      }
+
+      // 2. FALLBACK FETCH FROM GOOGLE APPSCRIPT IF SUPABASE IS EMPTY
+      const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
+      if (url && !url.includes('EXAMPLE')) {
+        const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
+        const data = await res.json();
+        if (data && data.products && Array.isArray(data.products) && data.products.length > 0) {
+          const cloudProducts: FootwearSKU[] = data.products;
+          
+          // Sync Apps Script products to Supabase in background
+          cloudProducts.forEach(sku => upsertSupabaseSKU(sku));
+
+          memorySkusCache = cloudProducts;
+          lastSkusFetchTime = Date.now();
+          saveStoredSKUs(cloudProducts);
+          return cloudProducts;
+        }
       }
     } catch (e) {
-      console.warn('Could not fetch live cloud products:', e);
+      console.warn('Could not fetch cloud SKUs:', e);
     } finally {
       inFlightSkusPromise = null;
     }
+
     memorySkusCache = local;
     return local;
   })();
