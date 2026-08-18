@@ -194,10 +194,8 @@ export default function AdminPage() {
 
     // Fetch live products from Supabase/cloud on mount to guarantee up-to-date products!
     fetchCloudSKUs(undefined, true).then(cloudSkus => {
-      if (cloudSkus && cloudSkus.length > 0) {
-        setSkus(cloudSkus);
-        getStorageQuotaStats(cloudSkus).then(setQuotaStats);
-      }
+      setSkus(cloudSkus || []);
+      getStorageQuotaStats(cloudSkus || []).then(setQuotaStats);
     }).catch(() => {});
 
     const session = sessionStorage.getItem('bliss_balance_admin_auth');
@@ -522,30 +520,41 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
   // PASSWORD GATE OVERLAY
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white flex flex-col justify-between font-mono p-4 transition-colors select-none">
-        <div className="flex items-center justify-between py-4 max-w-xl mx-auto w-full">
+      <div className="min-h-screen bg-neutral-50 dark:bg-black text-neutral-900 dark:text-white font-mono flex flex-col items-center justify-center p-4 transition-colors relative select-none">
+        
+        {/* Top Header Return Link */}
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between max-w-xl mx-auto w-full">
           <Link
             href="/"
-            className="text-xs font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300 hover:text-red-600 flex items-center gap-2"
+            className="text-xs font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-300 hover:text-red-600 flex items-center gap-2 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> CLIENT STOREFRONT
           </Link>
-          <span className="text-[10px] text-red-600 font-black border-2 border-red-600 px-2 py-0.5 rounded-none bg-red-50 dark:bg-red-950">
+          <span className="text-[10px] text-red-600 font-black border border-red-200 dark:border-red-800 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/80">
             SECURITY GATE // CONTROL STATION
           </span>
         </div>
 
-        <div className="w-full max-w-md mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] relative">
-          <div className="text-center space-y-3">
-            <BrandLogo size="lg" className="mx-auto rounded-none border-2 border-black shadow-sm" />
-            <div className="space-y-1">
-              <h2 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-wider">
-                BLISS BALANCE // ADMIN
-              </h2>
-              <p className="text-[10px] text-red-600 font-black uppercase tracking-widest">
-                SECURITY SHIELD ACTIVATED
-              </p>
+        {/* Ambient Glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-600/10 dark:bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Login Box */}
+        <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border border-neutral-200 dark:border-neutral-800 rounded-2xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-xl relative z-10">
+          
+          <div className="text-center space-y-2 border-b border-neutral-200 dark:border-neutral-800 pb-5">
+            <div className="w-14 h-14 mx-auto flex items-center justify-center p-2 rounded-2xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-800">
+              <BrandLogo size="md" />
             </div>
+
+            <span className="text-[10px] font-black text-red-600 uppercase tracking-widest block pt-1">
+              BLISS BALANCE SECURITY ENGINE
+            </span>
+            <h2 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+              CONTROL STATION UNLOCK
+            </h2>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold">
+              Enter admin security password to access merchant controls.
+            </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -561,7 +570,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   onChange={(e) => setAdminPin(e.target.value)}
                   placeholder="••••••••"
                   autoFocus
-                  className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none pl-10 pr-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:outline-none focus:border-red-600"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-10 pr-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:outline-none focus:border-red-600"
                 />
               </div>
               <span className="block text-[10px] text-neutral-500 font-bold mt-1">
@@ -570,7 +579,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
 
             {loginError && (
-              <div className="p-3.5 rounded-none bg-red-50 dark:bg-red-950 border-2 border-red-600 text-red-600 text-xs font-mono font-bold flex items-center gap-2">
+              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/80 border border-red-200 dark:border-red-800 text-red-600 text-xs font-mono font-bold flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{loginError}</span>
               </div>
@@ -578,13 +587,13 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
             <button
               type="submit"
-              className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+              className="w-full py-3.5 rounded-xl bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
             >
               <span>DECRYPT & UNLOCK STATION</span>
             </button>
           </form>
 
-          <div className="pt-4 border-t-2 border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500 font-black uppercase">
+          <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 text-center text-[10px] text-neutral-500 font-black uppercase">
             SYSTEM STATUS: RECAPTCHA V3 & APPSCRIPT SECURED
           </div>
         </div>
@@ -621,21 +630,21 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
       )}
 
       <div>
-        <div className="bg-neutral-100 dark:bg-neutral-900 border-b-2 border-neutral-900 dark:border-neutral-100 py-3 px-4 sm:px-8 flex items-center justify-between text-xs">
+        <div className="bg-neutral-50/80 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800 py-3 px-4 sm:px-8 flex items-center justify-between text-xs backdrop-blur-md">
           <Link
             href="/"
-            className="font-black text-neutral-800 dark:text-neutral-200 hover:text-red-600 uppercase flex items-center gap-2"
+            className="font-black text-neutral-800 dark:text-neutral-200 hover:text-red-600 uppercase flex items-center gap-2 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> RETURN TO CLIENT STOREFRONT
           </Link>
 
-          <span className="hidden sm:inline text-[11px] text-emerald-600 dark:text-emerald-400 font-black bg-white dark:bg-black px-3 py-1 rounded-none border-2 border-black dark:border-white">
+          <span className="hidden sm:inline text-[11px] text-emerald-600 dark:text-emerald-400 font-black bg-white dark:bg-black px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-800">
             SESSION: SECURELY DECRYPTED // BLISS SERVER
           </span>
 
           <button
             onClick={handleLogout}
-            className="px-3.5 py-1.5 rounded-none bg-red-600 text-white font-black uppercase border-2 border-black hover:bg-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="px-3.5 py-1.5 rounded-xl bg-red-600 text-white font-black uppercase border border-red-600 hover:bg-neutral-950 transition-all duration-200 shadow-sm"
           >
             LOCK SESSION ✕
           </button>
@@ -655,7 +664,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
             {/* DASHBOARD METRICS GRID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="p-5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-sm">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">TOTAL PRODUCTS</span>
                   <span className="font-heading text-3xl font-black text-neutral-950 dark:text-white">{skus.length}</span>
@@ -664,7 +673,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
               </div>
 
               {/* 1GB SUPABASE STORAGE MONITOR */}
-              <div className="p-5 rounded-lg bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex flex-col justify-between shadow-sm space-y-2">
+              <div className="p-5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex flex-col justify-between shadow-sm space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-neutral-500 uppercase font-black">SUPABASE 1GB STORAGE</span>
                   <button
@@ -694,7 +703,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                 </div>
               </div>
 
-              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="p-5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-sm">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">APPSCRIPT SPREADSHEET</span>
                   <span className="font-heading text-lg font-black text-emerald-600 dark:text-emerald-400">ACTIVE & SYNCED</span>
@@ -702,7 +711,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                 <FileSpreadsheet className="w-8 h-8 text-emerald-600" />
               </div>
 
-              <div className="p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="p-5 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center justify-between shadow-sm">
                 <div>
                   <span className="text-[10px] text-neutral-500 uppercase font-black block">HTML EMAIL NOTIFIER</span>
                   <span className="font-heading text-lg font-black text-blue-600 dark:text-blue-400">ENABLED</span>
@@ -790,9 +799,9 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
               {/* Product Form (Create & Edit Mode) */}
-              <div className="lg:col-span-7 bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
+              <div className="lg:col-span-7 bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
                 
-                <div className="flex items-center justify-between border-b-2 border-neutral-900 dark:border-neutral-800 pb-3">
+                <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
                   <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                     {editingSkuId ? <Edit className="w-5 h-5 text-red-600" /> : <Plus className="w-5 h-5 text-red-600" />}
                     <span>{editingSkuId ? 'EDIT FOOTWEAR PRODUCT' : 'CREATE NEW FOOTWEAR PRODUCT'}</span>
@@ -801,7 +810,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   {editingSkuId && (
                     <button
                       onClick={handleCancelEdit}
-                      className="px-3.5 py-1.5 rounded-none bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white border-2 border-black text-xs font-black uppercase flex items-center gap-1 hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      className="px-3.5 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-800 text-xs font-black uppercase flex items-center gap-1 hover:bg-red-600 hover:text-white transition-all shadow-sm"
                     >
                       <X className="w-3.5 h-3.5" /> CANCEL EDIT
                     </button>
@@ -820,7 +829,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       value={newSku.title}
                       onChange={(e) => setNewSku({ ...newSku, title: e.target.value })}
                       placeholder="e.g. BB158 (Bliss Sneaker)"
-                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
 
@@ -833,7 +842,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       value={newSku.subtitle}
                       onChange={(e) => setNewSku({ ...newSku, subtitle: e.target.value })}
                       placeholder="e.g. All-Day Perfect Comfort for Active Lifestyles"
-                      className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                      className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                     />
                   </div>
 
@@ -845,7 +854,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       <select
                         value={newSku.gender}
                         onChange={(e) => setNewSku({ ...newSku, gender: e.target.value as Gender })}
-                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
                       >
                         <option value="Men">Men</option>
                         <option value="Women">Women</option>
@@ -860,7 +869,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       <select
                         value={newSku.category}
                         onChange={(e) => setNewSku({ ...newSku, category: e.target.value as FootwearCategory })}
-                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-black"
                       >
                         <option value="Slippers">Slippers</option>
                         <option value="Flip-Flops">Flip-Flops</option>
@@ -888,7 +897,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                         value={newSku.price}
                         onChange={(e) => setNewSku({ ...newSku, price: Number(e.target.value) })}
                         placeholder="1675"
-                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
 
@@ -901,7 +910,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                         value={newSku.originalPrice || ''}
                         onChange={(e) => setNewSku({ ...newSku, originalPrice: Number(e.target.value) })}
                         placeholder="4499"
-                        className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                        className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -919,10 +928,10 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                             type="button"
                             key={size}
                             onClick={() => toggleSize(size)}
-                            className={`px-3 py-2 rounded-none text-xs font-mono font-black uppercase border-2 transition-all ${
+                            className={`px-3.5 py-2 rounded-xl text-xs font-mono font-black uppercase transition-all duration-200 border ${
                               isChecked
-                                ? 'bg-red-600 text-white border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                                : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200 border-neutral-900 dark:border-neutral-700'
+                                ? 'bg-red-600 text-white border-red-600 shadow-xs'
+                                : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600/60'
                             }`}
                           >
                             {size} {isChecked && '✓'}
@@ -962,7 +971,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   </div>
 
                   {/* ADDITIONAL CATALOG / GALLERY PHOTOS */}
-                  <div className="space-y-3 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
+                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                     <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5">
                       <ImageIcon className="w-4 h-4 text-red-600" />
                       <span>CATALOG & GALLERY PHOTOS (UP TO 4 EXTRA ANGLE PHOTOS)</span>
@@ -985,7 +994,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   </div>
 
                   {/* COLOR VARIANTS WITH SPECIFIC PHOTOS & BUY LINKS */}
-                  <div className="space-y-4 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
+                  <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                     <div className="flex items-center justify-between">
                       <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5">
                         <Palette className="w-4 h-4 text-red-600" />
@@ -994,21 +1003,21 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     </div>
 
                     {/* 1-CLICK QUICK ADD COMMON COLORS */}
-                    <div className="p-4 rounded-none bg-neutral-100 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-2">
+                    <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-2">
                       <span className="block text-[10px] font-mono font-black uppercase text-neutral-500">
                         ⚡ 1-CLICK ADD COMMON FOOTWEAR COLORS:
                       </span>
                       <div className="flex flex-wrap gap-2">
-                        <button type="button" onClick={() => addQuickColorVariant('Navy & White', '#1E293B')} className="px-3 py-1.5 rounded-none bg-slate-900 text-white text-[11px] font-mono font-black border border-black shadow-xs">
+                        <button type="button" onClick={() => addQuickColorVariant('Navy & White', '#1E293B')} className="px-3.5 py-1.5 rounded-lg bg-slate-900 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
                           + Navy & White
                         </button>
-                        <button type="button" onClick={() => addQuickColorVariant('Chestnut Brown', '#451A03')} className="px-3 py-1.5 rounded-none bg-amber-950 text-white text-[11px] font-mono font-black border border-black shadow-xs">
+                        <button type="button" onClick={() => addQuickColorVariant('Chestnut Brown', '#451A03')} className="px-3.5 py-1.5 rounded-lg bg-amber-950 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
                           + Chestnut Brown
                         </button>
-                        <button type="button" onClick={() => addQuickColorVariant('All Black', '#000000')} className="px-3 py-1.5 rounded-none bg-black text-white text-[11px] font-mono font-black border border-neutral-700 shadow-xs">
+                        <button type="button" onClick={() => addQuickColorVariant('All Black', '#000000')} className="px-3.5 py-1.5 rounded-lg bg-black text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
                           + All Black
                         </button>
-                        <button type="button" onClick={() => addQuickColorVariant('Olive Green', '#3F6212')} className="px-3 py-1.5 rounded-none bg-lime-950 text-white text-[11px] font-mono font-black border border-black shadow-xs">
+                        <button type="button" onClick={() => addQuickColorVariant('Olive Green', '#3F6212')} className="px-3.5 py-1.5 rounded-lg bg-lime-950 text-white text-[11px] font-mono font-black shadow-xs transition-all hover:bg-red-600">
                           + Olive Green
                         </button>
                       </div>
@@ -1017,11 +1026,11 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     {/* Added Colors List */}
                     <div className="flex flex-wrap gap-2">
                       {newSku.colorVariants?.map((cv, idx) => (
-                        <div key={idx} className="px-3.5 py-2 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 flex items-center gap-3 text-xs font-mono font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <div key={idx} className="px-3.5 py-2 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center gap-3 text-xs font-mono font-black shadow-xs">
                           {cv.imageUrl ? (
-                            <img src={cv.imageUrl} alt={cv.name} className="w-6 h-6 rounded-none object-cover border border-black" />
+                            <img src={cv.imageUrl} alt={cv.name} className="w-6 h-6 rounded-lg object-cover border border-neutral-200 dark:border-neutral-800" />
                           ) : (
-                            <span className="w-4 h-4 rounded-none border border-black" style={{ backgroundColor: cv.hex }} />
+                            <span className="w-4 h-4 rounded-full border border-neutral-300 dark:border-neutral-700" style={{ backgroundColor: cv.hex }} />
                           )}
                           <span>{cv.name}</span>
                           <button type="button" onClick={() => removeColorVariant(idx)} className="text-neutral-400 hover:text-red-600 font-black">
@@ -1032,7 +1041,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     </div>
 
                     {/* Color Variant Add Card */}
-                    <div className="p-4 sm:p-6 rounded-none bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 space-y-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm">
                       <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                         
                         <div className="sm:col-span-4 space-y-1">
@@ -1057,7 +1066,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                                 value={colorInput.name}
                                 onChange={(e) => setColorInput({ ...colorInput, name: e.target.value })}
                                 placeholder="Navy Blue"
-                                className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2 text-xs font-mono"
+                                className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono"
                               />
                             </div>
 
@@ -1068,13 +1077,13 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                                   type="color"
                                   value={colorInput.hex}
                                   onChange={(e) => setColorInput({ ...colorInput, hex: e.target.value })}
-                                  className="w-8 h-8 rounded-none border border-black cursor-pointer bg-transparent"
+                                  className="w-8 h-8 rounded-lg border border-neutral-300 dark:border-neutral-700 cursor-pointer bg-transparent"
                                 />
                                 <input
                                   type="text"
                                   value={colorInput.hex}
                                   onChange={(e) => setColorInput({ ...colorInput, hex: e.target.value })}
-                                  className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2 text-xs font-mono font-black"
+                                  className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono font-black"
                                 />
                               </div>
                             </div>
@@ -1086,28 +1095,28 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                               value={colorInput.amazonUrl || ''}
                               onChange={(e) => setColorInput({ ...colorInput, amazonUrl: e.target.value })}
                               placeholder="Amazon Link for this color"
-                              className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-2.5 py-2 text-[11px] font-mono"
+                              className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-2.5 py-2 text-[11px] font-mono"
                             />
                             <input
                               type="url"
                               value={colorInput.myntraUrl || ''}
                               onChange={(e) => setColorInput({ ...colorInput, myntraUrl: e.target.value })}
                               placeholder="Myntra Link for this color"
-                              className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-2.5 py-2 text-[11px] font-mono"
+                              className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-2.5 py-2 text-[11px] font-mono"
                             />
                             <input
                               type="url"
                               value={colorInput.flipkartUrl || ''}
                               onChange={(e) => setColorInput({ ...colorInput, flipkartUrl: e.target.value })}
                               placeholder="Flipkart Link for this color"
-                              className="w-full bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-2.5 py-2 text-[11px] font-mono"
+                              className="w-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-xl px-2.5 py-2 text-[11px] font-mono"
                             />
                           </div>
 
                           <button
                             type="button"
                             onClick={addColorVariant}
-                            className="w-full py-3 rounded-none bg-black text-white dark:bg-white dark:text-black text-xs font-mono font-black uppercase border-2 border-black hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                            className="w-full py-3.5 rounded-xl bg-neutral-950 text-white dark:bg-white dark:text-black text-xs font-mono font-black uppercase hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm"
                           >
                             + ADD COLOR VARIANT WITH PHOTO & LINKS
                           </button>
@@ -1118,7 +1127,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   </div>
 
                   {/* BASE MARKETPLACE LINKS */}
-                  <div className="space-y-3 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800">
+                  <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
                     <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200">
                       DEFAULT BASE MARKETPLACE LINKS
                     </label>
@@ -1131,7 +1140,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                           value={newSku.amazonUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, amazonUrl: e.target.value })}
                           placeholder="https://www.amazon.in/dp/B0H9B2DYS7..."
-                          className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                          className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
 
@@ -1142,7 +1151,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                           value={newSku.myntraUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, myntraUrl: e.target.value })}
                           placeholder="https://myntra.com/..."
-                          className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                          className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
 
@@ -1153,7 +1162,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                           value={newSku.flipkartUrl || ''}
                           onChange={(e) => setNewSku({ ...newSku, flipkartUrl: e.target.value })}
                           placeholder="https://flipkart.com/..."
-                          className="w-full bg-neutral-50 dark:bg-neutral-950 border-2 border-neutral-900 dark:border-neutral-700 rounded-none px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
+                          className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -1162,7 +1171,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   <button
                     type="submit"
                     disabled={isSyncing}
-                    className="w-full py-4 rounded-none bg-red-600 hover:bg-black text-white font-mono font-black text-xs uppercase tracking-widest border-2 border-black transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                    className="w-full py-4 rounded-xl bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
                   >
                     <Save className="w-4 h-4" />
                     <span>{editingSkuId ? 'UPDATE PRODUCT & SYNC TO SHEETS' : 'PUBLISH PRODUCT & SYNC TO SHEETS'}</span>
@@ -1173,13 +1182,13 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
               {/* Active Products List */}
               <div className="lg:col-span-5 space-y-4">
-                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b-2 border-neutral-900 dark:border-neutral-800 pb-3">
+                <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
                   <span>ACTIVE PRODUCTS</span>
                   <span className="text-xs text-red-600 font-mono font-black">{skus.length} Items</span>
                 </h3>
 
                 {skus.length === 0 ? (
-                  <div className="text-center py-12 bg-white dark:bg-black rounded-none border-2 border-neutral-900 dark:border-neutral-800 p-6 space-y-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="text-center py-12 bg-white dark:bg-black rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-2 shadow-sm">
                     <p className="text-xs text-neutral-500 font-mono font-bold">No products created yet.</p>
                   </div>
                 ) : (
@@ -1187,13 +1196,13 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     {skus.map((sku) => (
                       <div
                         key={sku.id}
-                        className={`p-4 rounded-none bg-white dark:bg-black border-2 flex items-center justify-between gap-4 transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${
-                          editingSkuId === sku.id ? 'border-red-600 shadow-[3px_3px_0px_0px_rgba(220,38,38,1)]' : 'border-neutral-900 dark:border-neutral-700 hover:border-neutral-500'
+                        className={`p-4 rounded-xl bg-white dark:bg-black border flex items-center justify-between gap-4 transition-all shadow-sm ${
+                          editingSkuId === sku.id ? 'border-red-600 ring-2 ring-red-600/20' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-400'
                         }`}
                       >
                         <div className="space-y-1 overflow-hidden font-mono">
                           <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black uppercase text-red-600 bg-red-50 dark:bg-red-950 px-2 py-0.5 border border-red-600">
+                            <span className="text-[9px] font-black uppercase text-red-600 bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800">
                               {sku.gender} • {sku.category}
                             </span>
                             <span className="text-[9px] text-neutral-400 font-black">{sku.id}</span>
@@ -1213,7 +1222,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                           <button
                             onClick={() => handleEditClick(sku)}
                             disabled={isSyncing}
-                            className="p-2.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-black text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                            className="p-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-xs"
                             title="Edit Product"
                           >
                             <Edit className="w-4 h-4" />
@@ -1222,7 +1231,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                           <button
                             onClick={() => handleDeleteSku(sku.id, sku.title)}
                             disabled={isSyncing}
-                            className="p-2.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-black text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                            className="p-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white hover:bg-red-600 hover:text-white transition-all shadow-xs"
                             title="Delete Product"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1237,10 +1246,10 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
           )}
 
-          {/* TAB 3: LANDING BANNER & MEDIA */}
+          {/* TAB 2: LANDING BANNER & MEDIA */}
           {activeTab === 'landing' && (
-            <div className="max-w-3xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
-              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3">
+            <div className="max-w-3xl mx-auto bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3">
                 <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white">
                   CHANGE HERO LANDING BANNER & MEDIA
                 </h3>
@@ -1392,10 +1401,10 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
           )}
 
-          {/* TAB 4: APPSCRIPT & EMAIL ENGINE */}
+          {/* TAB 3: APPSCRIPT & EMAIL ENGINE */}
           {activeTab === 'appscript' && (
-            <div className="max-w-4xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
-              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3 flex items-center justify-between">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
                 <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                   <Database className="w-5 h-5 text-red-600" /> APPSCRIPT & HTML EMAIL ENGINE
                 </h3>
@@ -1491,29 +1500,36 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
           )}
 
-          {/* TAB 5: SYSTEM AUDIT LOGS */}
+          {/* TAB 4: SYSTEM AUDIT LOGS */}
           {activeTab === 'logs' && (
-            <div className="max-w-4xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-4 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
-              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3 flex items-center justify-between">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
                 <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                   <Terminal className="w-5 h-5 text-red-600" /> SYSTEM AUDIT LOGS
                 </h3>
                 <button
-                  onClick={() => setLogs([])}
-                  className="text-xs text-neutral-500 hover:text-red-600 font-mono font-black uppercase"
+                  onClick={() => {
+                    setLogs([]);
+                    try {
+                      localStorage.removeItem('bliss_balance_logs_v1');
+                    } catch (e) {}
+                    showStatus('info', 'Audit logs cleared successfully!');
+                  }}
+                  className="px-3.5 py-1.5 rounded-lg bg-red-600 text-white hover:bg-neutral-950 font-mono font-black text-xs uppercase transition-all shadow-sm flex items-center gap-1.5"
                 >
-                  CLEAR LOGS
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>CLEAR LOGS</span>
                 </button>
               </div>
 
-              <div className="p-4 bg-neutral-50 dark:bg-neutral-950 rounded-none border-2 border-neutral-900 dark:border-neutral-800 font-mono text-xs space-y-2 max-h-[500px] overflow-y-auto">
+              <div className="p-4 bg-neutral-50 dark:bg-neutral-950 rounded-xl border border-neutral-200 dark:border-neutral-800 font-mono text-xs space-y-2 max-h-[500px] overflow-y-auto">
                 {logs.map((log, idx) => (
                   <div key={idx} className="flex items-start gap-3 py-1 border-b border-neutral-200 dark:border-neutral-800">
                     <span className="text-neutral-400 text-[10px] font-bold">{log.time}</span>
-                    <span className={`text-[10px] font-black px-2 py-0.5 border ${
-                      log.type === 'SECURITY' ? 'bg-red-600 text-white border-black' :
-                      log.type === 'ACTION' ? 'bg-emerald-600 text-white border-black' :
-                      'bg-black text-white border-black'
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${
+                      log.type === 'SECURITY' ? 'bg-red-600 text-white border-red-600' :
+                      log.type === 'ACTION' ? 'bg-emerald-600 text-white border-emerald-600' :
+                      'bg-neutral-900 text-white border-neutral-800'
                     }`}>
                       {log.type}
                     </span>
@@ -1524,10 +1540,10 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
           )}
 
-          {/* TAB 6: REVIEWS MANAGER */}
+          {/* TAB 5: REVIEWS MANAGER */}
           {activeTab === 'reviews' && (
-            <div className="max-w-4xl mx-auto bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-100 rounded-none p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)]">
-              <div className="border-b-2 border-neutral-900 dark:border-neutral-800 pb-3 flex items-center justify-between">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-3 flex items-center justify-between">
                 <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-red-600" /> CUSTOMER REVIEWS MANAGER [{allReviews.length}]
                 </h3>

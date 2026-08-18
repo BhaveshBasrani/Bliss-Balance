@@ -77,10 +77,10 @@ export default function WomenPage() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-4 py-2 rounded-none text-xs font-black uppercase tracking-wider transition-all border-2 ${
+              className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${
                 selectedCategory === cat
-                  ? 'bg-red-600 text-white border-red-600 shadow-md'
-                  : 'bg-white dark:bg-black text-neutral-800 dark:text-neutral-200 border-neutral-900 dark:border-neutral-800 hover:border-red-600'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-neutral-50 dark:bg-black text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600/60'
               }`}
             >
               {cat}

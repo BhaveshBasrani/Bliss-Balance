@@ -48,8 +48,11 @@ export default function HomePage() {
   }, []);
 
   const displayedSkus = skus.filter(s => {
+    if (!s) return false;
     if (selectedTab === 'All') return true;
-    return s.gender === selectedTab || s.gender === 'Unisex';
+    const g = (s.gender || '').toLowerCase();
+    const target = selectedTab.toLowerCase();
+    return g === target || g === 'unisex';
   });
 
   return (

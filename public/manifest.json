@@ -1,0 +1,22 @@
+{
+  "short_name": "Bliss Balance",
+  "name": "Bliss Balance Footwear",
+  "description": "Engineered for Everyday Balance. Soft cushioned, lightweight & anti-skid footwear.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#DC2626",
+  "display": "standalone",
+  "orientation": "portrait"
+}

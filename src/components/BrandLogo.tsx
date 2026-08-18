@@ -9,10 +9,10 @@ interface BrandLogoProps {
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '' }) => {
   const dimensions = {
-    sm: 'w-10 h-10 sm:w-11 sm:h-11',
-    md: 'w-13 h-13 sm:w-15 sm:h-15',
-    lg: 'w-18 h-18 sm:w-20 sm:h-20',
-    xl: 'w-28 h-28 sm:w-32 sm:h-32',
+    sm: 'w-8 h-8 sm:w-10 sm:h-10',
+    md: 'w-10 h-10 sm:w-12 sm:h-12',
+    lg: 'w-16 h-16 sm:w-20 sm:h-20',
+    xl: 'w-24 h-24 sm:w-32 sm:h-32',
   }[size];
 
   return (
@@ -20,7 +20,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '
       <img
         src="/Logo.svg"
         alt="Bliss Balance Emblem"
-        className="w-full h-full object-contain filter brightness-0 dark:invert transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-115 group-hover:-rotate-3"
+        className="w-full h-full object-contain filter brightness-0 dark:invert transition-all duration-300 ease-out group-hover:scale-105 group-hover:-rotate-3"
       />
     </div>
   );

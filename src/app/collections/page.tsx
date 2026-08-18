@@ -123,20 +123,20 @@ function CollectionsContent() {
         </div>
 
         {/* Dynamic Multi-Filter System (Gender, Category, Size, Color) */}
-        <div className="space-y-5 bg-neutral-50 dark:bg-neutral-950 p-6 rounded-none border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+        <div className="space-y-6 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl">
           
           <div className="flex flex-wrap items-center justify-between gap-4">
             
             {/* Gender Filters */}
-            <div className="flex items-center gap-1.5 bg-white dark:bg-black p-1.5 rounded-none border-2 border-neutral-900 dark:border-neutral-700 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1.5 bg-neutral-100 dark:bg-neutral-950 p-1.5 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-x-auto no-scrollbar">
               {(['All', 'Men', 'Women', 'Kids'] as const).map((g) => (
                 <button
                   key={g}
                   onClick={() => setSelectedGender(g)}
-                  className={`px-4 py-2 rounded-none text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap border ${
+                  className={`px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap ${
                     selectedGender === g
-                      ? 'bg-red-600 text-white border-red-600 shadow-md'
-                      : 'text-neutral-700 dark:text-neutral-300 border-transparent hover:border-neutral-900 dark:hover:border-neutral-100'
+                      ? 'bg-red-600 text-white shadow-sm'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white'
                   }`}
                 >
                   {g === 'All' ? 'ALL COLLECTIONS' : g}
@@ -148,7 +148,7 @@ function CollectionsContent() {
             {(selectedGender !== 'All' || selectedCategory !== 'All' || selectedSize !== 'All' || selectedColor !== 'All') && (
               <button
                 onClick={resetAllFilters}
-                className="px-4 py-2 rounded-none bg-neutral-200 dark:bg-neutral-800 hover:bg-red-600 hover:text-white text-xs font-black uppercase transition-all flex items-center gap-1.5 border border-black"
+                className="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-red-600 hover:text-white text-neutral-900 dark:text-white text-xs font-black uppercase transition-all duration-200 flex items-center gap-1.5 border border-neutral-200 dark:border-neutral-700 shadow-xs"
               >
                 <RefreshCw className="w-3.5 h-3.5" /> RESET ALL FILTERS
               </button>
@@ -157,19 +157,19 @@ function CollectionsContent() {
           </div>
 
           {/* Category Filter Pills */}
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <label className="block text-[10px] font-black uppercase text-neutral-400 tracking-widest flex items-center gap-1">
-              <Layers className="w-3 h-3" /> CATEGORY
+              <Layers className="w-3 h-3 text-red-600" /> CATEGORY
             </label>
             <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
               {allCategories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-none text-xs font-black uppercase tracking-wider transition-all border-2 ${
+                  className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 border ${
                     selectedCategory === cat
                       ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                      : 'bg-white dark:bg-black text-neutral-800 dark:text-neutral-200 border-neutral-900 dark:border-neutral-800 hover:border-red-600'
+                      : 'bg-neutral-50 dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800 hover:border-red-600/60'
                   }`}
                 >
                   {cat}
@@ -179,21 +179,21 @@ function CollectionsContent() {
           </div>
 
           {/* Size & Color Multi-Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-neutral-200 dark:border-neutral-800">
             {/* Size Selector */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label className="block text-[10px] font-black uppercase text-neutral-400 tracking-widest flex items-center gap-1">
-                <Ruler className="w-3 h-3" /> SIZE (UK)
+                <Ruler className="w-3 h-3 text-red-600" /> SIZE (UK)
               </label>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                 {allSizes.map((sz) => (
                   <button
                     key={sz}
                     onClick={() => setSelectedSize(sz)}
-                    className={`px-3 py-1.5 rounded-none text-xs font-black uppercase transition-all border ${
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase transition-all duration-200 border ${
                       selectedSize === sz
-                        ? 'bg-neutral-950 dark:bg-white text-white dark:text-black border-neutral-950 dark:border-white'
-                        : 'bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-800 hover:border-neutral-900'
+                        ? 'bg-neutral-950 dark:bg-white text-white dark:text-black border-neutral-950 dark:border-white shadow-sm'
+                        : 'bg-neutral-50 dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800 hover:border-neutral-500'
                     }`}
                   >
                     {sz}
@@ -202,29 +202,28 @@ function CollectionsContent() {
               </div>
             </div>
 
-            {/* Color Filter */}
-            <div className="space-y-1.5">
+            {/* Color Selector */}
+            <div className="space-y-2">
               <label className="block text-[10px] font-black uppercase text-neutral-400 tracking-widest flex items-center gap-1">
-                <Palette className="w-3 h-3" /> COLOR
+                <Palette className="w-3 h-3 text-red-600" /> COLOR
               </label>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                {allColors.map((clr) => (
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                {allColors.map((col) => (
                   <button
-                    key={clr}
-                    onClick={() => setSelectedColor(clr)}
-                    className={`px-3 py-1.5 rounded-none text-xs font-black uppercase transition-all border ${
-                      selectedColor === clr
-                        ? 'bg-red-600 text-white border-red-600'
-                        : 'bg-white dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-800 hover:border-neutral-900'
+                    key={col}
+                    onClick={() => setSelectedColor(col)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase transition-all duration-200 border ${
+                      selectedColor === col
+                        ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                        : 'bg-neutral-50 dark:bg-black text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800 hover:border-red-600/60'
                     }`}
                   >
-                    {clr}
+                    {col}
                   </button>
                 ))}
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Results Counter Bar */}

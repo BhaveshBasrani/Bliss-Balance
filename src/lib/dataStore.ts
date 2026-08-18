@@ -144,23 +144,38 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
   try {
     memorySkusCache = skus;
     lastSkusFetchTime = Date.now();
-    const jsonString = JSON.stringify(skus);
+    
+    // Remove legacy fallback key to free up browser storage space
+    try {
+      localStorage.removeItem(SKUS_STORAGE_FALLBACK_KEY);
+    } catch (e) {}
+
+    // Sanitize any large base64 inline images before storing locally
+    const sanitized = skus.map(s => ({
+      ...s,
+      imageUrl: s.imageUrl && s.imageUrl.startsWith('data:image') ? '/collections/mens-casual-sneakers.jpg' : s.imageUrl,
+      hoverImageUrl: s.hoverImageUrl && s.hoverImageUrl.startsWith('data:image') ? '' : s.hoverImageUrl,
+      galleryImages: (s.galleryImages || []).filter(img => img && !img.startsWith('data:image')),
+    }));
+
+    const jsonString = JSON.stringify(sanitized);
     localStorage.setItem(SKUS_STORAGE_KEY, jsonString);
-    localStorage.setItem(SKUS_STORAGE_FALLBACK_KEY, jsonString);
     window.dispatchEvent(new Event('skus-updated'));
   } catch (e) {
+    // If quota is still exceeded, clear memory cache and fallback cleanly
     try {
-      const sanitized = skus.map(s => ({
-        ...s,
-        imageUrl: s.imageUrl && s.imageUrl.startsWith('data:image') ? '/collections/mens-casual-sneakers.jpg' : s.imageUrl,
-        hoverImageUrl: s.hoverImageUrl && s.hoverImageUrl.startsWith('data:image') ? '' : s.hoverImageUrl,
+      const minimalSkus = skus.map(s => ({
+        id: s.id,
+        title: s.title,
+        gender: s.gender,
+        category: s.category,
+        price: s.price,
+        imageUrl: s.imageUrl && !s.imageUrl.startsWith('data:') ? s.imageUrl : '',
       }));
-      const cleanJson = JSON.stringify(sanitized);
-      localStorage.setItem(SKUS_STORAGE_KEY, cleanJson);
-      localStorage.setItem(SKUS_STORAGE_FALLBACK_KEY, cleanJson);
+      localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(minimalSkus));
       window.dispatchEvent(new Event('skus-updated'));
     } catch (err) {
-      console.error('Error saving SKUs to localStorage:', err);
+      console.warn('LocalStorage quota reached; operating with in-memory state.');
     }
   }
 }
@@ -215,7 +230,7 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
   const now = Date.now();
 
   if (!forceRefresh && memorySkusCache && (now - lastSkusFetchTime < CACHE_TTL_MS)) {
-    return mergeSKUArrays(local, memorySkusCache);
+    return memorySkusCache;
   }
 
   if (inFlightSkusPromise && !forceRefresh) {
@@ -224,42 +239,21 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
 
   inFlightSkusPromise = (async () => {
     try {
-      // 1. FETCH EXCLUSIVELY FROM SUPABASE DATABASE
+      // 1. FETCH AUTHORITATIVE LIST FROM SUPABASE DATABASE
       const supabaseProducts = await fetchSupabaseSKUs();
+      const cloudProducts: FootwearSKU[] = supabaseProducts || [];
 
-      let cloudProducts: FootwearSKU[] = [];
-      if (supabaseProducts && supabaseProducts.length > 0) {
-        cloudProducts = supabaseProducts;
-      }
-
-      // 2. BACKUP FETCH FROM APPSCRIPT IF NEEDED
-      const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
-      if (url && !url.includes('EXAMPLE')) {
-        try {
-          const res = await fetch(`${url}?action=getProducts`, { method: 'GET' });
-          const data = await res.json();
-          if (data && data.products && Array.isArray(data.products) && data.products.length > 0) {
-            cloudProducts = mergeSKUArrays(cloudProducts, data.products);
-          }
-        } catch (gasErr) {}
-      }
-
-      // MERGE LOCAL & CLOUD PRODUCTS (LOCAL NEVER LOST)
-      const merged = mergeSKUArrays(local, cloudProducts);
-
-      if (merged.length > 0) {
-        memorySkusCache = merged;
-        lastSkusFetchTime = Date.now();
-        saveStoredSKUs(merged);
-        return merged;
-      }
+      // Update memory & local storage cache with authoritative remote state
+      memorySkusCache = cloudProducts;
+      lastSkusFetchTime = Date.now();
+      saveStoredSKUs(cloudProducts);
+      return cloudProducts;
     } catch (e) {
       console.warn('Could not fetch cloud SKUs:', e);
     } finally {
       inFlightSkusPromise = null;
     }
 
-    memorySkusCache = local;
     return local;
   })();
 
