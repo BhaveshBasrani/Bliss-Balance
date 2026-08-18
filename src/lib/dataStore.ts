@@ -7,7 +7,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',
   heroImageUrl: '/hero-banner.png',
-  appScriptUrl: 'https://script.google.com/macros/s/AKfycbzEXAMPLE/exec',
+  appScriptUrl: 'https://script.google.com/macros/s/AKfycbzNcXkMYw4FyfMeU7WQbSuTah5HUd1kTTSeq95ASxmgLsbR28rxIUbG0wHGkuZrDM0DXA/exec',
   recaptchaSiteKey: '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa',
   adminEmail: 'admin@blissbalance.co',
   googleDriveFolderId: '',
@@ -171,7 +171,11 @@ export function getStoredSettings(): SiteSettings {
     const data = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (data) {
       const parsed = JSON.parse(data);
-      return { ...DEFAULT_SITE_SETTINGS, ...parsed };
+      const merged = { ...DEFAULT_SITE_SETTINGS, ...parsed };
+      if (!merged.appScriptUrl || merged.appScriptUrl.includes('EXAMPLE')) {
+        merged.appScriptUrl = DEFAULT_SITE_SETTINGS.appScriptUrl;
+      }
+      return merged;
     }
     return DEFAULT_SITE_SETTINGS;
   } catch (e) {
