@@ -573,9 +573,6 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-10 pr-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:outline-none focus:border-red-600"
                 />
               </div>
-              <span className="block text-[10px] text-neutral-500 font-bold mt-1">
-                Developer Key: <strong className="text-red-600 font-black">8088</strong>
-              </span>
             </div>
 
             {loginError && (
