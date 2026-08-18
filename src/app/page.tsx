@@ -73,7 +73,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <ScrollReveal direction="up" delay={0.05}>
               <div className="p-3 bg-white dark:bg-black border-2 border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                <span className="block text-xl font-heading font-black text-red-600">10,000+</span>
+                <span className="block text-xl font-heading font-black text-red-600">1,00,000+</span>
                 <span className="text-[10px] text-neutral-500 font-bold">PAIRS DELIVERED ACROSS INDIA</span>
               </div>
             </ScrollReveal>
@@ -171,29 +171,13 @@ export default function HomePage() {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-12">
-                {/* Standard Responsive Grid with ScrollReveal */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {displayedSkus.slice(0, 4).map((sku, idx) => (
-                    <ScrollReveal key={sku.id} direction="up" delay={idx * 0.1}>
-                      <SkuCard sku={sku} />
-                    </ScrollReveal>
-                  ))}
-                </div>
-
-                {/* ONE8 STYLE HORIZONTAL SLIDER WITH PROGRESS TRACK & ARROWS */}
-                {displayedSkus.length > 4 && (
-                  <ScrollReveal direction="up">
-                    <div className="pt-6 border-t-2 border-neutral-900 dark:border-neutral-800">
-                      <ProductSlider
-                        skus={displayedSkus.slice(4)}
-                        title="EXPLORE TRENDING DROPS"
-                        subtitle="SLIDER SHOWCASE • FEEL THE BLISS"
-                      />
-                    </div>
-                  </ScrollReveal>
-                )}
-              </div>
+              <ScrollReveal direction="up">
+                <ProductSlider
+                  skus={displayedSkus}
+                  title="FEATURED FOOTWEAR DROPS"
+                  subtitle="SMOOTH HORIZONTAL SLIDER • FEEL THE BLISS"
+                />
+              </ScrollReveal>
             )}
 
             {/* View Catalog Action */}

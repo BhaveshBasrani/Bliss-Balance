@@ -48,32 +48,39 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
     ? Math.round(((sku.originalPrice - sku.price) / sku.originalPrice) * 100)
     : 0;
 
-  // Resolve Card Image (Active Color Image OR Primary Image)
+  // Resolve Primary Active Image
   const currentImage = activeColor && activeColor.imageUrl
     ? activeColor.imageUrl
     : sku.imageUrl;
 
-  // Resolve Hover Image (Explicit Hover Image OR First Gallery Image)
-  const hoverImage = sku.hoverImageUrl || (sku.galleryImages && sku.galleryImages.length > 0 ? sku.galleryImages[0] : null);
+  // Resolve Secondary Hover Image with Smart Fallbacks
+  const hoverImage = sku.hoverImageUrl || 
+    (sku.galleryImages && sku.galleryImages.length > 0
+      ? (sku.galleryImages[0] !== currentImage ? sku.galleryImages[0] : (sku.galleryImages[1] || null))
+      : (sku.colorVariants && sku.colorVariants.length > 1 && sku.colorVariants[1].imageUrl ? sku.colorVariants[1].imageUrl : null));
 
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-none overflow-hidden bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 hover:border-red-600 dark:hover:border-red-500 transition-all duration-200 flex flex-col justify-between"
+      className="group relative rounded-none overflow-hidden bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-700 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_0px_rgba(220,38,38,1)] hover:-translate-y-1 flex flex-col justify-between"
     >
       <Link href={`/product?id=${sku.id}`} className="block flex-1 flex flex-col">
         
-        {/* Product Image Container with Dual-Image & Swatch Swap */}
-        <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950 p-3">
+        {/* Product Image Container with Ultra-Smooth Dual-Image Crossfade Animation */}
+        <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
           
-          {/* Active / Primary Image */}
+          {/* Primary / Active Image */}
           {currentImage ? (
             <img
               src={currentImage}
               alt={sku.title}
-              className={`w-full h-full object-cover transition-all duration-300 ${
-                isHovered && hoverImage && !activeColor?.imageUrl ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+              className={`w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                isHovered && hoverImage && !activeColor?.imageUrl
+                  ? 'opacity-0 scale-105 blur-[1px]'
+                  : isHovered
+                  ? 'scale-110 brightness-105'
+                  : 'opacity-100 scale-100'
               }`}
             />
           ) : (
@@ -82,13 +89,13 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             </div>
           )}
 
-          {/* Secondary Hover Image (Comet / Supreme Style) */}
+          {/* Secondary Alternate Hover Image (Comet & Nike Crossfade Effect) */}
           {hoverImage && !activeColor?.imageUrl && (
             <img
               src={hoverImage}
-              alt={`${sku.title} hover detail`}
-              className={`absolute inset-3 w-[calc(100%-1.5rem)] h-[calc(100%-1.5rem)] object-cover transition-all duration-300 ${
-                isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
+              alt={`${sku.title} hover preview`}
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-110'
               }`}
             />
           )}
@@ -109,7 +116,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             {/* Wishlist Button */}
             <button
               onClick={toggleWishlist}
-              className={`p-2 transition-all border border-black shadow-md ${
+              className={`p-2 transition-all duration-300 border border-black shadow-md ${
                 isWishlisted
                   ? 'bg-red-600 text-white scale-105'
                   : 'bg-white/90 dark:bg-black/90 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white'
@@ -156,7 +163,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
                       setActiveColor(cv);
                     }}
                     onMouseEnter={() => setActiveColor(cv)}
-                    className={`w-3.5 h-3.5 border transition-all ${
+                    className={`w-3.5 h-3.5 border transition-all duration-200 ${
                       activeColor?.name === cv.name
                         ? 'ring-2 ring-red-600 ring-offset-1 border-black scale-110'
                         : 'border-neutral-400 dark:border-neutral-600 opacity-80 hover:opacity-100'
@@ -184,7 +191,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
               )}
             </div>
 
-            <span className="inline-flex items-center gap-1 text-xs font-black text-red-600 group-hover:translate-x-1 transition-transform uppercase">
+            <span className="inline-flex items-center gap-1 text-xs font-black text-red-600 group-hover:translate-x-1.5 transition-transform duration-300 uppercase">
               <span>VIEW</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </span>

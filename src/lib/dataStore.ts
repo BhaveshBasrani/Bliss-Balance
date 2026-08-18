@@ -2,7 +2,7 @@ import { FootwearSKU, CollectionItem, SiteSettings } from './types';
 import { fetchSupabaseSKUs, upsertSupabaseSKU } from './supabaseClient';
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  announcementText: 'FREE SHIPPING ON ORDERS OVER ₹799 • EASY 7-DAY RETURNS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL STORE',
+  announcementText: 'EASY 7-DAY RETURNS & REPLACEMENTS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL ONLINE STORE • MADE IN INDIA',
   heroHeadline: 'FEEL THE BLISS',
   heroSubheadline: 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.',
   heroImageDimensions: '1200 x 600 px (2:1 Wide Banner)',

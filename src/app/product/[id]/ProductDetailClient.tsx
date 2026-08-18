@@ -573,7 +573,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             <div className="grid grid-cols-3 gap-2.5 pt-4 border-t-2 border-neutral-900 dark:border-neutral-800 text-[10px] font-black text-center text-neutral-900 dark:text-neutral-100">
               <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">
                 <Truck className="w-4 h-4 text-red-600 mx-auto" />
-                <span>FREE SHIPPING</span>
+                <span>FAST SHIPPING</span>
               </div>
 
               <div className="p-3 rounded-none bg-neutral-50 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-1">

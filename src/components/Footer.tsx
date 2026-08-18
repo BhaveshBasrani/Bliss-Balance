@@ -112,7 +112,7 @@ export const Footer: React.FC = () => {
                   FAST PAN-INDIA SHIPPING
                 </h4>
                 <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
-                  Complimentary free shipping on all orders over ₹799 across India.
+                  Fast and dependable pan-India doorstep delivery across all active pincodes.
                 </p>
               </div>
             </div>

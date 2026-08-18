@@ -61,6 +61,12 @@ export const metadata: Metadata = {
     images: [`${siteUrl}/hero-banner.png`],
     creator: '@blissbalance_',
   },
+  verification: {
+    other: {
+      'msvalidate.01': 'c89a01f782e541b0b2e8d91c2b5d4e10',
+      'indexnow': 'c89a01f782e541b0b2e8d91c2b5d4e10',
+    },
+  },
   icons: {
     icon: '/favicon.svg',
     shortcut: '/icon.svg',
