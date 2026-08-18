@@ -91,8 +91,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         {/* Bottom: Text & Buttons */}
         <div className="p-6 space-y-4 font-mono bg-black relative z-10">
           
-          <div className="inline-flex items-center px-3 py-1 rounded-none bg-black border border-red-600 text-white text-[9px] font-mono font-black tracking-widest uppercase">
-            <span>EVERYDAY FOOTWEAR • MADE IN INDIA</span>
+          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-black/90 border border-red-600/80 text-white text-[9px] font-mono font-black tracking-widest uppercase">
+            <span>FEEL THE BLISS • MADE IN INDIA</span>
           </div>
 
           <h1 className="font-heading text-3xl font-black uppercase tracking-tighter text-white leading-tight">
