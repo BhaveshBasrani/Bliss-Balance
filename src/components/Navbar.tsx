@@ -212,6 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <Link
                   key={link.name}
                   href={link.href}
+                  rel={link.href.includes('?') ? 'nofollow' : undefined}
                   className="text-xs font-bold tracking-widest text-neutral-800 dark:text-neutral-200 hover:text-red-600 dark:hover:text-red-500 transition-colors py-2 relative group uppercase"
                 >
                   {link.name}

@@ -186,10 +186,10 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 font-bold text-neutral-700 dark:text-neutral-300">
               <li><Link href="/men" className="hover:text-red-600 transition-colors">Men's Footwear</Link></li>
               <li><Link href="/women" className="hover:text-red-600 transition-colors">Women's Footwear</Link></li>
-              <li><Link href="/collections?cat=Slippers" className="hover:text-red-600 transition-colors">Slippers</Link></li>
-              <li><Link href="/collections?cat=Slides" className="hover:text-red-600 transition-colors">Slides</Link></li>
-              <li><Link href="/collections?cat=Sandals" className="hover:text-red-600 transition-colors">Sandals</Link></li>
-              <li><Link href="/collections?cat=Clogs" className="hover:text-red-600 transition-colors">Clogs</Link></li>
+              <li><Link href="/collections?cat=Slippers" rel="nofollow" className="hover:text-red-600 transition-colors">Slippers</Link></li>
+              <li><Link href="/collections?cat=Slides" rel="nofollow" className="hover:text-red-600 transition-colors">Slides</Link></li>
+              <li><Link href="/collections?cat=Sandals" rel="nofollow" className="hover:text-red-600 transition-colors">Sandals</Link></li>
+              <li><Link href="/collections?cat=Clogs" rel="nofollow" className="hover:text-red-600 transition-colors">Clogs</Link></li>
             </ul>
           </div>
 

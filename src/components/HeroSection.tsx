@@ -95,10 +95,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             <span>FEEL THE BLISS • MADE IN INDIA</span>
           </div>
 
-          <h1 className="font-heading text-3xl font-black uppercase tracking-tighter text-white leading-tight">
+          <h2 className="font-heading text-3xl font-black uppercase tracking-tighter text-white leading-tight">
             BUILT FOR THE ONES <br />
             <span className="text-red-600 italic font-serif">BALANCING</span> LIFE.
-          </h1>
+          </h2>
 
           <p className="font-mono text-neutral-300 text-xs leading-relaxed font-bold">
             {settings.heroSubheadline || 'Comfort, contemporary style, lightweight construction and dependable grip — crafted for everyday life.'}

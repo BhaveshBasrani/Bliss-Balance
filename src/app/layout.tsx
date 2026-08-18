@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | Bliss Balance - Official Online Store',
   },
   description:
-    'Bliss Balance is the official Indian footwear & lifestyle brand creating unisex sneakers, slides, sandals, clogs & slippers. Engineered for all-day comfort, contemporary style & dependable grip.',
+    "Bliss Balance is India's official footwear brand creating cushioned slippers, flip-flops, slides, sandals, clogs & sneakers for everyday comfort and grip.",
   keywords: [
     'Bliss Balance',
     'Bliss Balance Footwear',
