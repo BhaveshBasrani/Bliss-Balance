@@ -161,9 +161,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </div>
 
             {/* Mobile Center: Centered Logo & Title */}
-            <Link href="/" className="flex items-center gap-2 group mx-auto">
-              <BrandLogo size="sm" />
-              <BrandTitleText size="sm" showSubtitle={false} />
+            <Link href="/" className="flex items-center gap-2.5 group mx-auto">
+              <BrandLogo size="md" />
+              <BrandTitleText size="md" showSubtitle={false} />
             </Link>
 
             {/* Mobile Right: Account Profile + Wishlist */}

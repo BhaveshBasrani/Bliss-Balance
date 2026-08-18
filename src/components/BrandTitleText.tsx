@@ -14,8 +14,8 @@ export const BrandTitleText: React.FC<BrandTitleTextProps> = ({
   showSubtitle = true,
 }) => {
   const textSizes = {
-    sm: 'text-sm sm:text-lg font-black',
-    md: 'text-base sm:text-2xl font-black',
+    sm: 'text-base sm:text-xl font-black',
+    md: 'text-lg sm:text-2xl font-black',
     lg: 'text-2xl sm:text-4xl font-black',
     xl: 'text-4xl sm:text-6xl font-black',
   }[size];

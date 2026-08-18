@@ -9,10 +9,10 @@ interface BrandLogoProps {
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '' }) => {
   const dimensions = {
-    sm: 'w-8 h-8 sm:w-9 sm:h-9',
-    md: 'w-10 h-10 sm:w-12 sm:h-12',
-    lg: 'w-14 h-14 sm:w-16 sm:h-16',
-    xl: 'w-24 h-24 sm:w-28 sm:h-28',
+    sm: 'w-9 h-9 sm:w-10 sm:h-10',
+    md: 'w-11 h-11 sm:w-13 sm:h-13',
+    lg: 'w-16 h-16 sm:w-18 sm:h-18',
+    xl: 'w-26 h-26 sm:w-30 sm:h-30',
   }[size];
 
   return (
