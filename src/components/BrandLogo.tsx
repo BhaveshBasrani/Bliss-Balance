@@ -9,25 +9,18 @@ interface BrandLogoProps {
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', className = '' }) => {
   const dimensions = {
-    sm: 'w-7 h-7 sm:w-8 sm:h-8 rounded-none border-2 border-black dark:border-white shadow-[1.5px_1.5px_0px_0px_rgba(0,0,0,1)]',
-    md: 'w-8 h-8 sm:w-10 sm:h-10 rounded-none border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]',
-    lg: 'w-12 h-12 sm:w-14 sm:h-14 rounded-none border-2 border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]',
-    xl: 'w-20 h-20 sm:w-24 sm:h-24 rounded-none border-3 border-black dark:border-white shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]',
-  }[size];
-
-  const imgDimensions = {
-    sm: 'w-6 h-6 sm:w-7 sm:h-7',
-    md: 'w-7 h-7 sm:w-9 sm:h-9',
-    lg: 'w-10 h-10 sm:w-12 sm:h-12',
-    xl: 'w-16 h-16 sm:w-20 sm:h-20',
+    sm: 'w-7 h-7 sm:w-8 sm:h-8',
+    md: 'w-8 h-8 sm:w-10 sm:h-10',
+    lg: 'w-12 h-12 sm:w-14 sm:h-14',
+    xl: 'w-20 h-20 sm:w-24 sm:h-24',
   }[size];
 
   return (
-    <div className={`relative bg-red-600 flex items-center justify-center overflow-hidden shrink-0 ${dimensions} ${className}`}>
+    <div className={`relative flex items-center justify-center shrink-0 ${dimensions} ${className}`}>
       <img
         src="/Logo.svg"
         alt="Bliss Balance Emblem"
-        className={`object-contain filter brightness-0 invert scale-[1.55] ${imgDimensions}`}
+        className="w-full h-full object-contain filter brightness-0 dark:invert"
       />
     </div>
   );

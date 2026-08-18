@@ -98,56 +98,7 @@ export const Footer: React.FC = () => {
   return (
     <footer ref={footerRef} className="w-full bg-white dark:bg-black text-neutral-900 dark:text-white border-t-2 border-neutral-900 dark:border-neutral-800 transition-colors duration-300 font-mono relative overflow-hidden select-none">
       
-      {/* Brand Value Highlights (Gumroad Brutalist Cards) */}
-      <div className="border-b-2 border-neutral-900 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            
-            <div className="flex items-start gap-4 p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              <div className="p-3 rounded-none bg-red-600 text-white shrink-0">
-                <Truck className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-heading text-sm font-black uppercase tracking-wider text-neutral-950 dark:text-white">
-                  FAST PAN-INDIA SHIPPING
-                </h4>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
-                  Fast and dependable pan-India doorstep delivery across all active pincodes.
-                </p>
-              </div>
-            </div>
 
-            <div className="flex items-start gap-4 p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              <div className="p-3 rounded-none bg-red-600 text-white shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-heading text-sm font-black uppercase tracking-wider text-neutral-950 dark:text-white">
-                  CUSHIONED & ANTI-SKID
-                </h4>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
-                  Engineered with premium EVA and dependable outer soles for everyday life.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-5 rounded-none bg-white dark:bg-black border-2 border-neutral-900 dark:border-neutral-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              <div className="p-3 rounded-none bg-red-600 text-white shrink-0">
-                <RefreshCw className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-heading text-sm font-black uppercase tracking-wider text-neutral-950 dark:text-white">
-                  7-DAY EASY RETURNS
-                </h4>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed font-bold">
-                  Hassle-free 7-day doorstep returns and size exchanges guaranteed.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
 
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-18 relative z-10">
@@ -156,7 +107,7 @@ export const Footer: React.FC = () => {
           {/* Brand Info & Address Details */}
           <div className="md:col-span-5 space-y-4">
             <Link href="/" className="flex items-center gap-3 group">
-              <BrandLogo size="md" className="rounded-none border border-black dark:border-white" />
+              <BrandLogo size="md" />
               <BrandTitleText size="md" showSubtitle={true} />
             </Link>
 

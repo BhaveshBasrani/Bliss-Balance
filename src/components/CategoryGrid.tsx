@@ -57,45 +57,47 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
           </div>
         </ScrollReveal>
 
-        {/* Collections Cards Grid - Compact Sleek Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Collections Cards Grid - Compact 2-Column Mobile Layout */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {filteredCollections.map((item, idx) => (
-            <ScrollReveal key={item.id} direction="up" delay={idx * 0.08}>
-              <div className="group relative rounded-none overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 flex flex-col justify-between">
+            <ScrollReveal key={item.id} direction="up" delay={idx * 0.05}>
+              <div className="group relative rounded-none overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 flex flex-col justify-between h-full">
                 {/* Compact Category Image Banner */}
-                <div className="p-2.5">
+                <div className="p-1.5 sm:p-2.5">
                   <ImagePlaceholder
                     dimensions={item.imageDimensions || "800 x 600 px (4:3)"}
-                    aspectRatio="aspect-[16/9]"
+                    aspectRatio="aspect-[16/10] sm:aspect-[16/9]"
                     label={`${item.title} BANNER`}
                     imageUrl={item.imageUrl}
                   />
                 </div>
 
                 {/* Card Content */}
-                <div className="p-4 pt-1 space-y-2.5 font-mono">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black uppercase tracking-widest bg-red-600 text-white px-2 py-0.5">
-                      {item.gender}
-                    </span>
-                    <span className="text-[9px] font-bold text-neutral-400">COLLECTION</span>
+                <div className="p-2.5 sm:p-4 pt-1 space-y-1.5 sm:space-y-2.5 font-mono flex-1 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-red-600 text-white px-1.5 py-0.5">
+                        {item.gender}
+                      </span>
+                      <span className="hidden sm:inline text-[9px] font-bold text-neutral-400">COLLECTION</span>
+                    </div>
+
+                    <h3 className="font-heading text-xs sm:text-xl font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+                      {item.title}
+                    </h3>
+
+                    <p className="hidden sm:block font-body text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                      {item.description}
+                    </p>
                   </div>
 
-                  <h3 className="font-heading text-xl font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors">
-                    {item.title}
-                  </h3>
-
-                  <p className="font-body text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
-                    {item.description}
-                  </p>
-
-                  <div className="pt-2.5 border-t border-neutral-200/60 dark:border-neutral-800/60">
+                  <div className="pt-1.5 sm:pt-2.5 border-t border-neutral-200/60 dark:border-neutral-800/60 mt-auto">
                     <Link
                       href={`/collections?cat=${encodeURIComponent(item.title)}`}
-                      className="inline-flex items-center gap-2 font-mono text-xs font-black uppercase tracking-wider text-red-600 hover:text-red-500 group/link"
+                      className="inline-flex items-center gap-1 sm:gap-2 font-mono text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-600 hover:text-red-500 group/link"
                     >
-                      <span>EXPLORE COLLECTION</span>
-                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
+                      <span className="truncate">EXPLORE</span>
+                      <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover/link:translate-x-1 shrink-0" />
                     </Link>
                   </div>
                 </div>

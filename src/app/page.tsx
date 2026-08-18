@@ -204,78 +204,68 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-            <ScrollReveal direction="up">
-              <div className="text-center space-y-2 max-w-xl mx-auto">
-                <span className="text-xs font-black text-red-600 uppercase tracking-widest flex items-center justify-center gap-1.5">
-                  <CheckCircle className="w-4 h-4" /> THE BLISS STANDARDS
-                </span>
-                <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  ENGINEERED FOR <span className="text-red-600">EVERYDAY BALANCE</span>
-                </h2>
-              </div>
-            </ScrollReveal>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="text-center space-y-2 max-w-xl mx-auto">
+              <span className="text-[11px] font-black text-red-600 uppercase tracking-[0.25em] flex items-center justify-center gap-1.5">
+                <CheckCircle className="w-4 h-4" /> THE BLISS STANDARDS
+              </span>
+              <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                ENGINEERED FOR <span className="text-red-600">EVERYDAY BALANCE</span>
+              </h2>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
               {/* Card 1 */}
-              <ScrollReveal direction="up" delay={0.1}>
-                <div className="p-6 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] space-y-4 hover:-translate-y-1 transition-transform">
-                  <div className="w-12 h-12 rounded-none bg-red-600 text-white flex items-center justify-center border border-black shadow-sm">
-                    <Cloud className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
-                    CLOUD COMFORT SOLE
-                  </h3>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold">
-                    Dual-density EVA memory cushioning designed to absorb impact and relieve heel pressure for 12+ hour all-day standing comfort.
-                  </p>
+              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-none bg-red-600 text-white flex items-center justify-center">
+                  <Cloud className="w-5 h-5" />
                 </div>
-              </ScrollReveal>
+                <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                  CLOUD COMFORT SOLE
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  Dual-density EVA memory cushioning designed to absorb impact and relieve heel pressure for 12+ hour all-day standing comfort.
+                </p>
+              </div>
 
               {/* Card 2 */}
-              <ScrollReveal direction="up" delay={0.2}>
-                <div className="p-6 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] space-y-4 hover:-translate-y-1 transition-transform">
-                  <div className="w-12 h-12 rounded-none bg-black text-white dark:bg-white dark:text-black flex items-center justify-center border border-black shadow-sm">
-                    <ShieldCheck className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
-                    ANTI-SKID DEPENDABILITY
-                  </h3>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold">
-                    Engineered anti-slip wave tread outsoles providing maximum friction and stable traction on wet tiles, polished stone, and asphalt.
-                  </p>
+              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-none bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
-              </ScrollReveal>
+                <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                  ANTI-SKID DEPENDABILITY
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  Engineered anti-slip wave tread outsoles providing maximum friction and stable traction on wet tiles, polished stone, and asphalt.
+                </p>
+              </div>
 
               {/* Card 3 */}
-              <ScrollReveal direction="up" delay={0.3}>
-                <div className="p-6 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] space-y-4 hover:-translate-y-1 transition-transform">
-                  <div className="w-12 h-12 rounded-none bg-red-600 text-white flex items-center justify-center border border-black shadow-sm">
-                    <Feather className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
-                    FEATHERLIGHT BUILD
-                  </h3>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold">
-                    Ultralight construction weighing under 180 grams per footwear item for an effortless, weightless walking experience.
-                  </p>
+              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-none bg-red-600 text-white flex items-center justify-center">
+                  <Feather className="w-5 h-5" />
                 </div>
-              </ScrollReveal>
+                <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                  FEATHERLIGHT BUILD
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  Ultralight construction weighing under 180 grams per footwear item for an effortless, weightless walking experience.
+                </p>
+              </div>
 
               {/* Card 4 */}
-              <ScrollReveal direction="up" delay={0.4}>
-                <div className="p-6 rounded-none bg-white dark:bg-black border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] space-y-4 hover:-translate-y-1 transition-transform">
-                  <div className="w-12 h-12 rounded-none bg-black text-white dark:bg-white dark:text-black flex items-center justify-center border border-black shadow-sm">
-                    <Award className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
-                    CRAFTED IN INDIA
-                  </h3>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold">
-                    Designed, engineered, and manufactured in India with premium grade non-toxic materials built to withstand daily Indian conditions.
-                  </p>
+              <div className="p-6 rounded-none bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-4 font-mono">
+                <div className="w-10 h-10 rounded-none bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+                  <Award className="w-5 h-5" />
                 </div>
-              </ScrollReveal>
+                <h3 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                  CRAFTED IN INDIA
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  Designed, engineered, and manufactured in India with premium grade non-toxic materials built to withstand daily Indian conditions.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -283,10 +273,10 @@ export default function HomePage() {
         {/* 4. AS APPRECIATED ON PRESS MARQUEE (COMET STYLE) */}
         <PressMarquee />
 
-        {/* SUPREME HIGH-FASHION EDITORIAL MARQUEE STRIP */}
-        <section className="bg-red-600 text-white py-6 border-y-2 border-neutral-900 dark:border-neutral-800 font-mono uppercase font-black tracking-[0.2em] text-xs sm:text-base text-center select-none shadow-md overflow-hidden">
+        {/* EDITORIAL MARQUEE STRIP */}
+        <section className="bg-red-600 text-white py-6 border-y border-neutral-900 dark:border-neutral-800 font-mono uppercase font-black tracking-[0.2em] text-xs sm:text-base text-center select-none overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-1.5">
-            <span>ENGINEERED FOR EVERYDAY BALANCE • PREMIUM CUSHIONED FOOTWEAR</span>
+            <span>10 MILLION+ HAPPY CUSTOMERS • ENGINEERED FOR EVERYDAY BALANCE</span>
             <span className="text-white/95">CRAFTED IN INDIA</span>
           </div>
         </section>
