@@ -16,9 +16,13 @@ export const BrandLoadingScreen: React.FC<BrandLoadingScreenProps> = ({
       {/* Pure Black Stage with Flickering White Icon Emblem */}
       <div className="relative z-10 flex flex-col items-center justify-center space-y-8 text-center">
         
-        {/* Center Flickering Logo */}
+        {/* Center Flickering Pure White Logo */}
         <div className="relative p-2 flex items-center justify-center">
-          <BrandLogo size="xl" disableFlicker={false} className="!brightness-100 !invert" />
+          <img
+            src="/icon.svg"
+            alt="Bliss Balance Emblem"
+            className="w-24 h-24 sm:w-32 sm:h-32 object-contain filter brightness-0 invert animate-flicker"
+          />
         </div>
 
         {/* Minimalist White Brand Name & Status */}

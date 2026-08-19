@@ -19,55 +19,74 @@ const HEADERS = {
 /**
  * Fetch all Product SKUs directly from Supabase REST API
  */
+/**
+ * Fetch all Product SKUs directly from Supabase REST API with robust timeout & retry
+ */
 export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
-  try {
+  const attemptFetch = async (timeoutMs: number): Promise<FootwearSKU[]> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?select=*&order=created_at.desc`, {
-      method: 'GET',
-      headers: HEADERS,
-      cache: 'no-store',
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?select=*&order=created_at.desc`, {
+        method: 'GET',
+        headers: HEADERS,
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
 
-    if (!res.ok) {
-      console.warn('Supabase product fetch returned non-200:', res.status);
+      if (!res.ok) {
+        console.warn('Supabase product fetch returned non-200:', res.status);
+        return [];
+      }
+
+      const rows = await res.json();
+      if (!Array.isArray(rows)) return [];
+
+      return rows.map((row: any): FootwearSKU => ({
+        id: row.id,
+        title: row.title,
+        subtitle: row.subtitle || '',
+        gender: row.gender,
+        category: row.category,
+        price: Number(row.price),
+        originalPrice: row.original_price ? Number(row.original_price) : undefined,
+        imageUrl: row.image_url || '',
+        hoverImageUrl: row.hover_image_url || '',
+        galleryImages: row.gallery_images || [],
+        amazonUrl: row.amazon_url || '',
+        myntraUrl: row.myntra_url || '',
+        flipkartUrl: row.flipkart_url || '',
+        officialUrl: row.official_url || '',
+        features: row.features || ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid'],
+        sizes: row.sizes || [],
+        colorVariants: row.color_variants || [],
+        sizeMarketplaceUrls: row.size_marketplace_urls || {},
+        rating: Number(row.rating || 5.0),
+        reviewCount: Number(row.review_count || row.reviews_count || 0),
+        isNewArrival: Boolean(row.is_new_arrival),
+        isBestseller: Boolean(row.is_bestseller),
+        createdAt: row.created_at || new Date().toISOString(),
+      }));
+    } catch (e) {
+      clearTimeout(timeoutId);
+      throw e;
+    }
+  };
+
+  try {
+    // Attempt 1: 12-second generous timeout for cross-device & mobile 4G/Wi-Fi
+    return await attemptFetch(12000);
+  } catch (e) {
+    console.warn('First Supabase fetch attempt timed out, retrying with 8s timeout...');
+    try {
+      // Attempt 2: Quick retry fallback with 8s timeout
+      return await attemptFetch(8000);
+    } catch (err) {
+      console.error('Error fetching Supabase SKUs across devices:', err);
       return [];
     }
-
-    const rows = await res.json();
-    if (!Array.isArray(rows)) return [];
-
-    return rows.map((row: any): FootwearSKU => ({
-      id: row.id,
-      title: row.title,
-      subtitle: row.subtitle || '',
-      gender: row.gender,
-      category: row.category,
-      price: Number(row.price),
-      originalPrice: row.original_price ? Number(row.original_price) : undefined,
-      imageUrl: row.image_url || '',
-      hoverImageUrl: row.hover_image_url || '',
-      galleryImages: row.gallery_images || [],
-      amazonUrl: row.amazon_url || '',
-      myntraUrl: row.myntra_url || '',
-      flipkartUrl: row.flipkart_url || '',
-      officialUrl: row.official_url || '',
-      features: row.features || ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid'],
-      sizes: row.sizes || [],
-      colorVariants: row.color_variants || [],
-      sizeMarketplaceUrls: row.size_marketplace_urls || {},
-      rating: Number(row.rating || 5.0),
-      reviewCount: Number(row.review_count || row.reviews_count || 0),
-      isNewArrival: Boolean(row.is_new_arrival),
-      isBestseller: Boolean(row.is_bestseller),
-      createdAt: row.created_at || new Date().toISOString(),
-    }));
-  } catch (e) {
-    console.error('Error fetching Supabase SKUs:', e);
-    return [];
   }
 }
 
@@ -111,7 +130,13 @@ export async function upsertSupabaseSKU(sku: FootwearSKU): Promise<boolean> {
       body: JSON.stringify(payload),
     });
 
-    return res.ok;
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => '');
+      console.error(`Supabase Upsert Failed (${res.status}):`, errorText);
+      return false;
+    }
+
+    return true;
   } catch (e) {
     console.error('Error upserting Supabase SKU:', e);
     return false;

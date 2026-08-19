@@ -410,10 +410,12 @@ export default function AdminPage() {
     }
 
     setSkus(updatedSkus);
-    saveStoredSKUs(updatedSkus);
-
     setSyncStepText('Writing Record to Supabase PostgreSQL Database...');
-    await upsertSupabaseSKU(savedSku);
+    const upsertOk = await upsertSupabaseSKU(savedSku);
+    if (!upsertOk) {
+      console.warn('First Supabase write returned false, retrying upsert...');
+      await upsertSupabaseSKU(savedSku);
+    }
 
     setSyncStepText('Generating reCAPTCHA v3 Security Token...');
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'save_sku');
