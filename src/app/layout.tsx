@@ -36,8 +36,8 @@ const siteUrl = 'https://blissbalance.co';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Bliss Balance - Official Online Store India',
-    template: '%s | Bliss Balance',
+    default: 'Bliss Balance® — Official Online Store India',
+    template: '%s | Bliss Balance®',
   },
   description:
     "Bliss Balance is India's official footwear brand creating cushioned slippers, flip-flops, slides, sandals, clogs & sneakers for everyday comfort and grip.",
