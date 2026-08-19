@@ -78,7 +78,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
 
         {/* Single Unified Content Block */}
         <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-8 w-full sm:h-full sm:min-h-[640px] lg:min-h-[720px] flex items-center py-6 sm:py-16">
-          <div className="max-w-lg lg:max-w-xl space-y-4 sm:space-y-5 font-mono">
+          <div className="max-w-md lg:max-w-lg space-y-4 sm:space-y-5 font-mono">
             
             {/* Dynamic Badge */}
             <div className="inline-flex items-center px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-black/85 backdrop-blur-xs border border-red-600/80 text-white text-[9px] sm:text-xs font-mono font-black tracking-widest uppercase">
@@ -86,7 +86,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             </div>
 
             {/* Dynamic Title - Single H1 Tag */}
-            <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-white leading-tight sm:leading-[0.95] sm:[text-shadow:_0_2px_12px_rgb(0_0_0_/_95%)]">
+            <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white leading-[1.05] sm:leading-[1.02] sm:[text-shadow:_0_2px_12px_rgb(0_0_0_/_95%)]">
               {activeSlide.titleText || 'BLISS BALANCE® — BUILT FOR THE ONES BALANCING LIFE.'}
             </h1>
 

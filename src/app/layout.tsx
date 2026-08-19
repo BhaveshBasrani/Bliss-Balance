@@ -1,7 +1,21 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Outfit, JetBrains_Mono, Inter } from 'next/font/google';
+import { Syne, Plus_Jakarta_Sans, Outfit, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
+
+const syne = Syne({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-syne',
+  display: 'swap',
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-jakarta',
+  display: 'swap',
+});
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -10,17 +24,10 @@ const outfit = Outfit({
   display: 'swap',
 });
 
-const jetbrains = JetBrains_Mono({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['700', '800'],
-  variable: '--font-mono-custom',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-inter',
+  weight: ['600', '700'],
+  variable: '--font-serif-luxury',
   display: 'swap',
 });
 
@@ -116,6 +123,7 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
@@ -123,6 +131,10 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  other: {
+    bingbot: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
+    msnbot: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
   },
 };
 
@@ -283,7 +295,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${outfit.variable} ${jetbrains.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${syne.variable} ${jakarta.variable} ${outfit.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
