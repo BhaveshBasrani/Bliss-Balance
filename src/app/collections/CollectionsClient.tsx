@@ -154,8 +154,18 @@ export function CollectionsClient({
       if (!match) return false;
     }
 
-    if (filterParam === 'new' && !sku.isNewArrival) {
-      return false;
+    if (filterParam === 'bestseller') {
+      const hasBestsellers = skus.some(s => s.isBestseller);
+      if (hasBestsellers && !sku.isBestseller) {
+        return false;
+      }
+    }
+
+    if (filterParam === 'new') {
+      const hasNewArrivals = skus.some(s => s.isNewArrival);
+      if (hasNewArrivals && !sku.isNewArrival) {
+        return false;
+      }
     }
 
     return true;

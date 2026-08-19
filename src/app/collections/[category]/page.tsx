@@ -168,14 +168,14 @@ export default function CategoryCollectionPage({ params }: Props) {
   const slug = (params.category || '').toLowerCase();
   const config = CATEGORY_MAP[slug];
 
-  const categoryName = config?.category || slug.replace(/-/g, ' ');
+  const categoryName = config ? config.category : slug.replace(/-/g, ' ');
   const title = config?.title || slug.replace(/-/g, ' ').toUpperCase();
   const badge = config?.badge || 'BLISS BALANCE CATALOG';
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-black" />}>
       <CollectionsClient
-        initialCategory={config?.category ? config.category : categoryName}
+        initialCategory={categoryName}
         initialGender={config?.gender}
         initialFilter={config?.filter}
         customTitle={title}

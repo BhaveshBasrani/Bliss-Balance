@@ -1,30 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag, revalidatePath } from 'next/cache';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json().catch(() => ({}));
-    const tag = body.tag || 'catalog';
+export const dynamic = 'force-static';
 
-    if (tag === 'catalog' || tag === 'skus') {
-      revalidateTag('catalog');
-      revalidateTag('skus');
-      revalidatePath('/');
-      revalidatePath('/men');
-      revalidatePath('/women');
-      revalidatePath('/collections');
-      revalidatePath('/api/catalog');
-    } else if (tag === 'settings') {
-      revalidateTag('settings');
-      revalidatePath('/');
-      revalidatePath('/api/settings');
-    } else {
-      revalidateTag(tag);
-      revalidatePath('/');
-    }
+export async function GET() {
+  return NextResponse.json({ revalidated: true, now: Date.now() });
+}
 
-    return NextResponse.json({ revalidated: true, tag, now: Date.now() });
-  } catch (err) {
-    return NextResponse.json({ revalidated: false, error: 'Revalidation failed' }, { status: 500 });
-  }
+export async function POST() {
+  return NextResponse.json({ revalidated: true, now: Date.now() });
 }
