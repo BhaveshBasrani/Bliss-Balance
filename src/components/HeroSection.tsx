@@ -64,7 +64,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
 
             {/* Dynamic Title */}
             <h1 className="font-heading text-5xl lg:text-6xl font-black uppercase tracking-tighter text-white leading-[0.95] [text-shadow:_0_2px_12px_rgb(0_0_0_/_95%)]">
-              {activeSlide.titleText || 'BUILT FOR THE ONES BALANCING LIFE.'}
+              {activeSlide.titleText || 'BLISS BALANCE® — BUILT FOR THE ONES BALANCING LIFE.'}
             </h1>
 
             {/* Dynamic Subheadline */}
@@ -178,7 +178,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
           </div>
 
           <h2 className="font-heading text-3xl font-black uppercase tracking-tighter text-white leading-tight">
-            {activeSlide.titleText || 'BUILT FOR THE ONES BALANCING LIFE.'}
+            {activeSlide.titleText || 'BLISS BALANCE® — BUILT FOR THE ONES BALANCING LIFE.'}
           </h2>
 
           <p className="font-mono text-neutral-300 text-xs leading-relaxed font-bold">

@@ -27,9 +27,9 @@ export const BrandLoadingScreen: React.FC<BrandLoadingScreenProps> = ({
 
         {/* Minimalist White Brand Name & Status */}
         <div className="space-y-2">
-          <h1 className="font-heading text-xl sm:text-2xl font-black uppercase tracking-[0.3em] text-white">
+          <div className="font-heading text-xl sm:text-2xl font-black uppercase tracking-[0.3em] text-white">
             BLISS BALANCE
-          </h1>
+          </div>
           <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-[0.3em] block animate-pulse">
             {message}
           </span>

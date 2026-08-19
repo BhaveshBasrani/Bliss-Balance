@@ -1,5 +1,6 @@
 import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide } from './types';
 import { fetchSupabaseSKUs, fetchSupabaseSettings, upsertSupabaseSettings } from './supabaseClient';
+import { INITIAL_SKUS } from './initialSkus';
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
@@ -112,11 +113,11 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
   },
 ];
 
-export const INITIAL_SKUS: FootwearSKU[] = [];
+export { INITIAL_SKUS };
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v10';
-const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v9';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v11';
+const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v10';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
 
 // TURBO SPEED MEMORY CACHE

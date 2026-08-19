@@ -56,6 +56,7 @@ export interface FootwearSKU {
   isNewArrival?: boolean;
   isBestseller?: boolean;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CollectionItem {

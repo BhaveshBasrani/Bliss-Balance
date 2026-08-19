@@ -13,47 +13,43 @@ import { ProductSlider } from '@/components/ProductSlider';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { BestsellerSection } from '@/components/BestsellerSection';
 import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
-import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
+import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS, INITIAL_SKUS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
 import { ArrowRight, Zap, Plus, Cloud, ShieldCheck, Feather, Award, Star, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomePage() {
-  const [skus, setSkus] = useState<FootwearSKU[]>([]);
+  const [skus, setSkus] = useState<FootwearSKU[]>(INITIAL_SKUS);
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'All' | 'Men' | 'Women'>('All');
-  const [loading, setLoading] = useState(true);
-  const [initialSplash, setInitialSplash] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const loadData = () => {
-      const local = getStoredSKUs();
+    setMounted(true);
+    const local = getStoredSKUs();
+    if (local && local.length > 0) {
       setSkus(local);
-      if (local && local.length > 0) {
-        setLoading(false);
-      }
-    };
-
-    loadData();
+    }
     setSettings(getStoredSettings());
 
-    // Instant splash dismiss after 600ms preloading frame
-    const timer = setTimeout(() => {
-      setInitialSplash(false);
-    }, 600);
-
-    // Live Dynamic Cloud Fetch from Google Sheets
+    // Live Dynamic Cloud Fetch from Supabase
     fetchCloudSKUs().then(cloudSkus => {
-      setSkus(cloudSkus);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+      if (cloudSkus && cloudSkus.length > 0) {
+        setSkus(cloudSkus);
+      }
+    }).catch(() => {});
 
-    fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings));
+    fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings)).catch(() => {});
+
+    const loadData = () => {
+      const updated = getStoredSKUs();
+      if (updated && updated.length > 0) setSkus(updated);
+    };
 
     window.addEventListener('skus-updated', loadData);
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('skus-updated', loadData);
     };
   }, []);
@@ -66,12 +62,8 @@ export default function HomePage() {
     return g === target || g === 'unisex';
   });
 
-  if (initialSplash || loading) {
-    return <BrandLoadingScreen message="FEEL THE BLISS • INITIALIZING STORE..." />;
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300 select-none">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300 select-none relative">
       {/* Top Infinite Marquee Ticker */}
       <AnnouncementBar announcementText={settings.announcementText} />
 
@@ -414,7 +406,7 @@ export default function HomePage() {
                   DOCTOR & ORTHO SLIPPERS
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  Featuring high-density EVA bounce-back footbeds, acupressure nodes, and arch contouring for plantar fasciitis and heel pain relief (Models: BB147, BB1017, BB1038, BB155, BB944, BB942).
+                  Engineered with high-density EVA bounce-back footbeds, soft acupressure nodes, and anatomical arch contouring to alleviate plantar fasciitis, heel discomfort, and daily foot fatigue for men and women.
                 </p>
               </div>
 
@@ -423,7 +415,7 @@ export default function HomePage() {
                   COMFORT SANDALS & CLOGS
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  Adjustable Velcro doctor sandals, cute charm waterproof mules, and authentic Maharashtrian Kolhapuri & Puneri chappals with modern cushioning (Models: BB1037, BB1105, BB945, BB946, BB1069, BBSILK-11, BBSAP-2).
+                  Featuring adjustable dual-strap doctor sandals, ultra-lightweight waterproof clogs with breathable ventilation ports, and handcrafted heritage Kolhapuri chappals re-engineered with modern cushioning.
                 </p>
               </div>
 
@@ -432,7 +424,7 @@ export default function HomePage() {
                   STREETWEAR SNEAKERS
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  Lightweight hybrid running and walking casual shoes featuring breathable uppers, lace and dual-zip convenience, and shock-absorbing traction outsoles (Model: BB1080).
+                  Built for active everyday living with breathable knitted uppers, effortless zip & lace convenience, and high-traction anti-skid wave outsoles engineered for reliable all-day grip and stability.
                 </p>
               </div>
             </div>
