@@ -178,29 +178,39 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               {sku.subtitle}
             </p>
 
-            {/* INTERACTIVE COLOR SWATCHES BAR ON CATALOG CARD */}
+            {/* INTERACTIVE LUXURY COLOR SWATCHES BAR ON CATALOG CARD */}
             {Array.isArray(sku?.colorVariants) && sku.colorVariants.length > 0 && (
-              <div className="flex items-center gap-1 pt-0.5 sm:pt-1" onClick={(e) => e.preventDefault()}>
-                {sku.colorVariants.map((cv) => (
-                  <button
-                    key={cv.name}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveColor(cv);
-                    }}
-                    onMouseEnter={() => setActiveColor(cv)}
-                    className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 border transition-all duration-200 ${
-                      activeColor?.name === cv.name
-                        ? 'ring-2 ring-red-600 ring-offset-1 border-black scale-110'
-                        : 'border-neutral-400 dark:border-neutral-600 opacity-80 hover:opacity-100'
-                    }`}
-                    style={{ backgroundColor: cv.hex }}
-                    title={cv.name}
-                  />
-                ))}
-                <span className="text-[8px] sm:text-[9px] font-black text-neutral-400 ml-0.5 uppercase">
-                  {sku.colorVariants.length} C
+              <div className="flex items-center justify-between gap-1.5 pt-1" onClick={(e) => e.preventDefault()}>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {sku.colorVariants.map((cv) => {
+                    const isSelected = activeColor?.name === cv.name;
+                    return (
+                      <button
+                        key={cv.name}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setActiveColor(cv);
+                        }}
+                        onMouseEnter={() => setActiveColor(cv)}
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full transition-all duration-200 relative group/swatch ${
+                          isSelected
+                            ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-white dark:ring-offset-black scale-110 shadow-xs'
+                            : 'border border-black/15 dark:border-white/25 opacity-80 hover:opacity-100 hover:scale-115'
+                        }`}
+                        style={{ backgroundColor: cv.hex }}
+                        title={cv.name}
+                        aria-label={`Select color ${cv.name}`}
+                      >
+                        {isSelected && (
+                          <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/20 pointer-events-none" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="text-[9px] font-bold text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-1.5 py-0.5 rounded-full tracking-wider uppercase ml-1 shrink-0">
+                  {sku.colorVariants.length} {sku.colorVariants.length === 1 ? 'COLOR' : 'COLORS'}
                 </span>
               </div>
             )}

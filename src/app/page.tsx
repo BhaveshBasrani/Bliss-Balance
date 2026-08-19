@@ -223,7 +223,7 @@ export default function HomePage() {
         <BestsellerSection skus={skus} />
 
         {/* 3. THE BLISS STANDARDS SECTION */}
-        <section className="py-10 sm:py-28 bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900 transition-colors relative select-none overflow-hidden">
+        <section className="py-12 sm:py-24 bg-white dark:bg-black border-b border-neutral-200 dark:border-neutral-800 transition-colors relative select-none overflow-hidden">
           
           {/* Background Subtle Watermark */}
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] dark:opacity-[0.06] select-none">
@@ -242,55 +242,55 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {/* Card 1 */}
-              <div className="p-3.5 sm:p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-2.5 sm:space-y-4 font-mono">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-red-600 text-white flex items-center justify-center">
-                  <Cloud className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Cloud className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading text-xs sm:text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                   CLOUD COMFORT SOLE
                 </h3>
-                <p className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 leading-normal sm:leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
                   Dual-density EVA memory cushioning designed to absorb impact and relieve heel pressure for all-day standing comfort.
                 </p>
               </div>
 
               {/* Card 2 */}
-              <div className="p-3.5 sm:p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-2.5 sm:space-y-4 font-mono">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading text-xs sm:text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                   ANTI-SKID DEPENDABILITY
                 </h3>
-                <p className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 leading-normal sm:leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
                   Engineered anti-slip wave tread outsoles providing maximum friction and stable traction on wet tiles & asphalt.
                 </p>
               </div>
 
               {/* Card 3 */}
-              <div className="p-3.5 sm:p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-2.5 sm:space-y-4 font-mono">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-red-600 text-white flex items-center justify-center">
-                  <Feather className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Feather className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading text-xs sm:text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                   FEATHERLIGHT BUILD
                 </h3>
-                <p className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 leading-normal sm:leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
                   Ultralight construction weighing under 180 grams per footwear item for an effortless, weightless walking experience.
                 </p>
               </div>
 
               {/* Card 4 */}
-              <div className="p-3.5 sm:p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 space-y-2.5 sm:space-y-4 font-mono">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
-                  <Award className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Award className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading text-xs sm:text-lg font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                   CRAFTED IN INDIA
                 </h3>
-                <p className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 leading-normal sm:leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
                   Designed, engineered, and manufactured in India with premium grade non-toxic materials built for daily Indian conditions.
                 </p>
               </div>
@@ -298,7 +298,94 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 4. AS APPRECIATED ON PRESS MARQUEE (COMET STYLE) */}
+        {/* 4. REAL CUSTOMER TESTIMONIALS & SOCIAL PROOF SHOWCASE */}
+        <section className="py-14 sm:py-24 bg-neutral-50/70 dark:bg-neutral-950/70 border-b border-neutral-200 dark:border-neutral-800 relative select-none overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+              <div className="space-y-1.5">
+                <span className="text-[10px] sm:text-[11px] font-black text-red-600 uppercase tracking-[0.25em] flex items-center gap-1.5 font-mono">
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> 1,00,000+ HAPPY STEPS
+                </span>
+                <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                  LOVED BY CUSTOMERS <span className="text-red-600">ACROSS INDIA</span>
+                </h2>
+              </div>
+
+              <div className="flex items-center gap-2 font-mono text-xs font-bold text-neutral-500">
+                <span className="px-3 py-1 rounded-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200">
+                  ⭐ 4.9 / 5.0 Average Rating
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 font-mono">
+              {/* Review 1 */}
+              <div className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex text-amber-400 gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> Verified Buyer
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
+                  &ldquo;I have plantar fasciitis and standing in the kitchen used to hurt my heels. The BB147 slippers are a lifesaver. Super cushiony, featherlight, and the anti-skid grip is genuinely solid on bathroom tiles.&rdquo;
+                </p>
+                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
+                  <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">Rajesh V.</span>
+                  <span className="text-[10px] text-neutral-400">Hyderabad • Bought BB147</span>
+                </div>
+              </div>
+
+              {/* Review 2 */}
+              <div className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex text-amber-400 gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> Verified Buyer
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
+                  &ldquo;The BBSILK-11 clogs with cute charms are adorable and so comfortable. I wear them for college daily. Super easy to wash, waterproof, and doesn&apos;t bite my feet like other brands.&rdquo;
+                </p>
+                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
+                  <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">Pooja Sharma</span>
+                  <span className="text-[10px] text-neutral-400">Bangalore • Bought BBSILK-11</span>
+                </div>
+              </div>
+
+              {/* Review 3 */}
+              <div className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex text-amber-400 gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> Verified Buyer
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
+                  &ldquo;The BB1037 doctor sandals with adjustable velcro straps fit my wide feet perfectly. Quality is top-notch, feels very durable, and looks stylish with trousers and jeans.&rdquo;
+                </p>
+                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
+                  <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">Amitabh Deshmukh</span>
+                  <span className="text-[10px] text-neutral-400">Pune • Bought BB1037</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. AS APPRECIATED ON PRESS MARQUEE (COMET STYLE) */}
         <PressMarquee />
 
         {/* EDITORIAL MARQUEE STRIP */}
@@ -309,7 +396,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 5. SEARCH ENGINE & AI KNOWLEDGE GRAPH AUTHORITY SECTION */}
+        {/* 6. SEARCH ENGINE & AI KNOWLEDGE GRAPH AUTHORITY SECTION */}
         <section className="py-12 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 font-mono text-neutral-600 dark:text-neutral-400 text-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <div className="space-y-2">
