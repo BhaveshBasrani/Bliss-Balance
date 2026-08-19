@@ -410,11 +410,16 @@ export default function AdminPage() {
     }
 
     setSkus(updatedSkus);
+    saveStoredSKUs(updatedSkus);
     setSyncStepText('Writing Record to Supabase PostgreSQL Database...');
     const upsertOk = await upsertSupabaseSKU(savedSku);
     if (!upsertOk) {
       console.warn('First Supabase write returned false, retrying upsert...');
-      await upsertSupabaseSKU(savedSku);
+      const retryOk = await upsertSupabaseSKU(savedSku);
+      if (!retryOk) {
+        console.error('Supabase write failed after retry');
+        showStatus('error', 'Cloud save failed — product saved locally only. Please retry.');
+      }
     }
 
     setSyncStepText('Generating reCAPTCHA v3 Security Token...');
@@ -501,7 +506,16 @@ export default function AdminPage() {
     setSyncStepText('Syncing Site Banner, Tickers & Settings to Supabase Database...');
 
     saveStoredSettings(settings);
-    await upsertSupabaseSettings(settings);
+    const settingsOk = await upsertSupabaseSettings(settings);
+    if (!settingsOk) {
+      console.warn('Settings upsert to Supabase failed, retrying...');
+      const retryOk = await upsertSupabaseSettings(settings);
+      if (!retryOk) {
+        showStatus('error', 'Failed to save settings to cloud database. Saved locally only.');
+        setIsSyncing(false);
+        return;
+      }
+    }
 
     if (!settings.appScriptUrl || settings.appScriptUrl.includes('EXAMPLE')) {
       setIsSyncing(false);

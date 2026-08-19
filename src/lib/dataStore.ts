@@ -115,9 +115,9 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
 export const INITIAL_SKUS: FootwearSKU[] = [];
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v5';
-const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v4';
-const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v3';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v6';
+const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v5';
+const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
 
 // TURBO SPEED MEMORY CACHE
 let memorySkusCache: FootwearSKU[] | null = null;
@@ -290,17 +290,19 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
   const local = getStoredSKUs();
   const now = Date.now();
 
-  if (!forceRefresh && memorySkusCache && (now - lastSkusFetchTime < CACHE_TTL_MS)) {
+  // Return memory cache if fresh enough
+  if (!forceRefresh && memorySkusCache && memorySkusCache.length > 0 && (now - lastSkusFetchTime < CACHE_TTL_MS)) {
     return memorySkusCache;
   }
 
+  // De-duplicate parallel requests
   if (inFlightSkusPromise && !forceRefresh) {
     return inFlightSkusPromise;
   }
 
   inFlightSkusPromise = (async () => {
     try {
-      // 1. FETCH AUTHORITATIVE LIST FROM SUPABASE DATABASE
+      // FETCH AUTHORITATIVE LIST FROM SUPABASE DATABASE
       const supabaseProducts = await fetchSupabaseSKUs();
       if (Array.isArray(supabaseProducts) && supabaseProducts.length > 0) {
         memorySkusCache = supabaseProducts;
@@ -311,9 +313,11 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
     } catch (e) {
       console.warn('Could not fetch cloud SKUs:', e);
     } finally {
+      // ALWAYS clear in-flight so next call re-fetches instead of returning stale promise
       inFlightSkusPromise = null;
     }
 
+    // Fallback: return whatever we have locally
     return local;
   })();
 
@@ -327,10 +331,12 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
   const local = getStoredSettings();
   const now = Date.now();
 
+  // Return memory cache if fresh enough
   if (!forceRefresh && memorySettingsCache && (now - lastSettingsFetchTime < CACHE_TTL_MS)) {
     return memorySettingsCache;
   }
 
+  // De-duplicate parallel requests
   if (inFlightSettingsPromise && !forceRefresh) {
     return inFlightSettingsPromise;
   }
@@ -376,10 +382,13 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
       }
     }
 
-    inFlightSettingsPromise = null;
+    // All sources failed — use local
     memorySettingsCache = local;
     return local;
-  })();
+  })().finally(() => {
+    // ALWAYS clear in-flight so next call re-fetches instead of returning stale promise
+    inFlightSettingsPromise = null;
+  });
 
   return inFlightSettingsPromise;
 }

@@ -165,7 +165,7 @@ export async function deleteSupabaseSKU(id: string): Promise<boolean> {
  */
 export async function deleteAllSupabaseSKUs(): Promise<boolean> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?id=neq.__NO_MATCH__`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?id=not.is.null`, {
       method: 'DELETE',
       headers: HEADERS,
     });
