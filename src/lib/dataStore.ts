@@ -115,9 +115,9 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
 export const INITIAL_SKUS: FootwearSKU[] = [];
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v4';
-const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v3';
-const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v2';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v5';
+const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v4';
+const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v3';
 
 // TURBO SPEED MEMORY CACHE
 let memorySkusCache: FootwearSKU[] | null = null;
