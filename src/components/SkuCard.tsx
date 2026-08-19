@@ -4,13 +4,15 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FootwearSKU, ColorVariant } from '@/lib/types';
 import { prefetchProduct } from '@/lib/dataStore';
-import { Heart, Star, ArrowRight } from 'lucide-react';
+import { Heart, Star, ArrowRight, TrendingUp } from 'lucide-react';
 
 interface SkuCardProps {
   sku: FootwearSKU;
+  bestsellerRank?: number;
+  hideGenderBadge?: boolean;
 }
 
-export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
+export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGenderBadge }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [activeColor, setActiveColor] = useState<ColorVariant | null>(
@@ -55,10 +57,13 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
     : sku.imageUrl;
 
   // Resolve Secondary Hover Image with Smart Fallbacks
-  const hoverImage = sku.hoverImageUrl || 
-    (sku.galleryImages && sku.galleryImages.length > 0
-      ? (sku.galleryImages[0] !== currentImage ? sku.galleryImages[0] : (sku.galleryImages[1] || null))
-      : (sku.colorVariants && sku.colorVariants.length > 1 && sku.colorVariants[1].imageUrl ? sku.colorVariants[1].imageUrl : null));
+  const hoverImage = (sku.hoverImageUrl && sku.hoverImageUrl.trim() !== '' && sku.hoverImageUrl !== currentImage)
+    ? sku.hoverImageUrl
+    : (sku.galleryImages && sku.galleryImages.length > 0 && sku.galleryImages.find(img => img && img !== currentImage))
+    ? sku.galleryImages.find(img => img && img !== currentImage)
+    : (sku.colorVariants && sku.colorVariants.length > 1 && sku.colorVariants.find(cv => cv.imageUrl && cv.imageUrl !== currentImage)?.imageUrl)
+    ? sku.colorVariants.find(cv => cv.imageUrl && cv.imageUrl !== currentImage)!.imageUrl
+    : null;
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -85,10 +90,10 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
               loading="lazy"
               decoding="async"
               className={`w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                isHovered && hoverImage && !activeColor?.imageUrl
-                  ? 'opacity-0 scale-105 blur-[1px]'
+                isHovered && hoverImage
+                  ? 'opacity-0 scale-105 blur-[0.5px]'
                   : isHovered
-                  ? 'scale-110 brightness-105'
+                  ? 'scale-105 brightness-105'
                   : 'opacity-100 scale-100'
               }`}
             />
@@ -98,36 +103,47 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             </div>
           )}
 
-          {/* Secondary Alternate Hover Image (Comet & Nike Crossfade Effect) */}
-          {hoverImage && !activeColor?.imageUrl && (
+          {/* Secondary Alternate Hover Image (Instant Smooth Crossfade on Hover) */}
+          {hoverImage && (
             <img
               src={hoverImage}
               alt={`${sku.title} hover preview`}
               loading="lazy"
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-110'
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
+                isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
               }`}
             />
           )}
 
-          {/* Top Badges (Gender, Discount, Wishlist) */}
-          <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-black/85 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
-                {sku.gender}
-              </span>
-              {discountPercent > 0 && (
-                <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
-                  {discountPercent}% OFF
+          {/* Top Badges (Bestseller, Gender, Discount, Wishlist) */}
+          <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10 pointer-events-none">
+            <div className="flex items-center gap-1.5 pointer-events-auto">
+              {bestsellerRank !== undefined ? (
+                <span className="text-[9px] font-mono font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  #{bestsellerRank} BESTSELLER
                 </span>
+              ) : (
+                <>
+                  {!hideGenderBadge && (
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-black/85 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
+                      {sku.gender}
+                    </span>
+                  )}
+                  {discountPercent > 0 && (
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
+                      {discountPercent}% OFF
+                    </span>
+                  )}
+                </>
               )}
             </div>
 
             {/* Wishlist Button */}
             <button
               onClick={toggleWishlist}
-              className={`p-1.5 rounded-md transition-all duration-200 border ${
+              className={`p-1.5 rounded-md transition-all duration-200 border pointer-events-auto ${
                 isWishlisted
                   ? 'bg-red-600 text-white border-red-600'
                   : 'bg-white/90 dark:bg-black/90 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:text-red-600 backdrop-blur-xs'

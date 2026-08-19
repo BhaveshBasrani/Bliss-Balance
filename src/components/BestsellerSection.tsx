@@ -58,16 +58,7 @@ export const BestsellerSection: React.FC<BestsellerSectionProps> = ({ skus }) =>
         <ScrollReveal direction="up" delay={0.1}>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {displayed.map((sku, idx) => (
-              <div key={sku.id} className="relative group">
-                
-                {/* Ranking Tag */}
-                <div className="absolute top-3 left-3 z-20 bg-red-600 text-white font-mono text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>#{idx + 1} BESTSELLER</span>
-                </div>
-
-                <SkuCard sku={sku} />
-              </div>
+              <SkuCard key={sku.id} sku={sku} bestsellerRank={idx + 1} />
             ))}
           </div>
         </ScrollReveal>
