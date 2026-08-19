@@ -248,7 +248,7 @@ export default function WomenPage() {
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6">
               {filtered.slice(0, visibleCount).map((sku) => (
                 <SkuCard key={sku.id} sku={sku} />
               ))}

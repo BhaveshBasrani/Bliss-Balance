@@ -140,31 +140,31 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
         </div>
 
         {/* Product Details, Color Swatches & Price */}
-        <div className="p-4 space-y-3 flex-1 flex flex-col justify-between font-mono">
-          <div className="space-y-1.5">
+        <div className="p-2.5 sm:p-4 space-y-1.5 sm:space-y-3 flex-1 flex flex-col justify-between font-mono">
+          <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-red-600 uppercase">
+              <span className="text-[9px] sm:text-[10px] font-black text-red-600 uppercase">
                 {sku.category}
               </span>
 
               {/* Star Rating Badge */}
-              <div className="flex items-center gap-1 text-[11px] font-black text-amber-500">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-[11px] font-black text-amber-500">
+                <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 text-amber-400" />
                 <span>{sku.rating || '5.0'}</span>
               </div>
             </div>
 
-            <h3 className="font-heading text-base font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+            <h3 className="font-heading text-xs sm:text-base font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
               {sku.title}
             </h3>
 
-            <p className="font-mono text-xs text-neutral-500 line-clamp-1 font-bold">
+            <p className="font-mono text-[10px] sm:text-xs text-neutral-500 line-clamp-1 font-bold">
               {sku.subtitle}
             </p>
 
             {/* INTERACTIVE COLOR SWATCHES BAR ON CATALOG CARD */}
             {Array.isArray(sku?.colorVariants) && sku.colorVariants.length > 0 && (
-              <div className="flex items-center gap-1.5 pt-1" onClick={(e) => e.preventDefault()}>
+              <div className="flex items-center gap-1 pt-0.5 sm:pt-1" onClick={(e) => e.preventDefault()}>
                 {sku.colorVariants.map((cv) => (
                   <button
                     key={cv.name}
@@ -174,7 +174,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
                       setActiveColor(cv);
                     }}
                     onMouseEnter={() => setActiveColor(cv)}
-                    className={`w-3.5 h-3.5 border transition-all duration-200 ${
+                    className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 border transition-all duration-200 ${
                       activeColor?.name === cv.name
                         ? 'ring-2 ring-red-600 ring-offset-1 border-black scale-110'
                         : 'border-neutral-400 dark:border-neutral-600 opacity-80 hover:opacity-100'
@@ -183,28 +183,28 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
                     title={cv.name}
                   />
                 ))}
-                <span className="text-[9px] font-black text-neutral-400 ml-1 uppercase">
-                  {sku.colorVariants.length} COLORS
+                <span className="text-[8px] sm:text-[9px] font-black text-neutral-400 ml-0.5 uppercase">
+                  {sku.colorVariants.length} C
                 </span>
               </div>
             )}
           </div>
 
-          <div className="pt-2 border-t-2 border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
-              <span className="text-base font-black text-neutral-950 dark:text-white">
+          <div className="pt-1.5 sm:pt-2 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+            <div className="flex items-baseline gap-1 sm:gap-2">
+              <span className="text-xs sm:text-base font-black text-neutral-950 dark:text-white">
                 ₹{sku.price.toLocaleString('en-IN')}
               </span>
               {sku.originalPrice && (
-                <span className="text-xs text-neutral-400 line-through">
+                <span className="text-[9px] sm:text-xs text-neutral-400 line-through">
                   ₹{sku.originalPrice.toLocaleString('en-IN')}
                 </span>
               )}
             </div>
 
-            <span className="inline-flex items-center gap-1 text-xs font-black text-red-600 group-hover:translate-x-1.5 transition-transform duration-300 uppercase">
+            <span className="inline-flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs font-black text-red-600 group-hover:translate-x-1 transition-transform duration-300 uppercase">
               <span>VIEW</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </span>
           </div>
 
