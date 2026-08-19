@@ -293,19 +293,21 @@ export const Footer: React.FC = () => {
             
             {/* Small Footer Theme Switcher Button */}
             <button
+              type="button"
               onClick={toggleTheme}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-900 dark:border-neutral-700 text-[10px] font-black uppercase text-neutral-900 dark:text-white hover:border-red-600 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] ml-2"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900/90 border border-neutral-300 dark:border-neutral-700/80 text-[10px] font-black uppercase text-neutral-900 dark:text-white hover:border-red-600 transition-all duration-200 shadow-xs hover:shadow-md hover:scale-105 active:scale-95 ml-2 backdrop-blur-xs"
               title="Toggle Light / Dark Mode"
+              aria-label="Toggle Light / Dark Mode"
             >
               {theme === 'dark' ? (
                 <>
-                  <Moon className="w-3 h-3 text-amber-400 fill-amber-400" />
-                  <span>DARK MODE</span>
+                  <Moon className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  <span className="tracking-wider">DARK MODE</span>
                 </>
               ) : (
                 <>
-                  <Sun className="w-3 h-3 text-amber-500 fill-amber-500" />
-                  <span>LIGHT MODE</span>
+                  <Sun className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                  <span className="tracking-wider">LIGHT MODE</span>
                 </>
               )}
             </button>

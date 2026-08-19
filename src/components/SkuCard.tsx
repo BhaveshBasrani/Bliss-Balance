@@ -182,7 +182,13 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
 
             {/* INTERACTIVE LUXURY COLOR SWATCHES BAR ON CATALOG CARD */}
             {Array.isArray(sku?.colorVariants) && sku.colorVariants.length > 0 && (
-              <div className="flex items-center justify-between gap-1.5 pt-1" onClick={(e) => e.preventDefault()}>
+              <div
+                className="flex items-center justify-between gap-1.5 pt-1.5 relative z-20"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {sku.colorVariants.map((cv) => {
                     const isSelected = activeColor?.name === cv.name;
@@ -196,15 +202,23 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                           e.stopPropagation();
                           setActiveColor(cv);
                         }}
+                        onTouchEnd={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setActiveColor(cv);
+                        }}
                         onMouseEnter={() => setActiveColor(cv)}
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full transition-all duration-200 relative group/swatch ${
+                        className={`p-0.5 rounded-full transition-all duration-200 relative group/swatch flex items-center justify-center ${
                           isSelected
-                            ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-white dark:ring-offset-black scale-110 shadow-xs'
-                            : 'border border-black/15 dark:border-white/25 opacity-80 hover:opacity-100 hover:scale-115'
+                            ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-white dark:ring-offset-black scale-115 shadow-sm'
+                            : 'opacity-85 hover:opacity-100 hover:scale-110 active:scale-95'
                         }`}
-                        style={{ backgroundColor: cv.hex }}
                         title={cv.name}
                       >
+                        <span
+                          className="w-4 h-4 sm:w-3.5 sm:h-3.5 rounded-full border border-black/20 dark:border-white/30 block shadow-inner"
+                          style={{ backgroundColor: cv.hex }}
+                        />
                         {isSelected && (
                           <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/20 pointer-events-none" />
                         )}
@@ -212,7 +226,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                     );
                   })}
                 </div>
-                <span className="text-[9px] font-bold text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-1.5 py-0.5 rounded-full tracking-wider uppercase ml-1 shrink-0">
+                <span className="text-[9px] font-bold text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-2 py-0.5 rounded-full tracking-wider uppercase ml-1 shrink-0">
                   {sku.colorVariants.length} {sku.colorVariants.length === 1 ? 'COLOR' : 'COLORS'}
                 </span>
               </div>

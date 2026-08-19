@@ -4,14 +4,28 @@
   "description": "Engineered for Everyday Balance. Soft cushioned, lightweight & anti-skid footwear.",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/favicon-48x48.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "48x48",
+      "purpose": "any maskable"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "/favicon-96x96.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "96x96",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",

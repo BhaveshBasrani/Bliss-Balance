@@ -21,16 +21,16 @@ export const BrandLoadingScreen: React.FC<BrandLoadingScreenProps> = ({
           <img
             src="/icon.svg"
             alt="Bliss Balance Emblem"
-            className="w-24 h-24 sm:w-32 sm:h-32 object-contain filter brightness-0 invert animate-flicker"
+            className="w-36 h-36 sm:w-44 sm:h-44 object-contain filter brightness-0 invert animate-flicker scale-110 sm:scale-125"
           />
         </div>
 
         {/* Minimalist White Brand Name & Status */}
-        <div className="space-y-2">
-          <div className="font-heading text-xl sm:text-2xl font-black uppercase tracking-[0.3em] text-white">
+        <div className="space-y-2.5 pt-2">
+          <div className="font-heading text-2xl sm:text-3xl font-black uppercase tracking-[0.25em] text-white">
             BLISS BALANCE
           </div>
-          <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-[0.3em] block animate-pulse">
+          <span className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-[0.3em] block animate-pulse">
             {message}
           </span>
         </div>

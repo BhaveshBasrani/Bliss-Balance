@@ -40,15 +40,15 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
       const progress = Math.min(Math.max(scrollLeft / maxScroll, 0), 1);
       setScrollProgress(progress);
 
-      // Smoothly maps progress proportionally from 1 all the way to totalItems (e.g. 14 / 14)
+      // Smoothly maps progress proportionally from 1 to totalItems
       const index = Math.min(
         Math.round(progress * (totalItems - 1)) + 1,
         totalItems
       );
       setCurrentIndex(Math.max(index, 1));
     } else {
-      setScrollProgress(1);
-      setCurrentIndex(totalItems);
+      setScrollProgress(0);
+      setCurrentIndex(1);
     }
   }, [totalItems]);
 
@@ -84,6 +84,8 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (el) {
+      // Ensure carousel starts at the beginning (0)
+      el.scrollLeft = 0;
       el.addEventListener('scroll', updateScrollState, { passive: true });
       updateScrollState();
     }
@@ -203,18 +205,8 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
         </div>
       )}
 
-      {/* HORIZONTAL DRAGGABLE SLIDER TRACK WITH EDGE GRADIENTS */}
+      {/* HORIZONTAL DRAGGABLE SLIDER TRACK */}
       <div className="relative">
-        {/* Left Fade Gradient Mask */}
-        {canScrollLeft && (
-          <div className="absolute left-0 inset-y-0 w-12 bg-gradient-to-r from-white dark:from-black to-transparent z-20 pointer-events-none transition-opacity duration-300" />
-        )}
-
-        {/* Right Fade Gradient Mask */}
-        {canScrollRight && (
-          <div className="absolute right-0 inset-y-0 w-12 bg-gradient-to-l from-white dark:from-black to-transparent z-20 pointer-events-none transition-opacity duration-300" />
-        )}
-
         {/* The Draggable Card Track */}
         <div
           ref={scrollContainerRef}
