@@ -142,7 +142,9 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
 
             {/* Wishlist Button */}
             <button
+              type="button"
               onClick={toggleWishlist}
+              aria-label={isWishlisted ? `Remove ${sku.title} from Wishlist` : `Add ${sku.title} to Wishlist`}
               className={`p-1.5 rounded-md transition-all duration-200 border pointer-events-auto ${
                 isWishlisted
                   ? 'bg-red-600 text-white border-red-600'
@@ -187,6 +189,8 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                     return (
                       <button
                         key={cv.name}
+                        type="button"
+                        aria-label={`Select ${cv.name} color variant for ${sku.title}`}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -200,7 +204,6 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                         }`}
                         style={{ backgroundColor: cv.hex }}
                         title={cv.name}
-                        aria-label={`Select color ${cv.name}`}
                       >
                         {isSelected && (
                           <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/20 pointer-events-none" />

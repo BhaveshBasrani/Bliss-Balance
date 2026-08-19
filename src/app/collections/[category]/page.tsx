@@ -143,18 +143,40 @@ const CATEGORY_MAP: Record<string, CategoryRouteConfig> = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = (params.category || '').toLowerCase();
   const config = CATEGORY_MAP[slug];
+  const siteUrl = 'https://blissbalance.co';
 
-  if (config) {
-    return {
-      title: config.metaTitle,
-      description: config.metaDescription,
-    };
-  }
+  const title = config ? config.metaTitle : `${slug.replace(/-/g, ' ').toUpperCase()} Collection | Bliss Balance®`;
+  const description = config ? config.metaDescription : `Explore the ${slug.replace(/-/g, ' ')} footwear collection from Bliss Balance India.`;
 
-  const formatted = slug.replace(/-/g, ' ').toUpperCase();
   return {
-    title: `${formatted} Collection | Bliss Balance®`,
-    description: `Explore the ${formatted} footwear collection from Bliss Balance India.`,
+    title,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/collections/${slug}`,
+    },
+    openGraph: {
+      type: 'website',
+      locale: 'en_IN',
+      url: `${siteUrl}/collections/${slug}`,
+      title,
+      description,
+      siteName: 'Bliss Balance Footwear',
+      images: [
+        {
+          url: `${siteUrl}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `Bliss Balance Footwear - ${title}`,
+          type: 'image/jpeg',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${siteUrl}/og-image.jpg`],
+    },
   };
 }
 

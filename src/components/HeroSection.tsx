@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Truck, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Truck, RotateCcw, ChevronLeft, ChevronRight, ShieldCheck, Flame } from 'lucide-react';
 import { SiteSettings, HeroSlide } from '@/lib/types';
 import { DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
 
@@ -49,6 +49,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
               key={`hero-bg-${currentIndex}`}
               src={desktopBg}
               alt={activeSlide.titleText || 'Bliss Balance Footwear Hero'}
+              loading="eager"
+              fetchPriority="high"
               className="w-full h-full object-cover object-center sm:object-right lg:object-center transition-all duration-700 animate-in fade-in sm:zoom-in-95"
             />
           </picture>
@@ -62,6 +64,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
               {slides.map((_, idx) => (
                 <button
                   key={idx}
+                  type="button"
                   onClick={() => setCurrentIndex(idx)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     currentIndex === idx ? 'w-6 bg-red-600' : 'w-1.5 bg-white/50'
@@ -98,28 +101,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
                 href={activeSlide.ctaLink || '/men'}
                 className="group flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 sm:gap-3 px-4 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-red-600 hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest border border-red-600 transition-all duration-200 shadow-md"
               >
-                <span>{activeSlide.ctaText || 'SHOP MEN'}</span>
-                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
+                <span>{activeSlide.ctaText || 'EXPLORE MEN'}</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
 
               <Link
-                href={activeSlide.ctaLink2 || '/women'}
-                className="group flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 sm:gap-3 px-4 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-black border border-white hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest transition-all duration-200"
+                href="/women"
+                className="group flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 sm:gap-3 px-4 py-3.5 sm:px-8 sm:py-4 rounded-xl bg-black/80 hover:bg-white hover:text-black text-white font-black text-xs uppercase tracking-widest border border-neutral-700 hover:border-white transition-all duration-200 backdrop-blur-xs"
               >
-                <span>{activeSlide.ctaText2 || 'SHOP WOMEN'}</span>
-                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
+                <span>EXPLORE WOMEN</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </div>
 
-            {/* Value Props */}
-            <div className="pt-2 sm:pt-4 flex items-center justify-between sm:justify-start gap-4 sm:gap-6 text-[9px] sm:text-[10px] font-mono font-black uppercase text-neutral-400 sm:text-neutral-300 tracking-wider border-t border-neutral-800 sm:border-t-0 pt-3 sm:pt-0">
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                <Truck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
-                <span>FREE EXPRESS SHIPPING</span>
+            {/* Micro Feature Highlights */}
+            <div className="pt-2 sm:pt-4 flex items-center gap-4 sm:gap-6 text-[10px] sm:text-xs font-mono font-bold text-neutral-400">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <span>100% ORIGINAL</span>
               </div>
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
-                <span>7-DAY EASY RETURNS</span>
+              <div className="flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <span>FREE DELIVERY</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                <span>ANTI-SKID SOLES</span>
               </div>
             </div>
 
@@ -130,6 +137,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         {slides.length > 1 && (
           <div className="hidden sm:block">
             <button
+              type="button"
               onClick={prevSlide}
               className="absolute left-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-black/60 hover:bg-red-600 text-white backdrop-blur-md transition-all border border-neutral-800"
               aria-label="Previous Slide"
@@ -138,6 +146,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             </button>
 
             <button
+              type="button"
               onClick={nextSlide}
               className="absolute right-4 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-black/60 hover:bg-red-600 text-white backdrop-blur-md transition-all border border-neutral-800"
               aria-label="Next Slide"
@@ -150,6 +159,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
               {slides.map((_, idx) => (
                 <button
                   key={idx}
+                  type="button"
                   onClick={() => setCurrentIndex(idx)}
                   className={`h-2 rounded-full transition-all duration-300 ${
                     currentIndex === idx ? 'w-8 bg-red-600' : 'w-2 bg-white/40 hover:bg-white'

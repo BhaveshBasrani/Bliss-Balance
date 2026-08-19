@@ -31,11 +31,11 @@
 }
 
 .font-heading {
-  font-family: var(--font-syne), var(--font-outfit), sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 
 .font-mono {
-  font-family: var(--font-space), var(--font-jakarta), monospace;
+  font-family: var(--font-mono-custom), var(--font-inter), monospace;
 }
 
 /* Official Google reCAPTCHA v3 Floating Blue Badge */

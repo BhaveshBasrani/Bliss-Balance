@@ -116,6 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
           <div className="flex lg:hidden items-center justify-between h-16 w-full font-mono">
             <div className="flex items-center gap-1 shrink-0">
               <button
+                type="button"
                 onClick={() => setMobileMenuOpen(true)}
                 className="p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
                 aria-label="Open navigation menu"
@@ -123,6 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <Menu className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={onOpenSearch}
                 className="p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
                 aria-label="Search products"
@@ -138,8 +140,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
             <div className="flex items-center gap-1 shrink-0">
               <button
+                type="button"
                 onClick={() => setWishlistModalOpen(true)}
                 className="relative p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                aria-label={`View Wishlist (${wishlistCount} items)`}
                 title="View Wishlist"
               >
                 <Heart className="w-5 h-5" />
@@ -187,7 +191,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             {/* RIGHT ACTIONS (Text + Minimal Icon Labels) */}
             <div className="flex items-center space-x-8 xl:space-x-10 font-mono text-xs font-black tracking-widest text-neutral-800 dark:text-neutral-200 uppercase">
               <button
+                type="button"
                 onClick={onOpenSearch}
+                aria-label="Open search dialog"
                 className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5"
               >
                 <span>SEARCH</span>
@@ -195,7 +201,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               </button>
 
               <button
+                type="button"
                 onClick={() => setWishlistModalOpen(true)}
+                aria-label={`Open Wishlist (${wishlistCount} items)`}
                 className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5 relative"
               >
                 <span>WISHLIST ({wishlistCount})</span>
@@ -203,8 +211,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
               <div className="relative">
                 <button
+                  type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   onMouseEnter={() => setUserDropdownOpen(true)}
+                  aria-label="Open Account Menu"
+                  aria-expanded={userDropdownOpen}
                   className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5"
                 >
                   <span>ACCOUNT</span>

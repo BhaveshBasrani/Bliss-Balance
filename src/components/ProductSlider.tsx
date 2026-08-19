@@ -131,6 +131,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
             {/* Navigational Arrows */}
             <div className="flex items-center gap-1.5">
               <button
+                type="button"
                 onClick={() => scroll('left')}
                 disabled={!canScrollLeft}
                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
@@ -143,6 +144,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
+                type="button"
                 onClick={() => scroll('right')}
                 disabled={!canScrollRight}
                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
@@ -171,6 +173,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
 
             <div className="flex items-center gap-1.5">
               <button
+                type="button"
                 onClick={() => scroll('left')}
                 disabled={!canScrollLeft}
                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
@@ -183,6 +186,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
+                type="button"
                 onClick={() => scroll('right')}
                 disabled={!canScrollRight}
                 className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${

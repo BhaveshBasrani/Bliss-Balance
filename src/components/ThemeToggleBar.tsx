@@ -16,15 +16,17 @@ export const ThemeToggleBar: React.FC = () => {
           DYNAMIC VISUAL THEME SELECTOR
         </div>
 
-        <h3 className="font-heading text-2xl font-black text-white dark:text-white light:text-slate-950 uppercase">
+        <h2 className="font-heading text-2xl font-black text-white dark:text-white light:text-slate-950 uppercase">
           CHOOSE YOUR <span className="text-red-500">EXPERIENCE MODE</span>
-        </h3>
+        </h2>
 
         <div className="flex items-center justify-center gap-4 pt-2">
           
           {/* Black Dark Theme Option */}
           <button
+            type="button"
             onClick={() => setTheme('dark')}
+            aria-label="Switch to Black Theme (Dark Mode)"
             className={`group relative px-6 py-3.5 rounded-2xl flex items-center gap-3 font-mono text-xs font-bold uppercase tracking-wider transition-all border ${
               theme === 'dark'
                 ? 'bg-black text-white border-red-500 shadow-red-glow'
@@ -40,7 +42,9 @@ export const ThemeToggleBar: React.FC = () => {
 
           {/* White Neomorphic Light Theme Option */}
           <button
+            type="button"
             onClick={() => setTheme('light')}
+            aria-label="Switch to White Theme (Light Mode)"
             className={`group relative px-6 py-3.5 rounded-2xl flex items-center gap-3 font-mono text-xs font-bold uppercase tracking-wider transition-all border ${
               theme === 'light'
                 ? 'bg-slate-100 text-slate-950 border-red-500 shadow-lg'
