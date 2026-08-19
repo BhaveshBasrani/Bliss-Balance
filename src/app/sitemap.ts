@@ -1,51 +1,20 @@
 import { MetadataRoute } from 'next';
-import { INITIAL_SKUS, INITIAL_COLLECTIONS } from '@/lib/dataStore';
+import { getStoredSKUs, INITIAL_COLLECTIONS } from '@/lib/dataStore';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://blissbalance.co';
-  const currentDate = new Date();
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://blissbalance.co';
+  const currentDate = new Date().toISOString();
 
-  // Core Static Brand Routes
   const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/`,
-      lastModified: currentDate,
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/men`,
-      lastModified: currentDate,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/women`,
-      lastModified: currentDate,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/collections`,
-      lastModified: currentDate,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/faq`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
+    { url: `${baseUrl}`, lastModified: currentDate, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${baseUrl}/collections`, lastModified: currentDate, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${baseUrl}/men`, lastModified: currentDate, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${baseUrl}/women`, lastModified: currentDate, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${baseUrl}/our-story`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${baseUrl}/admin`, lastModified: currentDate, changeFrequency: 'monthly', priority: 0.3 },
   ];
 
-  // Dynamic Collection Category Routes
+  // Collection Routes
   const collectionRoutes: MetadataRoute.Sitemap = INITIAL_COLLECTIONS.map((col) => ({
     url: `${baseUrl}/collections?cat=${encodeURIComponent(col.title)}`,
     lastModified: currentDate,
@@ -53,8 +22,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // Dynamic Product SKU Routes
-  const productRoutes: MetadataRoute.Sitemap = INITIAL_SKUS.map((sku) => ({
+  // Dynamic Product SKU Routes from live storage
+  const activeSkus = getStoredSKUs();
+  const productRoutes: MetadataRoute.Sitemap = activeSkus.map((sku) => ({
     url: `${baseUrl}/product/${sku.id}`,
     lastModified: currentDate,
     changeFrequency: 'daily',

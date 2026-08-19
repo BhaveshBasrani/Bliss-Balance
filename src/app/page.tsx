@@ -12,6 +12,7 @@ import { SearchModal } from '@/components/SearchModal';
 import { ProductSlider } from '@/components/ProductSlider';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { BestsellerSection } from '@/components/BestsellerSection';
+import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
 import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings } from '@/lib/types';
 import { ArrowRight, Zap, Plus, Cloud, ShieldCheck, Feather, Award, Star, CheckCircle } from 'lucide-react';
@@ -23,6 +24,7 @@ export default function HomePage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'All' | 'Men' | 'Women'>('All');
   const [loading, setLoading] = useState(true);
+  const [initialSplash, setInitialSplash] = useState(true);
 
   useEffect(() => {
     const loadData = () => {
@@ -36,6 +38,11 @@ export default function HomePage() {
     loadData();
     setSettings(getStoredSettings());
 
+    // Instant splash dismiss after 600ms preloading frame
+    const timer = setTimeout(() => {
+      setInitialSplash(false);
+    }, 600);
+
     // Live Dynamic Cloud Fetch from Google Sheets
     fetchCloudSKUs().then(cloudSkus => {
       setSkus(cloudSkus);
@@ -45,7 +52,10 @@ export default function HomePage() {
     fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings));
 
     window.addEventListener('skus-updated', loadData);
-    return () => window.removeEventListener('skus-updated', loadData);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('skus-updated', loadData);
+    };
   }, []);
 
   const displayedSkus = skus.filter(s => {
@@ -55,6 +65,10 @@ export default function HomePage() {
     const target = selectedTab.toLowerCase();
     return g === target || g === 'unisex';
   });
+
+  if (initialSplash || loading) {
+    return <BrandLoadingScreen message="FEEL THE BLISS • INITIALIZING STORE..." />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300 select-none">

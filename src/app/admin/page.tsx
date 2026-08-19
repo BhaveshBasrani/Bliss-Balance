@@ -193,10 +193,12 @@ export default function AdminPage() {
     setSettings(getStoredSettings());
     getStorageQuotaStats(currentSkus).then(setQuotaStats);
 
-    // Fetch live products from Supabase/cloud on mount to guarantee up-to-date products!
-    fetchCloudSKUs(undefined, true).then(cloudSkus => {
-      setSkus(cloudSkus || []);
-      getStorageQuotaStats(cloudSkus || []).then(setQuotaStats);
+    // Fetch live products from Supabase/cloud on mount safely
+    fetchCloudSKUs(undefined, false).then(cloudSkus => {
+      if (Array.isArray(cloudSkus) && cloudSkus.length > 0) {
+        setSkus(cloudSkus);
+        getStorageQuotaStats(cloudSkus).then(setQuotaStats);
+      }
     }).catch(() => {});
 
     const session = sessionStorage.getItem('bliss_balance_admin_auth');
@@ -899,6 +901,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                         <option value="Flip-Flops">Flip-Flops</option>
                         <option value="Slides">Slides</option>
                         <option value="Sandals">Sandals</option>
+                        <option value="Kolhapuri & Puneri Chappal">Kolhapuri & Puneri Chappal</option>
                         <option value="Clogs">Clogs</option>
                         <option value="Casual Shoes">Casual Shoes</option>
                         <option value="Sneakers">Sneakers</option>

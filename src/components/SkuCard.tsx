@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FootwearSKU, ColorVariant } from '@/lib/types';
+import { prefetchProduct } from '@/lib/dataStore';
 import { Heart, Star, ArrowRight } from 'lucide-react';
 
 interface SkuCardProps {
@@ -59,9 +60,15 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
       ? (sku.galleryImages[0] !== currentImage ? sku.galleryImages[0] : (sku.galleryImages[1] || null))
       : (sku.colorVariants && sku.colorVariants.length > 1 && sku.colorVariants[1].imageUrl ? sku.colorVariants[1].imageUrl : null));
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    // Directive 7: Prefetch product data & images instantly on hover
+    prefetchProduct(sku);
+  };
+
   return (
     <div
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
       className="group relative rounded-xl overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between"
     >
@@ -75,6 +82,8 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             <img
               src={currentImage}
               alt={sku.title}
+              loading="lazy"
+              decoding="async"
               className={`w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 isHovered && hoverImage && !activeColor?.imageUrl
                   ? 'opacity-0 scale-105 blur-[1px]'
@@ -94,6 +103,8 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             <img
               src={hoverImage}
               alt={`${sku.title} hover preview`}
+              loading="lazy"
+              decoding="async"
               className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-110'
               }`}
@@ -102,12 +113,12 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
 
           {/* Top Badges (Gender, Discount, Wishlist) */}
           <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10">
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] font-mono font-black uppercase tracking-widest bg-red-600 text-white px-2 py-0.5 border border-black shadow-sm">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-black/85 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
                 {sku.gender}
               </span>
               {discountPercent > 0 && (
-                <span className="text-[10px] font-mono font-black uppercase tracking-widest bg-black text-emerald-400 px-2 py-0.5 border border-emerald-500 shadow-sm">
+                <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
                   {discountPercent}% OFF
                 </span>
               )}
@@ -116,14 +127,14 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku }) => {
             {/* Wishlist Button */}
             <button
               onClick={toggleWishlist}
-              className={`p-2 transition-all duration-300 border border-black shadow-md ${
+              className={`p-1.5 rounded-md transition-all duration-200 border ${
                 isWishlisted
-                  ? 'bg-red-600 text-white scale-105'
-                  : 'bg-white/90 dark:bg-black/90 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white'
+                  ? 'bg-red-600 text-white border-red-600'
+                  : 'bg-white/90 dark:bg-black/90 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:text-red-600 backdrop-blur-xs'
               }`}
               title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
-              <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
+              <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-white' : ''}`} />
             </button>
           </div>
         </div>

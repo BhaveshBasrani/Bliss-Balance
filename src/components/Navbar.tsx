@@ -215,7 +215,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 {userDropdownOpen && (
                   <div
                     onMouseLeave={() => setUserDropdownOpen(false)}
-                    className="absolute right-0 top-full mt-3 w-72 bg-white dark:bg-black border-2 border-neutral-950 dark:border-neutral-100 shadow-[8px_8px_0px_0px_rgba(220,38,38,1)] p-5 space-y-4 z-50 font-mono text-xs animate-in fade-in zoom-in-95 duration-150 select-none"
+                    className="absolute right-0 top-full mt-3 w-72 bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-xl p-5 space-y-4 z-50 font-mono text-xs animate-in fade-in zoom-in-95 duration-150 select-none"
                   >
                     {/* Top Accent Pill */}
                     <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2.5">

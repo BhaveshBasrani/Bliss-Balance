@@ -3,6 +3,8 @@ export type FootwearCategory =
   | 'Flip-Flops'
   | 'Slides'
   | 'Sandals'
+  | 'Kolhapuri'
+  | 'Kolhapuri & Puneri Chappal'
   | 'Clogs'
   | 'Casual Shoes'
   | 'Sneakers'
@@ -53,7 +55,7 @@ export interface FootwearSKU {
   reviewCount?: number;
   isNewArrival?: boolean;
   isBestseller?: boolean;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface CollectionItem {

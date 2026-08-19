@@ -13,6 +13,7 @@ export default function WomenPage() {
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   // Filter & Sort States
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -29,6 +30,7 @@ export default function WomenPage() {
     'Flip-Flops',
     'Slides',
     'Sandals',
+    'Kolhapuri & Puneri Chappal',
     'Clogs',
     'Casual Shoes',
     'Sneakers',
@@ -239,10 +241,24 @@ export default function WomenPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            {filtered.map((sku) => (
-              <SkuCard key={sku.id} sku={sku} />
-            ))}
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+              {filtered.slice(0, visibleCount).map((sku) => (
+                <SkuCard key={sku.id} sku={sku} />
+              ))}
+            </div>
+
+            {filtered.length > visibleCount && (
+              <div className="text-center pt-4 pb-8">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount(prev => prev + 24)}
+                  className="px-8 py-3.5 rounded-full bg-neutral-950 text-white dark:bg-white dark:text-black font-mono font-black text-xs uppercase tracking-widest hover:bg-red-600 dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-md"
+                >
+                  LOAD MORE PRODUCTS ({filtered.length - visibleCount} REMAINING)
+                </button>
+              </div>
+            )}
           </div>
         )}
 

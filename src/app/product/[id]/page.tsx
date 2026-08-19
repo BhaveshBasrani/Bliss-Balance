@@ -1,6 +1,6 @@
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
-import { INITIAL_SKUS } from '@/lib/dataStore';
+import { getStoredSKUs } from '@/lib/dataStore';
 
 interface ProductPageProps {
   params: {
@@ -11,14 +11,14 @@ interface ProductPageProps {
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const initialIds = INITIAL_SKUS.map(sku => ({ id: sku.id }));
+  const activeSkus = getStoredSKUs();
+  const initialIds = activeSkus.map(sku => ({ id: sku.id }));
   
-  // Include common SKU ID placeholders for static export compatibility
   const fallbackIds = [
-    { id: 'sku-1' },
-    { id: 'sku-2' },
-    { id: 'sku-3' },
-    { id: 'sku-bb-46176' },
+    { id: 'BB924' },
+    { id: 'BB1106' },
+    { id: 'BB12' },
+    { id: 'BB155' },
     { id: 'default' },
   ];
 

@@ -29,6 +29,7 @@ export const SizeGuideModal: React.FC<SizeGuideModalProps> = ({
   ];
 
   const womensSizeData = [
+    { uk: 'UK / IN 3', cm: '21.5 cm' },
     { uk: 'UK / IN 4', cm: '22.2 cm' },
     { uk: 'UK / IN 5', cm: '22.5 cm' },
     { uk: 'UK / IN 6', cm: '23.0 cm' },

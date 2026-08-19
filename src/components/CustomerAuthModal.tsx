@@ -54,6 +54,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
     setError('');
     try {
       const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
       await signInWithPopup(auth, provider);
       setSuccessMsg('Signed in with Google!');
       setTimeout(() => {
@@ -68,8 +69,8 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 font-mono">
       
-      {/* Gumroad Neo-Brutalist Auth Box */}
-      <div className="relative w-full max-w-md bg-white dark:bg-black rounded-none border-2 border-neutral-900 dark:border-neutral-100 shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] p-8 space-y-6">
+      {/* Minimal Sleek Auth Box */}
+      <div className="relative w-full max-w-md bg-white dark:bg-black rounded-xl border border-neutral-200 dark:border-neutral-800 p-8 space-y-6 shadow-2xl">
         
         {/* Close Button */}
         <button

@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
 import { SizeGuideModal } from '@/components/SizeGuideModal';
+import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
 import { getStoredSKUs, fetchCloudSKUs } from '@/lib/dataStore';
 import { syncWithAppsScript } from '@/lib/appScriptSync';
 import { FootwearSKU, ProductReview, ColorVariant } from '@/lib/types';
@@ -81,18 +82,21 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
     if (found) {
       setSku(found);
-      setSelectedImage(found.imageUrl || '');
+      const activeColorImg = (found.colorVariants && found.colorVariants.length > 0 && found.colorVariants[0].imageUrl && found.colorVariants[0].imageUrl.trim() !== '')
+        ? found.colorVariants[0].imageUrl
+        : (found.imageUrl || '');
+
+      setSelectedImage(activeColorImg);
       if (found.colorVariants && found.colorVariants.length > 0) {
         setSelectedColor(found.colorVariants[0].name);
-        if (found.colorVariants[0].imageUrl) {
-          setSelectedImage(found.colorVariants[0].imageUrl);
-        }
       }
+      setIsLoading(false);
+    } else {
       setIsLoading(false);
     }
 
     // NON-BLOCKING LIVE CLOUD REFRESH
-    fetchCloudSKUs(undefined, true).then(cloudSkus => {
+    fetchCloudSKUs(undefined, false).then(cloudSkus => {
       setAllSkus(cloudSkus);
       const cloudFound = cloudSkus.find(s => 
         s.id.toLowerCase() === targetId || 
@@ -101,14 +105,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
       if (cloudFound) {
         setSku(cloudFound);
-        if (!selectedImage && cloudFound.imageUrl) {
-          setSelectedImage(cloudFound.imageUrl);
-        }
+        const cloudImg = (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && cloudFound.colorVariants[0].imageUrl && cloudFound.colorVariants[0].imageUrl.trim() !== '')
+          ? cloudFound.colorVariants[0].imageUrl
+          : (cloudFound.imageUrl || '');
+
+        setSelectedImage(prev => (prev && prev.trim() !== '') ? prev : cloudImg);
         if (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && !selectedColor) {
           setSelectedColor(cloudFound.colorVariants[0].name);
-          if (cloudFound.colorVariants[0].imageUrl) {
-            setSelectedImage(cloudFound.colorVariants[0].imageUrl);
-          }
         }
       }
       setIsLoading(false);
@@ -237,28 +240,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   };
 
   if (isLoading && !sku) {
-    return (
-      <div className="fixed inset-0 z-[99999] bg-red-600 text-black flex flex-col items-center justify-center font-mono overflow-hidden transition-all">
-        <div className="speeder-loader-wrapper scale-125 sm:scale-150">
-          <div className="speeder-loader text-black">
-            <span><span /><span /><span /><span /></span>
-            <div className="speeder-base"><span /></div>
-            <div className="speeder-face" />
-          </div>
-          <div className="speeder-longfazers">
-            <span style={{ background: '#ffffff' }} />
-            <span style={{ background: '#ffffff' }} />
-            <span style={{ background: '#ffffff' }} />
-            <span style={{ background: '#ffffff' }} />
-          </div>
-        </div>
-
-        <div className="absolute bottom-10 inset-x-4 max-w-xs mx-auto flex items-center justify-center gap-2 text-xs font-black text-black tracking-widest uppercase animate-pulse z-10 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-4 py-2.5 rounded-none text-center">
-          <Zap className="w-4 h-4 fill-black text-black shrink-0" />
-          <span>FEEL THE BLISS • LOADING PRODUCT...</span>
-        </div>
-      </div>
-    );
+    return <BrandLoadingScreen message="FEEL THE BLISS • LOADING PRODUCT..." />;
   }
 
   if (!sku) {
@@ -279,9 +261,15 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     );
   }
 
-  const availableSizes = sku.sizes && sku.sizes.length > 0
+  const rawSizes = sku.sizes && sku.sizes.length > 0
     ? sku.sizes
     : ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];
+
+  const availableSizes = [...rawSizes].sort((a, b) => {
+    const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
+    const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
+    return numA - numB;
+  });
 
   const discountPercent = sku.originalPrice
     ? Math.round(((sku.originalPrice - sku.price) / sku.originalPrice) * 100)
@@ -365,9 +353,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             
             {/* Main Stage Image */}
             <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 shadow-sm">
-              {selectedImage ? (
+              {(selectedImage && selectedImage.trim() !== '') || (sku.imageUrl && sku.imageUrl.trim() !== '') ? (
                 <img
-                  src={selectedImage}
+                  src={(selectedImage && selectedImage.trim() !== '') ? selectedImage : sku.imageUrl}
                   alt={sku.title}
                   className="w-full h-full object-cover rounded-xl transition-all duration-300 hover:scale-105"
                 />

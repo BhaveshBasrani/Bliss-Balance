@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { SkuCard } from '@/components/SkuCard';
 import { SearchModal } from '@/components/SearchModal';
+import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
 import { getStoredSKUs, fetchCloudSKUs } from '@/lib/dataStore';
 import { FootwearSKU } from '@/lib/types';
 import { ArrowUpDown, SlidersHorizontal, X, ChevronUp, Check, RotateCcw } from 'lucide-react';
@@ -18,6 +19,7 @@ function CollectionsContent() {
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   // Filter States
   const [selectedGenders, setSelectedGenders] = useState<string[]>([]);
@@ -35,6 +37,7 @@ function CollectionsContent() {
     'Flip-Flops',
     'Slides',
     'Sandals',
+    'Kolhapuri & Puneri Chappal',
     'Clogs',
     'Casual Shoes',
     'Sneakers',
@@ -150,6 +153,10 @@ function CollectionsContent() {
     setSelectedSizes([]);
     setSelectedColors([]);
   };
+
+  if (loading) {
+    return <BrandLoadingScreen message="FEEL THE BLISS • LOADING CATALOG..." />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-mono select-none">
@@ -273,10 +280,24 @@ function CollectionsContent() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            {filtered.map((sku) => (
-              <SkuCard key={sku.id} sku={sku} />
-            ))}
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+              {filtered.slice(0, visibleCount).map((sku) => (
+                <SkuCard key={sku.id} sku={sku} />
+              ))}
+            </div>
+
+            {filtered.length > visibleCount && (
+              <div className="text-center pt-4 pb-8">
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount(prev => prev + 24)}
+                  className="px-8 py-3.5 rounded-full bg-neutral-950 text-white dark:bg-white dark:text-black font-mono font-black text-xs uppercase tracking-widest hover:bg-red-600 dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-md"
+                >
+                  LOAD MORE PRODUCTS ({filtered.length - visibleCount} REMAINING)
+                </button>
+              </div>
+            )}
           </div>
         )}
 

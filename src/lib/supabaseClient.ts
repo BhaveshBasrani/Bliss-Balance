@@ -21,11 +21,16 @@ const HEADERS = {
  */
 export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
     const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?select=*&order=created_at.desc`, {
       method: 'GET',
       headers: HEADERS,
       cache: 'no-store',
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
       console.warn('Supabase product fetch returned non-200:', res.status);

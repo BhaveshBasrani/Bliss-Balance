@@ -115,8 +115,8 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
 export const INITIAL_SKUS: FootwearSKU[] = [];
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v2';
-const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v4';
+const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v3';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v2';
 
 // TURBO SPEED MEMORY CACHE
@@ -155,7 +155,7 @@ export function mergeSKUArrays(primary: FootwearSKU[], secondary: FootwearSKU[])
 }
 
 export function getStoredSKUs(): FootwearSKU[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return INITIAL_SKUS;
   try {
     const data = localStorage.getItem(SKUS_STORAGE_KEY);
     if (data) {
@@ -174,9 +174,33 @@ export function getStoredSKUs(): FootwearSKU[] {
         return parsedFallback;
       }
     }
-    return memorySkusCache || [];
+    return (memorySkusCache && memorySkusCache.length > 0) ? memorySkusCache : INITIAL_SKUS;
   } catch (e) {
-    return memorySkusCache || [];
+    return (memorySkusCache && memorySkusCache.length > 0) ? memorySkusCache : INITIAL_SKUS;
+  }
+}
+
+/**
+ * ⚡ PREFETCH PRODUCT DATA & IMAGES ON MOUSE HOVER
+ * Directive 7: Prefetches product images into browser memory when user mouse enters a product card
+ */
+const prefetchedSkus = new Set<string>();
+
+export function prefetchProduct(sku: FootwearSKU) {
+  if (!sku || !sku.id || typeof window === 'undefined') return;
+  const key = sku.id.toLowerCase();
+  if (prefetchedSkus.has(key)) return;
+  prefetchedSkus.add(key);
+
+  // 1. Preload main product image into browser cache
+  if (sku.imageUrl && sku.imageUrl.trim() !== '') {
+    const img = new Image();
+    img.src = sku.imageUrl;
+  }
+  // 2. Preload secondary hover image into browser cache
+  if (sku.hoverImageUrl && sku.hoverImageUrl.trim() !== '') {
+    const hoverImg = new Image();
+    hoverImg.src = sku.hoverImageUrl;
   }
 }
 
@@ -191,15 +215,8 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
       localStorage.removeItem(SKUS_STORAGE_FALLBACK_KEY);
     } catch (e) {}
 
-    // Sanitize any large base64 inline images before storing locally
-    const sanitized = skus.map(s => ({
-      ...s,
-      imageUrl: s.imageUrl && s.imageUrl.startsWith('data:image') ? '/collections/mens-casual-sneakers.jpg' : s.imageUrl,
-      hoverImageUrl: s.hoverImageUrl && s.hoverImageUrl.startsWith('data:image') ? '' : s.hoverImageUrl,
-      galleryImages: (s.galleryImages || []).filter(img => img && !img.startsWith('data:image')),
-    }));
-
-    const jsonString = JSON.stringify(sanitized);
+    // Save full original SKUs with intact uploaded image URLs
+    const jsonString = JSON.stringify(skus);
     localStorage.setItem(SKUS_STORAGE_KEY, jsonString);
     window.dispatchEvent(new Event('skus-updated'));
   } catch (e) {
@@ -285,13 +302,12 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
     try {
       // 1. FETCH AUTHORITATIVE LIST FROM SUPABASE DATABASE
       const supabaseProducts = await fetchSupabaseSKUs();
-      const cloudProducts: FootwearSKU[] = supabaseProducts || [];
-
-      // Update memory & local storage cache with authoritative remote state
-      memorySkusCache = cloudProducts;
-      lastSkusFetchTime = Date.now();
-      saveStoredSKUs(cloudProducts);
-      return cloudProducts;
+      if (Array.isArray(supabaseProducts) && supabaseProducts.length > 0) {
+        memorySkusCache = supabaseProducts;
+        lastSkusFetchTime = Date.now();
+        saveStoredSKUs(supabaseProducts);
+        return supabaseProducts;
+      }
     } catch (e) {
       console.warn('Could not fetch cloud SKUs:', e);
     } finally {
@@ -331,7 +347,12 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
       const res = await fetch(`${url}?action=getSettings`, { method: 'GET' });
       const data = await res.json();
       if (data && data.settings && Object.keys(data.settings).length > 0) {
-        const merged = { ...local, ...data.settings };
+        // Preserve local custom hero slides if remote cloud settings returned empty/missing heroSlides
+        const remoteSlides = (Array.isArray(data.settings.heroSlides) && data.settings.heroSlides.length > 0)
+          ? data.settings.heroSlides
+          : local.heroSlides;
+
+        const merged = { ...local, ...data.settings, heroSlides: remoteSlides };
         memorySettingsCache = merged;
         lastSettingsFetchTime = Date.now();
         saveStoredSettings(merged);
