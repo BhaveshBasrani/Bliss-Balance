@@ -51,7 +51,10 @@ export default function MenPage() {
 
   useEffect(() => {
     const loadSkus = () => {
-      const local = getStoredSKUs().filter(s => s.gender === 'Men' || s.gender === 'Unisex');
+      const local = getStoredSKUs().filter(s => {
+        const g = (s?.gender || '').toLowerCase();
+        return g === 'men' || g === 'unisex';
+      });
       setSkus(local);
       if (local && local.length > 0) setLoading(false);
     };
@@ -59,7 +62,10 @@ export default function MenPage() {
     loadSkus();
 
     fetchCloudSKUs().then(cloudSkus => {
-      setSkus(cloudSkus.filter(s => s.gender === 'Men' || s.gender === 'Unisex'));
+      setSkus(cloudSkus.filter(s => {
+        const g = (s?.gender || '').toLowerCase();
+        return g === 'men' || g === 'unisex';
+      }));
       setLoading(false);
     }).catch(() => setLoading(false));
 
