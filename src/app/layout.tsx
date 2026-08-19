@@ -315,6 +315,23 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="bg-white dark:bg-black text-neutral-900 dark:text-white font-mono antialiased selection:bg-red-600 selection:text-white">
         {children}
+
+        {/* GOOGLE TAG / ANALYTICS (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-DQVHKGD55G"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-DQVHKGD55G', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
+
         {/* OFFICIAL GOOGLE RECAPTCHA V3 FLOATING BADGE ENGINE */}
         <Script
           src="https://www.google.com/recaptcha/api.js?render=6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa"
