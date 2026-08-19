@@ -13,14 +13,15 @@ import { ProductSlider } from '@/components/ProductSlider';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { BestsellerSection } from '@/components/BestsellerSection';
 import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
-import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS, INITIAL_SKUS } from '@/lib/dataStore';
-import { FootwearSKU, SiteSettings } from '@/lib/types';
+import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, getStoredReviews, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS, INITIAL_SKUS } from '@/lib/dataStore';
+import { FootwearSKU, SiteSettings, ProductReview } from '@/lib/types';
 import { ArrowRight, Zap, Plus, Cloud, ShieldCheck, Feather, Award, Star, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomePage() {
   const [skus, setSkus] = useState<FootwearSKU[]>(INITIAL_SKUS);
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'All' | 'Men' | 'Women'>('All');
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,7 @@ export default function HomePage() {
       setSkus(local);
     }
     setSettings(getStoredSettings());
+    setReviews(getStoredReviews());
 
     // Auto-dismiss the signature brand intro screen smoothly
     const timer = setTimeout(() => {
@@ -54,10 +56,16 @@ export default function HomePage() {
       if (updated && updated.length > 0) setSkus(updated);
     };
 
+    const loadReviews = () => {
+      setReviews(getStoredReviews());
+    };
+
     window.addEventListener('skus-updated', loadData);
+    window.addEventListener('reviews-updated', loadReviews);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('skus-updated', loadData);
+      window.removeEventListener('reviews-updated', loadReviews);
     };
   }, []);
 
@@ -170,7 +178,7 @@ export default function HomePage() {
                     href="/collections"
                     className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider text-red-600 hover:text-neutral-950 dark:hover:text-white transition-colors"
                   >
-                    <span>VIEW ALL</span>
+                    <span>VIEW ALL DROPS</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -213,7 +221,7 @@ export default function HomePage() {
                   href="/collections"
                   className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-none bg-neutral-950 text-white dark:bg-white dark:text-black font-black text-[11px] uppercase tracking-widest border border-neutral-900 dark:border-white hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm"
                 >
-                  <span>VIEW FULL CATALOG ({skus.length} PRODUCTS)</span>
+                  <span>VIEW FULL CATALOG</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -304,92 +312,68 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 4. REAL CUSTOMER TESTIMONIALS & SOCIAL PROOF SHOWCASE */}
-        <section className="py-14 sm:py-24 bg-neutral-50/70 dark:bg-neutral-950/70 border-b border-neutral-200 dark:border-neutral-800 relative select-none overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
-              <div className="space-y-1.5">
-                <span className="text-[10px] sm:text-[11px] font-black text-red-600 uppercase tracking-[0.25em] flex items-center gap-1.5 font-mono">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> 1,00,000+ HAPPY STEPS
-                </span>
-                <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  LOVED BY CUSTOMERS <span className="text-red-600">ACROSS INDIA</span>
-                </h2>
+        {/* 4. REAL CUSTOMER TESTIMONIALS & SOCIAL PROOF SHOWCASE (ONLY ACTUAL SUBMITTED REVIEWS) */}
+        {reviews.length > 0 && (
+          <section className="py-14 sm:py-24 bg-neutral-50/70 dark:bg-neutral-950/70 border-b border-neutral-200 dark:border-neutral-800 relative select-none overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div className="space-y-1.5">
+                  <span className="text-[10px] sm:text-[11px] font-black text-red-600 uppercase tracking-[0.25em] flex items-center gap-1.5 font-mono">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> VERIFIED CUSTOMER REVIEWS
+                  </span>
+                  <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                    LOVED BY CUSTOMERS <span className="text-red-600">ACROSS INDIA</span>
+                  </h2>
+                </div>
+
+                <div className="flex items-center gap-2 font-mono text-xs font-bold text-neutral-500">
+                  <span className="px-3 py-1 rounded-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200">
+                    ⭐ {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} / 5.0 Rating ({reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'})
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-xs font-bold text-neutral-500">
-                <span className="px-3 py-1 rounded-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200">
-                  ⭐ 4.9 / 5.0 Average Rating
-                </span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 font-mono">
+                {reviews.slice(0, 6).map((rev) => (
+                  <div
+                    key={rev.id}
+                    className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex text-amber-400 gap-0.5">
+                          {[...Array(Math.max(1, Math.min(5, rev.rating)))].map((_, i) => (
+                            <Star key={i} className="w-4 h-4 fill-amber-400" />
+                          ))}
+                        </div>
+                        {rev.verified && (
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3" /> Verified Buyer
+                          </span>
+                        )}
+                      </div>
+
+                      {rev.headline && (
+                        <p className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white line-clamp-1">
+                          {rev.headline}
+                        </p>
+                      )}
+
+                      <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium line-clamp-4">
+                        &ldquo;{rev.comment}&rdquo;
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
+                      <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">{rev.authorName}</span>
+                      <span className="text-[10px] text-neutral-400">{rev.date}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 font-mono">
-              {/* Review 1 */}
-              <div className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex text-amber-400 gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" /> Verified Buyer
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
-                  &ldquo;I have plantar fasciitis and standing in the kitchen used to hurt my heels. The BB147 slippers are a lifesaver. Super cushiony, featherlight, and the anti-skid grip is genuinely solid on bathroom tiles.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
-                  <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">Rajesh V.</span>
-                  <span className="text-[10px] text-neutral-400">Hyderabad • Bought BB147</span>
-                </div>
-              </div>
-
-              {/* Review 2 */}
-              <div className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex text-amber-400 gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" /> Verified Buyer
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
-                  &ldquo;The BBSILK-11 clogs with cute charms are adorable and so comfortable. I wear them for college daily. Super easy to wash, waterproof, and doesn&apos;t bite my feet like other brands.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
-                  <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">Pooja Sharma</span>
-                  <span className="text-[10px] text-neutral-400">Bangalore • Bought BBSILK-11</span>
-                </div>
-              </div>
-
-              {/* Review 3 */}
-              <div className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex text-amber-400 gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" /> Verified Buyer
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
-                  &ldquo;The BB1037 doctor sandals with adjustable velcro straps fit my wide feet perfectly. Quality is top-notch, feels very durable, and looks stylish with trousers and jeans.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
-                  <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">Amitabh Deshmukh</span>
-                  <span className="text-[10px] text-neutral-400">Pune • Bought BB1037</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* 5. AS APPRECIATED ON PRESS MARQUEE (COMET STYLE) */}
         <PressMarquee />

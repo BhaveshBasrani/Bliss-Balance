@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
-import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
+import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, getStoredReviews, saveStoredReviews, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
 import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
 import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide } from '@/lib/types';
@@ -67,13 +67,12 @@ export default function AdminPage() {
   }, [settings.announcementText]);
 
   useEffect(() => {
-    try {
-      const savedRev = localStorage.getItem('bliss_balance_reviews_v1');
-      if (savedRev) {
-        const parsed = JSON.parse(savedRev);
-        if (Array.isArray(parsed)) setAllReviews(parsed);
-      }
-    } catch (e) {}
+    const loadReviews = () => {
+      setAllReviews(getStoredReviews());
+    };
+    loadReviews();
+    window.addEventListener('reviews-updated', loadReviews);
+    return () => window.removeEventListener('reviews-updated', loadReviews);
   }, []);
 
   const handleAddTickerItem = (e: React.FormEvent) => {
@@ -85,8 +84,8 @@ export default function AdminPage() {
     setSettings(prev => ({ ...prev, announcementText: joined }));
     saveStoredSettings({ ...settings, announcementText: joined });
     setNewTickerText('');
-    addLog(`Added ticker offer item: "${newTickerText.trim()}"`, 'CONFIG');
-    showStatus('success', 'Ticker item added!');
+    addLog(`Added ticker item: "${newTickerText.trim()}"`, 'CONFIG');
+    showStatus('success', 'Ticker announcement added!');
   };
 
   const handleDeleteTickerItem = (idx: number) => {
@@ -113,14 +112,10 @@ export default function AdminPage() {
   };
 
   const handleResetDefaultTickers = () => {
-    const defaults = [
-      'EASY 7-DAY RETURNS & REPLACEMENTS',
-      'CUSHIONED & ANTI-SKID FOOTWEAR',
-      'OFFICIAL ONLINE STORE',
-      'MADE IN INDIA'
-    ];
-    const joined = defaults.join(' • ');
-    setTickerItems(defaults);
+    const defaultJoined = 'EASY 7-DAY RETURNS & REPLACEMENTS • CUSHIONED & ANTI-SKID FOOTWEAR • OFFICIAL ONLINE STORE • MADE IN INDIA';
+    const parsed = defaultJoined.split(' • ').map(t => t.trim()).filter(Boolean);
+    setTickerItems(parsed);
+    const joined = parsed.join(' • ');
     setSettings(prev => ({ ...prev, announcementText: joined }));
     saveStoredSettings({ ...settings, announcementText: joined });
     addLog('Reset ticker announcements to default offers', 'CONFIG');
@@ -131,10 +126,7 @@ export default function AdminPage() {
     if (!confirm('Are you sure you want to delete this customer review?')) return;
     const updated = allReviews.filter(r => r.id !== revId);
     setAllReviews(updated);
-    try {
-      localStorage.setItem('bliss_balance_reviews_v1', JSON.stringify(updated));
-      window.dispatchEvent(new Event('reviews-updated'));
-    } catch (e) {}
+    saveStoredReviews(updated);
     addLog(`Deleted customer review ${revId}`, 'ACTION');
     showStatus('info', 'Review deleted.');
   };
@@ -425,7 +417,6 @@ export default function AdminPage() {
     setSyncStepText('Generating reCAPTCHA v3 Security Token...');
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'save_sku');
 
-    setSyncStepText('Writing Record to Google Sheets & Dispatching Email...');
     await syncWithAppsScript(settings.appScriptUrl, {
       action: editingSkuId ? 'UPDATE_SKU' : 'ADD_SKU',
       skuData: savedSku,
@@ -433,6 +424,13 @@ export default function AdminPage() {
       timestamp: new Date().toISOString(),
       adminEmail: settings.adminEmail,
     });
+
+    // Trigger Next.js Server-Side Cache Revalidation
+    fetch('/api/revalidate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tag: 'catalog' }),
+    }).catch(() => {});
 
     setIsSyncing(false);
     addLog(`Product "${savedSku.title}" saved to Supabase & Google Sheets`, 'ACTION');
@@ -452,6 +450,13 @@ export default function AdminPage() {
     saveStoredSKUs(updatedSkus);
 
     await deleteSupabaseSKU(id);
+
+    // Trigger Next.js Server-Side Cache Revalidation
+    fetch('/api/revalidate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tag: 'catalog' }),
+    }).catch(() => {});
 
     const recaptchaToken = await getRecaptchaV3Token(settings.recaptchaSiteKey, 'delete_sku');
 
@@ -478,6 +483,12 @@ export default function AdminPage() {
 
     const success = await deleteAllSupabaseSKUs();
 
+    fetch('/api/revalidate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tag: 'catalog' }),
+    }).catch(() => {});
+
     setIsSyncing(false);
     if (success) {
       addLog('Completely wiped all products & storage from Supabase Database', 'ACTION');
@@ -495,6 +506,11 @@ export default function AdminPage() {
     const skuToSave = updated.find(s => s.id === id);
     if (skuToSave) {
       await upsertSupabaseSKU(skuToSave);
+      fetch('/api/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tag: 'catalog' }),
+      }).catch(() => {});
     }
     setIsSyncing(false);
     showStatus('success', isBestseller ? 'Marked product as BESTSELLER! 🔥' : 'Removed product from Bestsellers.');
@@ -516,6 +532,12 @@ export default function AdminPage() {
         return;
       }
     }
+
+    fetch('/api/revalidate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tag: 'settings' }),
+    }).catch(() => {});
 
     if (!settings.appScriptUrl || settings.appScriptUrl.includes('EXAMPLE')) {
       setIsSyncing(false);

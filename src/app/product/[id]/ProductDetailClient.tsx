@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
 import { SizeGuideModal } from '@/components/SizeGuideModal';
 import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
-import { getStoredSKUs, fetchCloudSKUs } from '@/lib/dataStore';
+import { getStoredSKUs, fetchSingleProduct, getStoredReviews, saveStoredReviews } from '@/lib/dataStore';
 import { syncWithAppsScript } from '@/lib/appScriptSync';
 import { FootwearSKU, ProductReview, ColorVariant } from '@/lib/types';
 import {
@@ -91,33 +91,29 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         setSelectedColor(found.colorVariants[0].name);
       }
       setIsLoading(false);
+    }
+
+    // TARGETED SINGLE-PRODUCT CLOUD FETCH (Only if missing or refreshing this 1 product)
+    if (!found || !found.galleryImages || found.galleryImages.length === 0) {
+      fetchSingleProduct(productId).then(cloudFound => {
+        if (cloudFound) {
+          setSku(cloudFound);
+          const cloudImg = (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && cloudFound.colorVariants[0].imageUrl && cloudFound.colorVariants[0].imageUrl.trim() !== '')
+            ? cloudFound.colorVariants[0].imageUrl
+            : (cloudFound.imageUrl || '');
+
+          setSelectedImage(prev => (prev && prev.trim() !== '') ? prev : cloudImg);
+          if (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && !selectedColor) {
+            setSelectedColor(cloudFound.colorVariants[0].name);
+          }
+        }
+        setIsLoading(false);
+      }).catch(() => {
+        setIsLoading(false);
+      });
     } else {
       setIsLoading(false);
     }
-
-    // NON-BLOCKING LIVE CLOUD REFRESH
-    fetchCloudSKUs(undefined, false).then(cloudSkus => {
-      setAllSkus(cloudSkus);
-      const cloudFound = cloudSkus.find(s => 
-        s.id.toLowerCase() === targetId || 
-        encodeURIComponent(s.id).toLowerCase() === targetId
-      );
-
-      if (cloudFound) {
-        setSku(cloudFound);
-        const cloudImg = (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && cloudFound.colorVariants[0].imageUrl && cloudFound.colorVariants[0].imageUrl.trim() !== '')
-          ? cloudFound.colorVariants[0].imageUrl
-          : (cloudFound.imageUrl || '');
-
-        setSelectedImage(prev => (prev && prev.trim() !== '') ? prev : cloudImg);
-        if (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && !selectedColor) {
-          setSelectedColor(cloudFound.colorVariants[0].name);
-        }
-      }
-      setIsLoading(false);
-    }).catch(() => {
-      setIsLoading(false);
-    });
 
     // Check Wishlist
     try {
@@ -203,9 +199,8 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     setReviews(updated);
 
     try {
-      const stored = localStorage.getItem(REVIEWS_STORAGE_KEY);
-      const allReviews: ProductReview[] = stored ? JSON.parse(stored) : [];
-      localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify([createdReview, ...allReviews]));
+      const allReviews = getStoredReviews();
+      saveStoredReviews([createdReview, ...allReviews]);
     } catch (e) {}
 
     try {
@@ -227,15 +222,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     const updated = reviews.filter(r => r.id !== revId);
     setReviews(updated);
     try {
-      const saved = localStorage.getItem('bliss_balance_reviews_v1');
-      if (saved) {
-        const all = JSON.parse(saved);
-        if (Array.isArray(all)) {
-          const nextAll = all.filter((r: any) => r.id !== revId);
-          localStorage.setItem('bliss_balance_reviews_v1', JSON.stringify(nextAll));
-          window.dispatchEvent(new Event('reviews-updated'));
-        }
-      }
+      const all = getStoredReviews();
+      const nextAll = all.filter(r => r.id !== revId);
+      saveStoredReviews(nextAll);
     } catch (e) {}
   };
 
@@ -711,9 +700,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           {reviews.length === 0 ? (
             <div className="text-center py-12 bg-neutral-50/50 dark:bg-neutral-950/50 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 space-y-3">
               <Star className="w-10 h-10 text-amber-500 mx-auto fill-amber-400" />
-              <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
+              <p className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white">
                 NO REVIEWS YET FOR THIS PRODUCT
-              </h4>
+              </p>
               <p className="text-xs text-neutral-500 font-mono font-bold max-w-sm mx-auto">
                 Be the first customer to write a verified review for {sku.title}!
               </p>
@@ -758,7 +747,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                     ))}
                   </div>
 
-                  <h4 className="font-heading text-sm font-black text-neutral-900 dark:text-white uppercase">{rev.headline}</h4>
+                  {rev.headline && (
+                    <p className="font-heading text-sm font-black text-neutral-900 dark:text-white uppercase">{rev.headline}</p>
+                  )}
                   <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-bold">{rev.comment}</p>
                 </div>
               ))}

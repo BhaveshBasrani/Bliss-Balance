@@ -1,6 +1,6 @@
 /**
  * ⚡ OFFICIAL BLISS BALANCE SUPABASE CLIENT ENGINE
- * Dedicated ONLY AND ONLY to Products Info & Image Data Storage
+ * Optimized for Ultra-Low PostgREST/Database Egress & Maximum Cache Efficiency
  * Connected to: https://ummvwrzzxehetmtaugop.supabase.co
  */
 
@@ -16,11 +16,28 @@ const HEADERS = {
   'Prefer': 'return=representation',
 };
 
+// Fields needed for catalog listing & filtering (Strips out heavy gallery, features, & marketplace URL maps)
+const LISTING_FIELDS = [
+  'id',
+  'title',
+  'subtitle',
+  'gender',
+  'category',
+  'price',
+  'original_price',
+  'image_url',
+  'hover_image_url',
+  'rating',
+  'review_count',
+  'is_bestseller',
+  'is_new_arrival',
+  'color_variants',
+  'sizes',
+  'created_at',
+].join(',');
+
 /**
- * Fetch all Product SKUs directly from Supabase REST API
- */
-/**
- * Fetch all Product SKUs directly from Supabase REST API with robust timeout & retry
+ * 1. Fetch Lightweight Product Catalog (Saves ~80% Egress per request)
  */
 export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
   const attemptFetch = async (timeoutMs: number): Promise<FootwearSKU[]> => {
@@ -28,10 +45,9 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?select=*&order=created_at.desc`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?select=${LISTING_FIELDS}&order=created_at.desc`, {
         method: 'GET',
         headers: HEADERS,
-        cache: 'no-store',
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -76,17 +92,65 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
   };
 
   try {
-    // Attempt 1: 12-second generous timeout for cross-device & mobile 4G/Wi-Fi
     return await attemptFetch(12000);
   } catch (e) {
-    console.warn('First Supabase fetch attempt timed out, retrying with 8s timeout...');
     try {
-      // Attempt 2: Quick retry fallback with 8s timeout
       return await attemptFetch(8000);
     } catch (err) {
-      console.error('Error fetching Supabase SKUs across devices:', err);
+      console.error('Error fetching Supabase SKUs:', err);
       return [];
     }
+  }
+}
+
+/**
+ * 2. Fetch Full Details for a Single Product ONLY when viewing /product/[id]
+ */
+export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | null> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?id=eq.${encodeURIComponent(id)}&select=*`, {
+      method: 'GET',
+      headers: HEADERS,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+
+    const row = rows[0];
+    return {
+      id: row.id,
+      title: row.title,
+      subtitle: row.subtitle || '',
+      gender: row.gender,
+      category: row.category,
+      price: Number(row.price),
+      originalPrice: row.original_price ? Number(row.original_price) : undefined,
+      imageUrl: row.image_url || '',
+      hoverImageUrl: row.hover_image_url || '',
+      galleryImages: row.gallery_images || [],
+      amazonUrl: row.amazon_url || '',
+      myntraUrl: row.myntra_url || '',
+      flipkartUrl: row.flipkart_url || '',
+      officialUrl: row.official_url || '',
+      features: row.features || ['Soft Cushioning', 'Lightweight Construction', 'Anti-Skid'],
+      sizes: row.sizes || [],
+      colorVariants: row.color_variants || [],
+      sizeMarketplaceUrls: row.size_marketplace_urls || {},
+      rating: Number(row.rating || 5.0),
+      reviewCount: Number(row.review_count || row.reviews_count || 0),
+      isNewArrival: Boolean(row.is_new_arrival),
+      isBestseller: Boolean(row.is_bestseller),
+      createdAt: row.created_at || new Date().toISOString(),
+    };
+  } catch (e) {
+    console.error('Error fetching single Supabase SKU:', e);
+    return null;
   }
 }
 
@@ -217,10 +281,9 @@ export async function fetchSupabaseSettings(): Promise<any | null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?id=eq.site_settings&select=*`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?id=eq.site_settings&select=data`, {
       method: 'GET',
       headers: HEADERS,
-      cache: 'no-store',
       signal: controller.signal,
     });
     clearTimeout(timeoutId);

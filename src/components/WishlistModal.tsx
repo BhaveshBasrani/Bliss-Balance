@@ -109,14 +109,14 @@ export const WishlistModal: React.FC<WishlistModalProps> = ({ isOpen, onClose })
                   )}
                   <div>
                     <span className="text-[9px] font-black text-red-600 uppercase">{sku.gender} • {sku.category}</span>
-                    <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white line-clamp-1">{sku.title}</h4>
+                    <p className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white line-clamp-1">{sku.title}</p>
                     <span className="text-xs font-black text-neutral-950 dark:text-white">₹{sku.price.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/product?id=${sku.id}`}
+                    href={`/product/${sku.id}`}
                     onClick={onClose}
                     className="p-2 rounded-none bg-red-600 text-white font-black text-xs flex items-center gap-1 hover:bg-neutral-950 transition-all border border-red-600"
                   >

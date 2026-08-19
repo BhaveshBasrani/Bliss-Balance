@@ -254,9 +254,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                     ) : (
                       <>
                         <div className="space-y-1.5">
-                          <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                          <p className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white tracking-tight">
                             WELCOME TO BLISS BALANCE
-                          </h4>
+                          </p>
                           <p className="text-[11px] text-neutral-500 font-bold leading-relaxed">
                             Sign in to save wishlist items, track orders and manage delivery addresses.
                           </p>
@@ -375,21 +375,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                       ALL MEN'S FOOTWEAR
                     </Link>
                     <Link
-                      href="/collections?cat=Slippers"
+                      href="/collections/slippers"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block py-1 hover:text-red-600"
                     >
                       SLIPPERS & FLIP-FLOPS
                     </Link>
                     <Link
-                      href="/collections?cat=Slides"
+                      href="/collections/slides"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block py-1 hover:text-red-600"
                     >
                       SLIDES & CLOGS
                     </Link>
                     <Link
-                      href="/collections?cat=Casual+Shoes"
+                      href="/collections/casual-shoes"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block py-1 hover:text-red-600"
                     >
@@ -422,14 +422,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                       ALL WOMEN'S FOOTWEAR
                     </Link>
                     <Link
-                      href="/collections?cat=Slides"
+                      href="/collections/slides"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block py-1 hover:text-red-600"
                     >
                       SLIDES & SLIPPERS
                     </Link>
                     <Link
-                      href="/collections?cat=Sandals"
+                      href="/collections/sandals"
                       onClick={() => setMobileMenuOpen(false)}
                       className="block py-1 hover:text-red-600"
                     >

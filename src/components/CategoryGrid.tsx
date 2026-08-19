@@ -82,9 +82,9 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
                       <span className="hidden sm:inline text-[9px] font-bold text-neutral-400">COLLECTION</span>
                     </div>
 
-                    <h3 className="font-heading text-xs sm:text-xl font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+                    <span className="font-heading block text-xs sm:text-xl font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
                       {item.title}
-                    </h3>
+                    </span>
 
                     <p className="hidden sm:block font-body text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
                       {item.description}
@@ -93,10 +93,11 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
 
                   <div className="pt-1.5 sm:pt-2.5 border-t border-neutral-200/60 dark:border-neutral-800/60 mt-auto">
                     <Link
-                      href={`/collections?cat=${encodeURIComponent(item.title)}`}
+                      href={`/collections/${item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                       className="inline-flex items-center gap-1 sm:gap-2 font-mono text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-600 hover:text-red-500 group/link"
+                      aria-label={`Explore ${item.title}`}
                     >
-                      <span className="truncate">EXPLORE</span>
+                      <span className="truncate">EXPLORE {item.title}</span>
                       <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover/link:translate-x-1 shrink-0" />
                     </Link>
                   </div>

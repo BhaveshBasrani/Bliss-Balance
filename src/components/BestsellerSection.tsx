@@ -45,7 +45,7 @@ export const BestsellerSection: React.FC<BestsellerSectionProps> = ({ skus }) =>
             </div>
 
             <Link
-              href="/collections?filter=bestseller"
+              href="/collections/bestsellers"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white font-black text-xs uppercase tracking-widest hover:bg-neutral-950 transition-all shadow-md self-start sm:self-auto border border-red-600"
             >
               <span>EXPLORE ALL BESTSELLERS</span>

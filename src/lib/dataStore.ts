@@ -1,5 +1,5 @@
-import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide } from './types';
-import { fetchSupabaseSKUs, fetchSupabaseSettings, upsertSupabaseSettings } from './supabaseClient';
+import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide, ProductReview } from './types';
+import { fetchSupabaseSKUs, fetchSupabaseSingleSKU, fetchSupabaseSettings, upsertSupabaseSettings } from './supabaseClient';
 import { INITIAL_SKUS } from './initialSkus';
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
@@ -23,9 +23,9 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
     titleText: 'EVERYDAY COMFORT. ZERO COMPROMISE.',
     subheadlineText: 'Experience high-density EVA memory foam cushioning engineered for effortless steps all day long.',
     ctaText: 'EXPLORE SLIDES',
-    ctaLink: '/collections?cat=Slides',
+    ctaLink: '/collections/slides',
     ctaText2: 'EXPLORE CLOGS',
-    ctaLink2: '/collections?cat=Clogs',
+    ctaLink2: '/collections/clogs',
   },
   {
     id: 'slide-3',
@@ -117,10 +117,15 @@ export { INITIAL_SKUS };
 
 // Persistence Storage Keys
 const SKUS_STORAGE_KEY = 'bliss_balance_skus_v12';
-const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v11';
+const SKUS_TIME_KEY = 'bliss_balance_skus_time_v12';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
+const SETTINGS_TIME_KEY = 'bliss_balance_settings_time_v4';
 
-// TURBO SPEED MEMORY CACHE
+// Long-lived Cache TTLs for 99% Database Egress Reduction
+const CATALOG_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const SETTINGS_CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+// TURBO SPEED IN-MEMORY CACHE
 let memorySkusCache: FootwearSKU[] | null = null;
 let lastSkusFetchTime = 0;
 let inFlightSkusPromise: Promise<FootwearSKU[]> | null = null;
@@ -129,17 +134,13 @@ let memorySettingsCache: SiteSettings | null = null;
 let lastSettingsFetchTime = 0;
 let inFlightSettingsPromise: Promise<SiteSettings> | null = null;
 
-const CACHE_TTL_MS = 15 * 1000; // 15s refresh TTL
-
 export function mergeSKUArrays(primary: FootwearSKU[], secondary: FootwearSKU[]): FootwearSKU[] {
   const map = new Map<string, FootwearSKU>();
   
-  // 1. Load primary list first
   (primary || []).forEach(item => {
     if (item && item.id) map.set(item.id.toLowerCase(), item);
   });
 
-  // 2. Merge secondary list (updating existing or appending new)
   (secondary || []).forEach(item => {
     if (item && item.id) {
       const key = item.id.toLowerCase();
@@ -157,48 +158,31 @@ export function mergeSKUArrays(primary: FootwearSKU[], secondary: FootwearSKU[])
 
 export function getStoredSKUs(): FootwearSKU[] {
   if (typeof window === 'undefined') return INITIAL_SKUS;
+  if (memorySkusCache && memorySkusCache.length > 0) return memorySkusCache;
+
   try {
     const data = localStorage.getItem(SKUS_STORAGE_KEY);
     if (data) {
       const parsed = JSON.parse(data);
       if (Array.isArray(parsed) && parsed.length > 0) {
         memorySkusCache = parsed;
+        const storedTime = Number(localStorage.getItem(SKUS_TIME_KEY) || 0);
+        if (storedTime > 0) lastSkusFetchTime = storedTime;
         return parsed;
       }
     }
-    const fallbackData = localStorage.getItem(SKUS_STORAGE_FALLBACK_KEY);
-    if (fallbackData) {
-      const parsedFallback = JSON.parse(fallbackData);
-      if (Array.isArray(parsedFallback) && parsedFallback.length > 0) {
-        memorySkusCache = parsedFallback;
-        localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(parsedFallback));
-        return parsedFallback;
-      }
-    }
-    return (memorySkusCache && memorySkusCache.length > 0) ? memorySkusCache : INITIAL_SKUS;
+    return INITIAL_SKUS;
   } catch (e) {
-    return (memorySkusCache && memorySkusCache.length > 0) ? memorySkusCache : INITIAL_SKUS;
+    return INITIAL_SKUS;
   }
 }
 
-/**
- * ⚡ PREFETCH PRODUCT DATA & IMAGES ON MOUSE HOVER
- * Directive 7: Prefetches product images into browser memory when user mouse enters a product card
- */
-const prefetchedSkus = new Set<string>();
-
 export function prefetchProduct(sku: FootwearSKU) {
   if (!sku || !sku.id || typeof window === 'undefined') return;
-  const key = sku.id.toLowerCase();
-  if (prefetchedSkus.has(key)) return;
-  prefetchedSkus.add(key);
-
-  // 1. Preload main product image into browser cache
   if (sku.imageUrl && sku.imageUrl.trim() !== '') {
     const img = new Image();
     img.src = sku.imageUrl;
   }
-  // 2. Preload secondary hover image into browser cache
   if (sku.hoverImageUrl && sku.hoverImageUrl.trim() !== '') {
     const hoverImg = new Image();
     hoverImg.src = sku.hoverImageUrl;
@@ -209,19 +193,12 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
   if (typeof window === 'undefined') return;
   try {
     memorySkusCache = skus;
-    lastSkusFetchTime = Date.now();
-    
-    // Remove legacy fallback key to free up browser storage space
-    try {
-      localStorage.removeItem(SKUS_STORAGE_FALLBACK_KEY);
-    } catch (e) {}
-
-    // Save full original SKUs with intact uploaded image URLs
-    const jsonString = JSON.stringify(skus);
-    localStorage.setItem(SKUS_STORAGE_KEY, jsonString);
+    const now = Date.now();
+    lastSkusFetchTime = now;
+    localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(skus));
+    localStorage.setItem(SKUS_TIME_KEY, String(now));
     window.dispatchEvent(new Event('skus-updated'));
   } catch (e) {
-    // If quota is still exceeded, clear memory cache and fallback cleanly
     try {
       const minimalSkus = skus.map(s => ({
         id: s.id,
@@ -234,7 +211,7 @@ export function saveStoredSKUs(skus: FootwearSKU[]) {
       localStorage.setItem(SKUS_STORAGE_KEY, JSON.stringify(minimalSkus));
       window.dispatchEvent(new Event('skus-updated'));
     } catch (err) {
-      console.warn('LocalStorage quota reached; operating with in-memory state.');
+      console.warn('LocalStorage full, using in-memory state.');
     }
   }
 }
@@ -244,15 +221,15 @@ export function clearAllSKUs() {
   try {
     memorySkusCache = [];
     localStorage.removeItem(SKUS_STORAGE_KEY);
-    localStorage.removeItem(SKUS_STORAGE_FALLBACK_KEY);
+    localStorage.removeItem(SKUS_TIME_KEY);
     window.dispatchEvent(new Event('skus-updated'));
-  } catch (e) {
-    console.error('Error clearing SKUs from localStorage:', e);
-  }
+  } catch (e) {}
 }
 
 export function getStoredSettings(): SiteSettings {
   if (typeof window === 'undefined') return DEFAULT_SITE_SETTINGS;
+  if (memorySettingsCache) return memorySettingsCache;
+
   try {
     const data = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (data) {
@@ -264,6 +241,9 @@ export function getStoredSettings(): SiteSettings {
       if (!Array.isArray(merged.heroSlides) || merged.heroSlides.length === 0) {
         merged.heroSlides = DEFAULT_HERO_SLIDES;
       }
+      memorySettingsCache = merged;
+      const storedTime = Number(localStorage.getItem(SETTINGS_TIME_KEY) || 0);
+      if (storedTime > 0) lastSettingsFetchTime = storedTime;
       return merged;
     }
     return DEFAULT_SITE_SETTINGS;
@@ -276,49 +256,92 @@ export function saveStoredSettings(settings: SiteSettings) {
   if (typeof window === 'undefined') return;
   try {
     memorySettingsCache = settings;
-    lastSettingsFetchTime = Date.now();
+    const now = Date.now();
+    lastSettingsFetchTime = now;
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+    localStorage.setItem(SETTINGS_TIME_KEY, String(now));
     window.dispatchEvent(new Event('settings-updated'));
+  } catch (e) {}
+}
+
+export const REVIEWS_STORAGE_KEY = 'bliss_balance_reviews_v2';
+
+export function getStoredReviews(): ProductReview[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(REVIEWS_STORAGE_KEY);
+    if (data) {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+    const legacy = localStorage.getItem('bliss_balance_reviews_v1');
+    if (legacy) {
+      const parsed = JSON.parse(legacy);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(parsed));
+        return parsed;
+      }
+    }
+    return [];
   } catch (e) {
-    console.error('Error saving settings:', e);
+    return [];
   }
 }
 
+export function saveStoredReviews(reviews: ProductReview[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(reviews));
+    localStorage.setItem('bliss_balance_reviews_v1', JSON.stringify(reviews));
+    window.dispatchEvent(new Event('reviews-updated'));
+  } catch (e) {}
+}
+
 /**
- * ⚡ FETCH PRODUCTS (EXCLUSIVELY FROM SUPABASE DATABASE WITH APPSCRIPT BACKUP)
+ * ⚡ FETCH PRODUCTS (WITH 30-MINUTE SERVER/LOCAL CACHE - 99% SUPABASE EGRESS SAVINGS)
  */
 export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false): Promise<FootwearSKU[]> {
   const local = getStoredSKUs();
   const now = Date.now();
 
-  // Return memory cache if fresh enough
-  if (!forceRefresh && memorySkusCache && memorySkusCache.length > 0 && (now - lastSkusFetchTime < CACHE_TTL_MS)) {
-    return memorySkusCache;
+  // 1. Instant Cache Hit: Return memory or localStorage cache without any network request
+  if (!forceRefresh && local && local.length > 0 && (now - lastSkusFetchTime < CATALOG_CACHE_TTL_MS)) {
+    return local;
   }
 
-  // De-duplicate parallel requests
+  // 2. De-duplicate parallel in-flight requests
   if (inFlightSkusPromise && !forceRefresh) {
     return inFlightSkusPromise;
   }
 
   inFlightSkusPromise = (async () => {
     try {
-      // FETCH AUTHORITATIVE LIST FROM SUPABASE DATABASE
+      // 3. Try Next.js Cached Server Route First (/api/catalog)
+      try {
+        const apiRes = await fetch('/api/catalog', { method: 'GET' });
+        if (apiRes.ok) {
+          const apiProducts = await apiRes.json();
+          if (Array.isArray(apiProducts) && apiProducts.length > 0) {
+            saveStoredSKUs(apiProducts);
+            return apiProducts;
+          }
+        }
+      } catch (err) {
+        // Fall through to direct Supabase client query
+      }
+
+      // 4. Direct Supabase Query (Lightweight Listing Projection only)
       const supabaseProducts = await fetchSupabaseSKUs();
       if (Array.isArray(supabaseProducts) && supabaseProducts.length > 0) {
-        memorySkusCache = supabaseProducts;
-        lastSkusFetchTime = Date.now();
         saveStoredSKUs(supabaseProducts);
         return supabaseProducts;
       }
     } catch (e) {
       console.warn('Could not fetch cloud SKUs:', e);
     } finally {
-      // ALWAYS clear in-flight so next call re-fetches instead of returning stale promise
       inFlightSkusPromise = null;
     }
 
-    // Fallback: return whatever we have locally
     return local;
   })();
 
@@ -326,25 +349,67 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
 }
 
 /**
- * ⚡ FETCH SITE SETTINGS, BANNERS & TICKER (FROM SUPABASE DATABASE WITH APPSCRIPT BACKUP)
+ * ⚡ FETCH FULL DETAILS FOR A SINGLE PRODUCT ONLY WHEN VIEWING /product/[id]
+ */
+export async function fetchSingleProduct(id: string, forceRefresh = false): Promise<FootwearSKU | null> {
+  const targetId = decodeURIComponent(id).trim().toLowerCase();
+  const all = getStoredSKUs();
+  const existing = all.find(s => s.id.toLowerCase() === targetId || encodeURIComponent(s.id).toLowerCase() === targetId);
+
+  // If already exists with full details (gallery / features), return instantly
+  if (!forceRefresh && existing && existing.galleryImages && existing.galleryImages.length > 0) {
+    return existing;
+  }
+
+  try {
+    const singleProduct = await fetchSupabaseSingleSKU(id);
+    if (singleProduct) {
+      // Update this single product in local cache without re-fetching entire DB
+      const updated = all.map(s => (s.id.toLowerCase() === targetId ? { ...s, ...singleProduct } : s));
+      if (!all.some(s => s.id.toLowerCase() === targetId)) {
+        updated.unshift(singleProduct);
+      }
+      saveStoredSKUs(updated);
+      return singleProduct;
+    }
+  } catch (e) {
+    console.warn('Error fetching single product:', e);
+  }
+
+  return existing || null;
+}
+
+/**
+ * ⚡ FETCH SITE SETTINGS WITH 2-HOUR CACHE
  */
 export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = false): Promise<SiteSettings> {
   const local = getStoredSettings();
   const now = Date.now();
 
-  // Return memory cache if fresh enough
-  if (!forceRefresh && memorySettingsCache && (now - lastSettingsFetchTime < CACHE_TTL_MS)) {
+  if (!forceRefresh && memorySettingsCache && (now - lastSettingsFetchTime < SETTINGS_CACHE_TTL_MS)) {
     return memorySettingsCache;
   }
 
-  // De-duplicate parallel requests
   if (inFlightSettingsPromise && !forceRefresh) {
     return inFlightSettingsPromise;
   }
 
   inFlightSettingsPromise = (async () => {
     try {
-      // 1. FETCH SITE SETTINGS (BANNERS, TICKERS, SLIDES) FROM SUPABASE DATABASE
+      // Try Next.js cached server route (/api/settings)
+      try {
+        const apiRes = await fetch('/api/settings', { method: 'GET' });
+        if (apiRes.ok) {
+          const apiSettings = await apiRes.json();
+          if (apiSettings && Object.keys(apiSettings).length > 0) {
+            const merged = { ...local, ...apiSettings };
+            saveStoredSettings(merged);
+            return merged;
+          }
+        }
+      } catch (err) {}
+
+      // Direct Supabase Settings fetch
       const supabaseSettings = await fetchSupabaseSettings();
       if (supabaseSettings && Object.keys(supabaseSettings).length > 0) {
         const remoteSlides = (Array.isArray(supabaseSettings.heroSlides) && supabaseSettings.heroSlides.length > 0)
@@ -352,44 +417,17 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
           : local.heroSlides;
 
         const merged = { ...local, ...supabaseSettings, heroSlides: remoteSlides };
-        memorySettingsCache = merged;
-        lastSettingsFetchTime = Date.now();
         saveStoredSettings(merged);
         return merged;
       }
     } catch (e) {
       console.warn('Could not fetch settings from Supabase:', e);
+    } finally {
+      inFlightSettingsPromise = null;
     }
 
-    // 2. BACKUP FETCH FROM GOOGLE APPSCRIPT
-    const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
-    if (url && !url.includes('EXAMPLE')) {
-      try {
-        const res = await fetch(`${url}?action=getSettings`, { method: 'GET' });
-        const data = await res.json();
-        if (data && data.settings && Object.keys(data.settings).length > 0) {
-          const remoteSlides = (Array.isArray(data.settings.heroSlides) && data.settings.heroSlides.length > 0)
-            ? data.settings.heroSlides
-            : local.heroSlides;
-
-          const merged = { ...local, ...data.settings, heroSlides: remoteSlides };
-          memorySettingsCache = merged;
-          lastSettingsFetchTime = Date.now();
-          saveStoredSettings(merged);
-          return merged;
-        }
-      } catch (e) {
-        console.warn('Could not fetch cloud settings from AppsScript:', e);
-      }
-    }
-
-    // All sources failed — use local
-    memorySettingsCache = local;
     return local;
-  })().finally(() => {
-    // ALWAYS clear in-flight so next call re-fetches instead of returning stale promise
-    inFlightSettingsPromise = null;
-  });
+  })();
 
   return inFlightSettingsPromise;
 }

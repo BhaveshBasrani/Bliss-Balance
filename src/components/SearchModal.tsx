@@ -82,15 +82,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, skus 
                     </span>
                     <span className="text-[9px] font-mono text-neutral-400">{sku.category}</span>
                   </div>
-                  <h4 className="font-heading text-lg font-bold text-white dark:text-white light:text-slate-950 uppercase">
+                  <p className="font-heading text-lg font-bold text-white dark:text-white light:text-slate-950 uppercase">
                     {sku.title}
-                  </h4>
+                  </p>
                   <p className="font-mono text-xs font-bold text-white">₹{sku.price.toLocaleString('en-IN')}</p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/product?id=${sku.id}`}
+                    href={`/product/${sku.id}`}
                     onClick={onClose}
                     className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-[10px] uppercase flex items-center gap-1"
                   >

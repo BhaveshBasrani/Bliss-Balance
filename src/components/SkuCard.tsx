@@ -77,7 +77,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
       onMouseLeave={() => setIsHovered(false)}
       className="group relative rounded-xl overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between"
     >
-      <Link href={`/product?id=${sku.id}`} className="block flex-1 flex flex-col">
+      <Link href={`/product/${sku.id}`} className="block flex-1 flex flex-col">
         
         {/* Product Image Container with Ultra-Smooth Dual-Image Crossfade Animation */}
         <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
@@ -170,9 +170,9 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               </div>
             </div>
 
-            <h3 className="font-heading text-xs sm:text-base font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+            <span className="font-heading block text-xs sm:text-base font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
               {sku.title}
-            </h3>
+            </span>
 
             <p className="font-mono text-[10px] sm:text-xs text-neutral-500 line-clamp-1 font-bold">
               {sku.subtitle}
