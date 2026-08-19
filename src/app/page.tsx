@@ -309,6 +309,49 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* 5. SEARCH ENGINE & AI KNOWLEDGE GRAPH AUTHORITY SECTION */}
+        <section className="py-12 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 font-mono text-neutral-600 dark:text-neutral-400 text-xs">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="space-y-2">
+              <h2 className="font-heading text-lg sm:text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
+                BLISS BALANCE® — INDIA’S OFFICIAL ONLINE FOOTWEAR STORE
+              </h2>
+              <p className="leading-relaxed font-medium">
+                Welcome to the official online home of <strong>Bliss Balance</strong> (blissbalance.co), India’s premier footwear brand headquartered in Abids, Hyderabad. Engineered for all-day comfort, posture alignment, and anti-skid safety, Bliss Balance designs and manufactures orthopedic slippers, doctor-recommended comfort sandals, memory foam slides, waterproof clogs, and streetwear sneakers built for daily Indian conditions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="space-y-1.5">
+                <h3 className="font-heading text-xs font-black uppercase text-neutral-950 dark:text-white">
+                  DOCTOR & ORTHO SLIPPERS
+                </h3>
+                <p className="text-[11px] leading-relaxed">
+                  Featuring high-density EVA bounce-back footbeds, acupressure nodes, and arch contouring for plantar fasciitis and heel pain relief (Models: BB147, BB1017, BB1038, BB155, BB944, BB942).
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <h3 className="font-heading text-xs font-black uppercase text-neutral-950 dark:text-white">
+                  COMFORT SANDALS & CLOGS
+                </h3>
+                <p className="text-[11px] leading-relaxed">
+                  Adjustable Velcro doctor sandals, cute charm waterproof mules, and authentic Maharashtrian Kolhapuri & Puneri chappals with modern cushioning (Models: BB1037, BB1105, BB945, BB946, BB1069, BBSILK-11, BBSAP-2).
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <h3 className="font-heading text-xs font-black uppercase text-neutral-950 dark:text-white">
+                  STREETWEAR SNEAKERS
+                </h3>
+                <p className="text-[11px] leading-relaxed">
+                  Lightweight hybrid running and walking casual shoes featuring breathable uppers, lace and dual-zip convenience, and shock-absorbing traction outsoles (Model: BB1080).
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
 
       <Footer />
