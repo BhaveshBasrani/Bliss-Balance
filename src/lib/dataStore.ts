@@ -1,5 +1,5 @@
 import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide } from './types';
-import { fetchSupabaseSKUs } from './supabaseClient';
+import { fetchSupabaseSKUs, fetchSupabaseSettings, upsertSupabaseSettings } from './supabaseClient';
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
@@ -321,7 +321,7 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
 }
 
 /**
- * ⚡ FETCH SITE SETTINGS & TICKER (EXCLUSIVELY FROM GOOGLE APPSCRIPT)
+ * ⚡ FETCH SITE SETTINGS, BANNERS & TICKER (FROM SUPABASE DATABASE WITH APPSCRIPT BACKUP)
  */
 export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = false): Promise<SiteSettings> {
   const local = getStoredSettings();
@@ -335,35 +335,48 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
     return inFlightSettingsPromise;
   }
 
-  const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
-  if (!url || url.includes('EXAMPLE')) {
-    memorySettingsCache = local;
-    return local;
-  }
-
   inFlightSettingsPromise = (async () => {
     try {
-      // FETCH EXCLUSIVELY FROM GOOGLE APPSCRIPT
-      const res = await fetch(`${url}?action=getSettings`, { method: 'GET' });
-      const data = await res.json();
-      if (data && data.settings && Object.keys(data.settings).length > 0) {
-        // Preserve local custom hero slides if remote cloud settings returned empty/missing heroSlides
-        const remoteSlides = (Array.isArray(data.settings.heroSlides) && data.settings.heroSlides.length > 0)
-          ? data.settings.heroSlides
+      // 1. FETCH SITE SETTINGS (BANNERS, TICKERS, SLIDES) FROM SUPABASE DATABASE
+      const supabaseSettings = await fetchSupabaseSettings();
+      if (supabaseSettings && Object.keys(supabaseSettings).length > 0) {
+        const remoteSlides = (Array.isArray(supabaseSettings.heroSlides) && supabaseSettings.heroSlides.length > 0)
+          ? supabaseSettings.heroSlides
           : local.heroSlides;
 
-        const merged = { ...local, ...data.settings, heroSlides: remoteSlides };
+        const merged = { ...local, ...supabaseSettings, heroSlides: remoteSlides };
         memorySettingsCache = merged;
         lastSettingsFetchTime = Date.now();
         saveStoredSettings(merged);
         return merged;
       }
     } catch (e) {
-      console.warn('Could not fetch cloud settings from AppsScript:', e);
-    } finally {
-      inFlightSettingsPromise = null;
+      console.warn('Could not fetch settings from Supabase:', e);
     }
 
+    // 2. BACKUP FETCH FROM GOOGLE APPSCRIPT
+    const url = appScriptUrl || DEFAULT_SITE_SETTINGS.appScriptUrl;
+    if (url && !url.includes('EXAMPLE')) {
+      try {
+        const res = await fetch(`${url}?action=getSettings`, { method: 'GET' });
+        const data = await res.json();
+        if (data && data.settings && Object.keys(data.settings).length > 0) {
+          const remoteSlides = (Array.isArray(data.settings.heroSlides) && data.settings.heroSlides.length > 0)
+            ? data.settings.heroSlides
+            : local.heroSlides;
+
+          const merged = { ...local, ...data.settings, heroSlides: remoteSlides };
+          memorySettingsCache = merged;
+          lastSettingsFetchTime = Date.now();
+          saveStoredSettings(merged);
+          return merged;
+        }
+      } catch (e) {
+        console.warn('Could not fetch cloud settings from AppsScript:', e);
+      }
+    }
+
+    inFlightSettingsPromise = null;
     memorySettingsCache = local;
     return local;
   })();

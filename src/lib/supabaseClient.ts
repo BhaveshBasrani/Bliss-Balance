@@ -208,3 +208,57 @@ export async function getStorageQuotaStats(skus: FootwearSKU[]): Promise<Storage
     skuCount: skus.length,
   };
 }
+
+/**
+ * ⚡ FETCH SITE SETTINGS (TICKERS, BANNERS, HERO SLIDES) FROM SUPABASE DATABASE
+ */
+export async function fetchSupabaseSettings(): Promise<any | null> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?id=eq.site_settings&select=*`, {
+      method: 'GET',
+      headers: HEADERS,
+      cache: 'no-store',
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (Array.isArray(rows) && rows.length > 0 && rows[0].data) {
+      return rows[0].data;
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * ⚡ SAVE SITE SETTINGS (TICKERS, BANNERS, HERO SLIDES) TO SUPABASE DATABASE
+ */
+export async function upsertSupabaseSettings(settings: any): Promise<boolean> {
+  try {
+    const payload = {
+      id: 'site_settings',
+      data: settings,
+      updated_at: new Date().toISOString(),
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/settings`, {
+      method: 'POST',
+      headers: {
+        ...HEADERS,
+        'Prefer': 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return res.ok;
+  } catch (e) {
+    console.error('Error upserting Supabase settings:', e);
+    return false;
+  }
+}

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
 import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
-import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
+import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
 import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide } from '@/lib/types';
 import {
@@ -498,9 +498,10 @@ export default function AdminPage() {
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSyncing(true);
-    setSyncStepText('Syncing Site Banner & Settings to Google Sheets...');
+    setSyncStepText('Syncing Site Banner, Tickers & Settings to Supabase Database...');
 
     saveStoredSettings(settings);
+    await upsertSupabaseSettings(settings);
 
     if (!settings.appScriptUrl || settings.appScriptUrl.includes('EXAMPLE')) {
       setIsSyncing(false);
