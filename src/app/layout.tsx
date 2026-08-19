@@ -309,8 +309,6 @@ export default function RootLayout({
         <meta name="theme-color" content="#DC2626" />
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="preload" as="image" href="/hero-banner.png" fetchPriority="high" media="(min-width: 640px)" />
-        <link rel="preload" as="image" href="/hero-banner-mobile.png" fetchPriority="high" media="(max-width: 639px)" />
 
         {/* CONSOLIDATED JSON-LD SCHEMA GRAPH */}
         <script
