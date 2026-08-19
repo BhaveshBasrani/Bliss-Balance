@@ -116,8 +116,8 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
 export { INITIAL_SKUS };
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v11';
-const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v10';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v12';
+const SKUS_STORAGE_FALLBACK_KEY = 'bliss_balance_skus_v11';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
 
 // TURBO SPEED MEMORY CACHE

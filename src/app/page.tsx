@@ -25,6 +25,7 @@ export default function HomePage() {
   const [selectedTab, setSelectedTab] = useState<'All' | 'Men' | 'Women'>('All');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -33,6 +34,11 @@ export default function HomePage() {
       setSkus(local);
     }
     setSettings(getStoredSettings());
+
+    // Auto-dismiss the signature brand intro screen smoothly
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 650);
 
     // Live Dynamic Cloud Fetch from Supabase
     fetchCloudSKUs().then(cloudSkus => {
@@ -50,6 +56,7 @@ export default function HomePage() {
 
     window.addEventListener('skus-updated', loadData);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('skus-updated', loadData);
     };
   }, []);
@@ -64,6 +71,13 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300 select-none relative">
+      {/* Brand Splash Screen Intro Overlay */}
+      {showSplash && (
+        <div className="fixed inset-0 z-[99999] pointer-events-none transition-opacity duration-300">
+          <BrandLoadingScreen message="FEEL THE BLISS • INITIALIZING STORE..." />
+        </div>
+      )}
+
       {/* Top Infinite Marquee Ticker */}
       <AnnouncementBar announcementText={settings.announcementText} />
 

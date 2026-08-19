@@ -6,8 +6,8 @@ import { Footer } from '@/components/Footer';
 import { SkuCard } from '@/components/SkuCard';
 import { SearchModal } from '@/components/SearchModal';
 import { getStoredSKUs, fetchCloudSKUs } from '@/lib/dataStore';
-import { FootwearSKU } from '@/lib/types';
-import { ArrowUpDown, SlidersHorizontal, X, ChevronUp, Check } from 'lucide-react';
+import { FootwearSKU, ColorVariant } from '@/lib/types';
+import { ArrowUpDown, SlidersHorizontal, X, ChevronUp, Check, Flame } from 'lucide-react';
 
 export default function MenPage() {
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
@@ -19,7 +19,7 @@ export default function MenPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [sortOption, setSortOption] = useState<'trending' | 'new' | 'price-high-low' | 'price-low-high'>('trending');
+  const [sortOption, setSortOption] = useState<'trending' | 'bestsellers' | 'new' | 'price-high-low' | 'price-low-high'>('trending');
 
   // UI Drawer / Dropdown States
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -42,7 +42,7 @@ export default function MenPage() {
   const safeSkus = Array.isArray(skus) ? skus : [];
   const extractedColors = Array.from(
     new Set(
-      safeSkus.flatMap(sku => (sku?.colorVariants || []).map(cv => (cv?.name || '').trim())).filter(Boolean)
+      safeSkus.flatMap((sku: FootwearSKU) => (sku?.colorVariants || []).map((cv: ColorVariant) => (cv?.name || '').trim())).filter(Boolean)
     )
   );
   const allColors = extractedColors.length > 0
@@ -102,7 +102,7 @@ export default function MenPage() {
 
     if (selectedColors.length > 0) {
       const match = selectedColors.some(clr => {
-        const hasColor = (sku.colorVariants || []).some(cv => cv.name.toLowerCase().includes(clr.toLowerCase()));
+        const hasColor = (sku.colorVariants || []).some((cv: ColorVariant) => (cv.name || '').toLowerCase().includes(clr.toLowerCase()));
         return hasColor || sku.title.toLowerCase().includes(clr.toLowerCase());
       });
       if (!match) return false;
@@ -112,7 +112,17 @@ export default function MenPage() {
   });
 
   // Sort Logic
-  if (sortOption === 'new') {
+  if (sortOption === 'bestsellers') {
+    filtered = [...filtered].sort((a, b) => {
+      const aBest = a.isBestseller ? 1 : 0;
+      const bBest = b.isBestseller ? 1 : 0;
+      if (bBest !== aBest) return bBest - aBest;
+      const aRating = a.rating || 5.0;
+      const bRating = b.rating || 5.0;
+      if (bRating !== aRating) return bRating - aRating;
+      return (b.reviewCount || 0) - (a.reviewCount || 0);
+    });
+  } else if (sortOption === 'new') {
     filtered = [...filtered].sort((a, b) => (b.isNewArrival ? 1 : 0) - (a.isNewArrival ? 1 : 0));
   } else if (sortOption === 'price-high-low') {
     filtered = [...filtered].sort((a, b) => b.price - a.price);
@@ -168,6 +178,16 @@ export default function MenPage() {
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setIsSortDropdownOpen(false)} />
                   <div className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-2xl z-40 py-2 font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
+                    <button
+                      type="button"
+                      onClick={() => { setSortOption('bestsellers'); setIsSortDropdownOpen(false); }}
+                      className={`w-full text-left px-4 py-3 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'bestsellers' ? 'text-red-600 font-black' : 'text-neutral-700 dark:text-neutral-300'}`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Flame className="w-3.5 h-3.5 text-red-600 fill-red-600" /> Bestsellers
+                      </span>
+                      {sortOption === 'bestsellers' && <Check className="w-3.5 h-3.5 text-red-600" />}
+                    </button>
                     <button
                       type="button"
                       onClick={() => { setSortOption('trending'); setIsSortDropdownOpen(false); }}
