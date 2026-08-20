@@ -28,3 +28,11 @@ pnpm-debug.log*
 *.pem
 .vscode/
 .idea/
+
+# Excel & Data Import Scraper Dumps
+*.xlsx
+*.xls
+*.csv
+processed*.json
+exact_products*.json
+
