@@ -66,16 +66,15 @@ export const Footer: React.FC = () => {
 
     const animateWave = () => {
       const waveElements = waveRefs.current;
-      let offset = 0;
 
       waveElements.forEach((element, index) => {
         if (element) {
-          offset += Math.max(0, 20 * Math.sin((t + index) * 0.3));
-          element.style.transform = `translateY(${index + offset}px)`;
+          const y = Math.sin(t + (index * 0.5)) * 15;
+          element.style.transform = `translateY(${y}px)`;
         }
       });
 
-      t += 0.1;
+      t += 0.05;
       animationFrameRef.current = requestAnimationFrame(animateWave);
     };
 
@@ -290,26 +289,24 @@ export const Footer: React.FC = () => {
       <div
         id="waveContainer"
         aria-hidden="true"
-        className="w-full h-16 sm:h-28 lg:h-36 opacity-95 pointer-events-none overflow-hidden"
+        className="w-full h-16 sm:h-28 lg:h-36 opacity-95 pointer-events-none overflow-hidden flex items-end justify-between px-1"
       >
-        <div style={{ marginTop: 0 }}>
-          {Array.from({ length: barCount }).map((_, index) => (
-            <div
-              key={index}
-              ref={(el) => {
-                waveRefs.current[index] = el;
-              }}
-              className="wave-segment"
-              style={{
-                height: `${index + 2}px`,
-                backgroundColor: waveColor,
-                transition: 'transform 0.1s ease',
-                willChange: 'transform',
-                marginTop: '-2px',
-              }}
-            />
-          ))}
-        </div>
+        {Array.from({ length: barCount }).map((_, index) => (
+          <div
+            key={index}
+            ref={(el) => {
+              waveRefs.current[index] = el;
+            }}
+            className="wave-segment w-full mx-[1px] sm:mx-[2px]"
+            style={{
+              height: `${40 + Math.sin(index * 0.5) * 20}%`,
+              backgroundColor: waveColor,
+              borderTopLeftRadius: '9999px',
+              borderTopRightRadius: '9999px',
+              willChange: 'transform',
+            }}
+          />
+        ))}
       </div>
 
     </footer>

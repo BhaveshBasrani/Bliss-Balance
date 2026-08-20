@@ -110,31 +110,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             </div>
 
             {/* Hero Title */}
-            <h1 className="font-heading text-[2rem] sm:text-[2.75rem] lg:text-[3.5rem] font-black uppercase tracking-tight text-white leading-[1.05]">
+            <h1 className="font-heading text-3xl sm:text-[2.75rem] lg:text-[3.5rem] font-black uppercase tracking-tight text-white leading-[1.1] sm:leading-[1.05]">
               {activeSlide.titleText || 'Step Into Perfect Balance.'}
             </h1>
 
             {/* Subtitle */}
-            <p className="font-body text-white/60 text-sm sm:text-base leading-relaxed max-w-md">
+            <p className="font-body text-white/70 text-[13px] sm:text-base leading-relaxed max-w-md">
               {activeSlide.subheadlineText || settings.heroSubheadline || 'Comfort-engineered footwear designed for everyday Indian life. Lightweight, anti-skid, and effortlessly stylish.'}
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-row gap-3 sm:gap-4 pt-2">
+            <div className="flex flex-row flex-wrap sm:flex-nowrap gap-2 sm:gap-4 pt-1 sm:pt-2 w-full max-w-[320px] sm:max-w-full">
               <Link
                 href={activeSlide.ctaLink || '/men'}
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:px-8 sm:py-4 rounded-full bg-white text-brand-black font-body font-semibold text-sm uppercase tracking-wider hover:bg-brand-red hover:text-white transition-all duration-300"
+                className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-3.5 sm:px-8 sm:py-4 rounded-full bg-white text-brand-black font-body font-bold text-[11px] sm:text-sm uppercase tracking-wider hover:bg-brand-red hover:text-white transition-all duration-300 text-center"
               >
                 <span>{activeSlide.ctaText || 'Shop Men'}</span>
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
 
               <Link
                 href="/women"
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:px-8 sm:py-4 rounded-full bg-transparent text-white font-body font-semibold text-sm uppercase tracking-wider border border-white/30 hover:bg-white hover:text-brand-black transition-all duration-300"
+                className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-3.5 sm:px-8 sm:py-4 rounded-full bg-transparent text-white font-body font-bold text-[11px] sm:text-sm uppercase tracking-wider border border-white/30 hover:bg-white hover:text-brand-black transition-all duration-300 text-center"
               >
                 <span>Shop Women</span>
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </div>
 

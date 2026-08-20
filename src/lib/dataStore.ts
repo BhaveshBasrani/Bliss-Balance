@@ -316,21 +316,7 @@ export async function fetchCloudSKUs(appScriptUrl?: string, forceRefresh = false
 
   inFlightSkusPromise = (async () => {
     try {
-      // 3. Try Next.js Cached Server Route First (/api/catalog)
-      try {
-        const apiRes = await fetch('/api/catalog', { method: 'GET' });
-        if (apiRes.ok) {
-          const apiProducts = await apiRes.json();
-          if (Array.isArray(apiProducts) && apiProducts.length > 0) {
-            saveStoredSKUs(apiProducts);
-            return apiProducts;
-          }
-        }
-      } catch (err) {
-        // Fall through to direct Supabase client query
-      }
-
-      // 4. Direct Supabase Query (Lightweight Listing Projection only)
+      // Direct Supabase Query (Lightweight Listing Projection only)
       const supabaseProducts = await fetchSupabaseSKUs();
       if (Array.isArray(supabaseProducts) && supabaseProducts.length > 0) {
         saveStoredSKUs(supabaseProducts);
@@ -396,19 +382,6 @@ export async function fetchCloudSettings(appScriptUrl?: string, forceRefresh = f
 
   inFlightSettingsPromise = (async () => {
     try {
-      // Try Next.js cached server route (/api/settings)
-      try {
-        const apiRes = await fetch('/api/settings', { method: 'GET' });
-        if (apiRes.ok) {
-          const apiSettings = await apiRes.json();
-          if (apiSettings && Object.keys(apiSettings).length > 0) {
-            const merged = { ...local, ...apiSettings };
-            saveStoredSettings(merged);
-            return merged;
-          }
-        }
-      } catch (err) {}
-
       // Direct Supabase Settings fetch
       const supabaseSettings = await fetchSupabaseSettings();
       if (supabaseSettings && Object.keys(supabaseSettings).length > 0) {

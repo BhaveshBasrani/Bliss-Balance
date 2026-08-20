@@ -133,6 +133,7 @@ export default function AdminPage() {
 
   // Editing Product Mode State
   const [editingSkuId, setEditingSkuId] = useState<string | null>(null);
+  const [draggedColorImg, setDraggedColorImg] = useState<{ cvIdx: number, imgIdx: number } | null>(null);
 
   // Status & Syncing State
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
@@ -302,6 +303,37 @@ export default function AdminPage() {
     const updated = (newSku.colorVariants || []).filter((_, i) => i !== index);
     setNewSku({ ...newSku, colorVariants: updated });
   };
+
+  const updateColorVariant = (index: number, updates: Partial<ColorVariant>) => {
+    const updated = [...(newSku.colorVariants || [])];
+    updated[index] = { ...updated[index], ...updates };
+    setNewSku({ ...newSku, colorVariants: updated });
+  };
+
+  const handleColorGalleryDragStart = (cvIdx: number, imgIdx: number) => {
+    setDraggedColorImg({ cvIdx, imgIdx });
+  };
+
+  const handleColorGalleryDrop = (cvIdx: number, targetImgIdx: number) => {
+    if (!draggedColorImg || draggedColorImg.cvIdx !== cvIdx) return;
+    const sourceImgIdx = draggedColorImg.imgIdx;
+    if (sourceImgIdx === targetImgIdx) return;
+
+    const updatedCvList = [...(newSku.colorVariants || [])];
+    const cv = { ...updatedCvList[cvIdx] };
+    const gallery = [...(cv.galleryImages || ['', '', '', ''])];
+    
+    // Swap images
+    const temp = gallery[sourceImgIdx];
+    gallery[sourceImgIdx] = gallery[targetImgIdx];
+    gallery[targetImgIdx] = temp;
+    
+    cv.galleryImages = gallery;
+    updatedCvList[cvIdx] = cv;
+    setNewSku({ ...newSku, colorVariants: updatedCvList });
+    setDraggedColorImg(null);
+  };
+
 
   const setGalleryImage = (index: number, url: string) => {
     const current = newSku.galleryImages ? [...newSku.galleryImages] : ['', '', '', ''];
@@ -1150,21 +1182,87 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     </div>
 
                     {/* Added Colors List */}
-                    <div className="flex flex-wrap gap-2">
-                      {newSku.colorVariants?.map((cv, idx) => (
-                        <div key={idx} className="px-3.5 py-2 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center gap-3 text-xs font-mono font-black shadow-xs">
-                          {cv.imageUrl ? (
-                            <img src={cv.imageUrl} alt={cv.name} className="w-6 h-6 rounded-lg object-cover border border-neutral-200 dark:border-neutral-800" />
-                          ) : (
-                            <span className="w-4 h-4 rounded-full border border-neutral-300 dark:border-neutral-700" style={{ backgroundColor: cv.hex }} />
-                          )}
-                          <span>{cv.name}</span>
-                          <button type="button" onClick={() => removeColorVariant(idx)} className="text-neutral-400 hover:text-red-600 font-black">
-                            ✕
-                          </button>
+                    <div className="flex flex-col gap-4">
+                      {newSku.colorVariants?.map((cv, cvIdx) => (
+                        <div key={cvIdx} className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex flex-col gap-4 shadow-sm">
+                          <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                            <div className="flex items-center gap-3 text-sm font-mono font-black uppercase">
+                              <span className="w-5 h-5 rounded-full border border-neutral-300 dark:border-neutral-700" style={{ backgroundColor: cv.hex }} />
+                              {cv.name}
+                            </div>
+                            <button type="button" onClick={() => removeColorVariant(cvIdx)} className="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg text-[10px] font-black uppercase transition-colors">
+                              DELETE VARIANT ✕
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                            {/* Color Primary Photo */}
+                            <div className="lg:col-span-1 space-y-1">
+                              <label className="block text-[9px] font-mono font-black uppercase text-neutral-500">
+                                Primary Photo
+                              </label>
+                              <ImagePlaceholder
+                                dimensions="800x800"
+                                aspectRatio="aspect-square"
+                                label="PRIMARY"
+                                imageUrl={cv.imageUrl}
+                                onImageUploaded={(base64) => updateColorVariant(cvIdx, { imageUrl: base64 })}
+                              />
+                            </div>
+
+                            {/* Color Hover Photo */}
+                            <div className="lg:col-span-1 space-y-1">
+                              <label className="block text-[9px] font-mono font-black uppercase text-neutral-500">
+                                Hover Photo
+                              </label>
+                              <ImagePlaceholder
+                                dimensions="800x800"
+                                aspectRatio="aspect-square"
+                                label="HOVER"
+                                imageUrl={cv.hoverImageUrl}
+                                onImageUploaded={(base64) => updateColorVariant(cvIdx, { hoverImageUrl: base64 })}
+                              />
+                            </div>
+
+                            {/* Color Gallery Photos (Drag & Drop) */}
+                            <div className="lg:col-span-4 space-y-1">
+                              <label className="block text-[9px] font-mono font-black uppercase text-neutral-500 flex justify-between">
+                                <span>Gallery Photos (Drag to Reorder)</span>
+                              </label>
+                              <div className="grid grid-cols-4 gap-2">
+                                {[0, 1, 2, 3].map((imgIdx) => {
+                                  const gallery = cv.galleryImages || ['', '', '', ''];
+                                  return (
+                                    <div
+                                      key={imgIdx}
+                                      draggable={true}
+                                      onDragStart={() => handleColorGalleryDragStart(cvIdx, imgIdx)}
+                                      onDragOver={(e) => e.preventDefault()}
+                                      onDrop={() => handleColorGalleryDrop(cvIdx, imgIdx)}
+                                      className="cursor-move hover:ring-2 ring-red-600 rounded-xl transition-all"
+                                      title="Drag and drop to reorder"
+                                    >
+                                      <ImagePlaceholder
+                                        dimensions="800x800"
+                                        aspectRatio="aspect-square"
+                                        label={`GAL ${imgIdx + 1}`}
+                                        imageUrl={gallery[imgIdx]}
+                                        onImageUploaded={(base64) => {
+                                          const newGallery = [...gallery];
+                                          newGallery[imgIdx] = base64;
+                                          updateColorVariant(cvIdx, { galleryImages: newGallery });
+                                        }}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
+
 
                     {/* Color Variant Add Card */}
                     <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm">

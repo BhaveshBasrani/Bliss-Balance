@@ -313,23 +313,36 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
   const allGalleryThumbnails: Array<{ url: string; label: string }> = [];
   
-  if (activeColorObj && activeColorObj.imageUrl && activeColorObj.imageUrl.trim() !== '') {
-    allGalleryThumbnails.push({ url: activeColorObj.imageUrl, label: activeColorObj.name });
-  } else if (sku.imageUrl) {
-    allGalleryThumbnails.push({ url: sku.imageUrl, label: 'Primary' });
+  // If we have an active color variant, try to build a gallery STRICTLY from its specific photos
+  if (activeColorObj) {
+    if (activeColorObj.imageUrl && activeColorObj.imageUrl.trim() !== '') {
+      allGalleryThumbnails.push({ url: activeColorObj.imageUrl, label: `${activeColorObj.name} Primary` });
+    }
+    if (activeColorObj.hoverImageUrl && activeColorObj.hoverImageUrl.trim() !== '') {
+      allGalleryThumbnails.push({ url: activeColorObj.hoverImageUrl, label: `${activeColorObj.name} Angle 2` });
+    }
+    activeColorObj.galleryImages?.forEach((img, i) => {
+      if (img && img.trim() !== '') {
+        allGalleryThumbnails.push({ url: img, label: `${activeColorObj.name} Gal ${i + 1}` });
+      }
+    });
   }
 
-  if (sku.hoverImageUrl) allGalleryThumbnails.push({ url: sku.hoverImageUrl, label: 'Angle 2' });
-  
-  sku.galleryImages?.forEach((img, i) => {
-    if (img && img.trim() !== '') allGalleryThumbnails.push({ url: img, label: `Catalog ${i + 1}` });
-  });
-
-  sku.colorVariants?.forEach((cv) => {
-    if (cv.imageUrl && cv.imageUrl.trim() !== '' && cv.name !== selectedColor) {
-      allGalleryThumbnails.push({ url: cv.imageUrl, label: cv.name });
+  // FALLBACK: If the active color has absolutely no photos (or no color selected), 
+  // we fall back to the main SKU global photos. We DO NOT mix them.
+  if (allGalleryThumbnails.length === 0) {
+    if (sku.imageUrl && sku.imageUrl.trim() !== '') {
+      allGalleryThumbnails.push({ url: sku.imageUrl, label: 'Primary' });
     }
-  });
+    if (sku.hoverImageUrl && sku.hoverImageUrl.trim() !== '') {
+      allGalleryThumbnails.push({ url: sku.hoverImageUrl, label: 'Angle 2' });
+    }
+    sku.galleryImages?.forEach((img, i) => {
+      if (img && img.trim() !== '') {
+        allGalleryThumbnails.push({ url: img, label: `Catalog ${i + 1}` });
+      }
+    });
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors font-mono select-none">
