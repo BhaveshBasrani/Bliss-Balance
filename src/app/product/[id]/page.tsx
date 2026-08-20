@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import ProductDetailClient from './ProductDetailClient';
-import { getStoredSKUs } from '@/lib/dataStore';
+import { fetchSupabaseSingleSKU, fetchSupabaseSKUs } from '@/lib/supabaseClient';
 
 interface ProductPageProps {
   params: {
@@ -10,10 +10,11 @@ interface ProductPageProps {
 }
 
 export const dynamicParams = true;
+// Revalidate every 12 hours (43200 seconds)
+export const revalidate = 43200;
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const skus = getStoredSKUs();
-  const product = skus.find(s => s.id.toLowerCase() === params.id.toLowerCase());
+  const product = await fetchSupabaseSingleSKU(params.id);
   const siteUrl = 'https://blissbalance.co';
 
   if (!product) {
@@ -69,20 +70,61 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export async function generateStaticParams() {
-  const activeSkus = getStoredSKUs();
-  const initialIds = activeSkus.map(sku => ({ id: sku.id }));
-  
-  const fallbackIds = [
-    { id: 'BB924' },
-    { id: 'BB1106' },
-    { id: 'BB12' },
-    { id: 'BB155' },
-    { id: 'default' },
-  ];
-
-  return [...initialIds, ...fallbackIds];
+  const activeSkus = await fetchSupabaseSKUs();
+  return activeSkus.map(sku => ({ id: sku.id }));
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  return <ProductDetailClient productId={params.id} />;
+export default async function ProductPage({ params }: ProductPageProps) {
+  const product = await fetchSupabaseSingleSKU(params.id);
+  const siteUrl = 'https://blissbalance.co';
+
+  let jsonLd = null;
+  if (product) {
+    const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') ? product.imageUrl : `${siteUrl}/og-image.jpg`;
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.title,
+      image: imageUrl,
+      description: product.subtitle || `Official Bliss Balance ${product.title} footwear.`,
+      sku: product.id,
+      brand: {
+        '@type': 'Brand',
+        name: 'Bliss Balance'
+      },
+      offers: {
+        '@type': 'Offer',
+        url: `${siteUrl}/product/${product.id}`,
+        priceCurrency: 'INR',
+        price: product.price,
+        itemCondition: 'https://schema.org/NewCondition',
+        availability: 'https://schema.org/InStock',
+        seller: {
+          '@type': 'Organization',
+          name: 'Bliss Balance'
+        }
+      }
+    };
+    
+    // Add AggregateRating if it exists
+    if (product.rating && product.reviewCount && product.reviewCount > 0) {
+      jsonLd.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: product.rating,
+        reviewCount: product.reviewCount
+      };
+    }
+  }
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <ProductDetailClient productId={params.id} />
+    </>
+  );
 }

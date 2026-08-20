@@ -168,21 +168,10 @@ export default function RootLayout({
           'Bliss Balance is India’s premium footwear & lifestyle brand manufacturing ortho-friendly slippers, slides, sandals, clogs, flip-flops & sneakers. Engineered for all-day comfort, arch support, and anti-skid grip.',
         disambiguatingDescription:
           'Bliss Balance is an Indian footwear and shoe manufacturing brand based in Hyderabad, India (Website: blissbalance.co, Instagram: @blissbalance.co). It is a footwear e-commerce brand and is completely distinct from Ayurvedic massage oils.',
-        knowsAbout: [
-          'Footwear',
-          'Shoes',
-          'Orthopaedic Slippers',
-          'Memory Foam Slides',
-          'Doctor Footwear',
-          'Kolhapuri Chappals',
-          'Casual Sandals',
-          'Sneakers',
-          'Clogs',
-        ],
         sameAs: [
           'https://www.instagram.com/blissbalance.co/',
           'https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3',
-          'https://www.facebook.com/share/1Bhmz8KL1w/',
+          'https://www.facebook.com/share/1G3yitXCdj/',
           'https://x.com/blissbalance_',
           'https://youtube.com/@blissbalance_26',
         ],
@@ -213,30 +202,8 @@ export default function RootLayout({
         sameAs: [
           'https://www.instagram.com/blissbalance.co/',
           'https://www.amazon.in/stores/BLISSBALANCE/page/41BF3BA5-26D5-42E4-BD12-56E78C103FB3',
+          'https://www.facebook.com/share/1G3yitXCdj/',
         ],
-      },
-      {
-        '@type': 'OnlineStore',
-        '@id': `${siteUrl}/#store`,
-        name: 'Bliss Balance - Official Online Store',
-        url: siteUrl,
-        logo: `${siteUrl}/Logo.svg`,
-        image: `${siteUrl}/og-image.jpg`,
-        description:
-          'Official Online Store of Bliss Balance Footwear. Buy unisex slippers, slides, sandals, clogs & sneakers online in India.',
-        priceRange: '₹569 - ₹1785',
-        currenciesAccepted: 'INR',
-        paymentAccepted: 'Credit Card, Debit Card, UPI, Net Banking, Cash on Delivery',
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: 'Novel House, Iskon Temple, Road No. 1, Muralidhar Bagh, Abids',
-          addressLocality: 'Hyderabad',
-          addressRegion: 'Telangana',
-          postalCode: '500012',
-          addressCountry: 'IN',
-        },
-        telephone: '+919440961776',
-        email: 'blissbalance.in@gmail.com',
       },
       {
         '@type': 'FAQPage',
@@ -279,7 +246,7 @@ export default function RootLayout({
         '@type': 'WebSite',
         '@id': `${siteUrl}/#website`,
         url: siteUrl,
-        name: 'Bliss Balance - Official Online Store',
+        name: 'Bliss Balance',
         alternateName: 'Bliss Balance Footwear',
         publisher: {
           '@id': `${siteUrl}/#brand`,
@@ -299,6 +266,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${syne.variable} ${jakarta.variable} ${outfit.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <head>
+        <link rel="icon" type="image/png" href="/favicon.png" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
         <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />

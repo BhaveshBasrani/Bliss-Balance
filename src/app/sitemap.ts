@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getStoredSKUs, INITIAL_COLLECTIONS } from '@/lib/dataStore';
+import { fetchSupabaseSKUs } from '@/lib/supabaseClient';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://blissbalance.co';
   const currentDate = new Date().toISOString();
 
@@ -39,7 +40,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Dynamic Product SKU Routes from live storage
-  const activeSkus = getStoredSKUs();
+  const activeSkus = await fetchSupabaseSKUs();
   const productRoutes: MetadataRoute.Sitemap = activeSkus.map((sku) => ({
     url: `${baseUrl}/product/${sku.id}`,
     lastModified: currentDate,
