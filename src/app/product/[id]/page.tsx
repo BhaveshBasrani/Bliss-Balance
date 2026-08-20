@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import ProductDetailClient from './ProductDetailClient';
 import { fetchSupabaseSingleSKU, fetchSupabaseSKUs } from '@/lib/supabaseClient';
+import { INITIAL_SKUS } from '@/lib/initialSkus';
 
 interface ProductPageProps {
   params: {
@@ -70,8 +71,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export async function generateStaticParams() {
-  const activeSkus = await fetchSupabaseSKUs();
-  return activeSkus.map(sku => ({ id: sku.id }));
+  return INITIAL_SKUS.map(sku => ({ id: sku.id }));
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
