@@ -4,7 +4,7 @@ import React from 'react';
 
 export const PaymentLogos: React.FC = () => {
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center sm:justify-end scale-90 sm:scale-100 origin-center sm:origin-right">
       {/* Amex Badge (Blue Box with AMEX) */}
       <div className="h-8 px-2.5 rounded-md bg-[#006FCF] text-white font-mono font-black text-[10px] flex items-center justify-center tracking-tighter shadow-sm border border-white/20">
         AMEX

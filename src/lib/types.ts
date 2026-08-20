@@ -19,6 +19,8 @@ export interface ColorVariant {
   name: string;
   hex: string;
   imageUrl?: string;
+  hoverImageUrl?: string;
+  galleryImages?: string[];
   amazonUrl?: string;
   myntraUrl?: string;
   flipkartUrl?: string;

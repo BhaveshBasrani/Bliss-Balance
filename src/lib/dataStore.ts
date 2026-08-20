@@ -116,14 +116,14 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
 export { INITIAL_SKUS };
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v25';
-const SKUS_TIME_KEY = 'bliss_balance_skus_time_v25';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v28';
+const SKUS_TIME_KEY = 'bliss_balance_skus_time_v28';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
 const SETTINGS_TIME_KEY = 'bliss_balance_settings_time_v4';
 
 // Long-lived Cache TTLs for 99% Database Egress Reduction
 const CATALOG_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
-const SETTINGS_CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
+const SETTINGS_CACHE_TTL_MS = 30 * 1000; // 30 seconds for near-instant live banner updates
 
 // TURBO SPEED IN-MEMORY CACHE
 let memorySkusCache: FootwearSKU[] | null = null;

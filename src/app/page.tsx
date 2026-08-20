@@ -43,11 +43,17 @@ export default function HomePage() {
       }
     }).catch(() => {});
 
-    fetchCloudSettings().then(cloudSettings => setSettings(cloudSettings)).catch(() => {});
+    fetchCloudSettings(undefined, true).then(cloudSettings => {
+      if (cloudSettings) setSettings(cloudSettings);
+    }).catch(() => {});
 
     const loadData = () => {
       const updated = getStoredSKUs();
       if (updated && updated.length > 0) setSkus(updated);
+    };
+
+    const loadSettings = () => {
+      setSettings(getStoredSettings());
     };
 
     const loadReviews = () => {
@@ -55,10 +61,12 @@ export default function HomePage() {
     };
 
     window.addEventListener('skus-updated', loadData);
+    window.addEventListener('settings-updated', loadSettings);
     window.addEventListener('reviews-updated', loadReviews);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('skus-updated', loadData);
+      window.removeEventListener('settings-updated', loadSettings);
       window.removeEventListener('reviews-updated', loadReviews);
     };
   }, []);
@@ -91,8 +99,8 @@ export default function HomePage() {
         <HeroSection settings={settings} />
 
         {/* 1. FEATURED FOOTWEAR DROPS SLIDER SECTION */}
-        <section className="py-20 sm:py-28 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-12 sm:space-y-16">
+        <section className="py-12 sm:py-28 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-8 sm:space-y-16">
             
             {/* Header & Gender Tabs */}
             <ScrollReveal direction="up">
@@ -164,8 +172,8 @@ export default function HomePage() {
         <BestsellerSection skus={skus} />
 
         {/* 4. THE BLISS STANDARDS / BRAND CRAFTSMANSHIP */}
-        <section className="py-20 sm:py-32 bg-[#FAFAF8] dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-16 sm:space-y-20">
+        <section className="py-12 sm:py-32 bg-[#FAFAF8] dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-12 sm:space-y-20">
             
             <div className="max-w-2xl space-y-3">
               <span className="text-[11px] font-medium tracking-[0.25em] text-brand-stone uppercase block font-body">

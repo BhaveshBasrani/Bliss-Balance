@@ -26,8 +26,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, skus 
       );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl bg-neutral-950 dark:bg-neutral-950 light:bg-white rounded-2xl border border-neutral-800 dark:border-neutral-800 light:border-slate-300 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-16 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-2xl bg-neutral-950 dark:bg-neutral-950 light:bg-white rounded-2xl border border-neutral-800 dark:border-neutral-800 light:border-slate-300 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         
         {/* Search Input Bar */}
         <div className="p-4 border-b border-neutral-800 dark:border-neutral-800 light:border-slate-200 flex items-center gap-3">

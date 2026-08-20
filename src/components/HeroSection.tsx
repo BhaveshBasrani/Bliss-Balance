@@ -28,6 +28,26 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+    setTouchStartX(null);
+  };
+
   const activeSlide = slides[currentIndex] || slides[0];
 
   const desktopBg = activeSlide.desktopImageUrl || settings.heroImageUrl || '/hero-banner.png';
@@ -37,9 +57,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
   const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <section className="relative w-full bg-brand-black text-white select-none overflow-hidden">
+    <section 
+      className="relative w-full bg-brand-black text-white select-none overflow-hidden touch-pan-y"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Hero Container */}
-      <div className="relative w-full flex flex-col sm:block min-h-[520px] sm:min-h-[600px] lg:min-h-[85vh] overflow-hidden">
+      <div className="relative w-full flex flex-col sm:block min-h-[500px] sm:min-h-[600px] lg:min-h-[85vh] overflow-hidden">
         
         {/* Background Image */}
         <div className="relative w-full h-[300px] sm:absolute sm:inset-0 sm:h-full overflow-hidden bg-neutral-900">

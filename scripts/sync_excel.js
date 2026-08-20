@@ -104,31 +104,81 @@ for (const row of wsColors) {
   }
 }
 
+const EXACT_COLOR_PALETTE = {
+  'ALMOND': '#D7BA9D',
+  'BEIGE': '#D2B48C',
+  'BEIGE BROWN': 'linear-gradient(135deg, #D2B48C 50%, #5A381E 50%)',
+  'BLACK': '#1A1A1A',
+  'BLACK BEIGE': 'linear-gradient(135deg, #1A1A1A 50%, #D2B48C 50%)',
+  'BLACK GREY': 'linear-gradient(135deg, #1A1A1A 50%, #6B7280 50%)',
+  'BLUE': '#1E3A8A',
+  'BROWN': '#5A381E',
+  'BROWN ALMOND': 'linear-gradient(135deg, #5A381E 50%, #D7BA9D 50%)',
+  'BROWN BEIGE': 'linear-gradient(135deg, #5A381E 50%, #D2B48C 50%)',
+  'CAMEL': '#C19A6B',
+  'CAMEL TAN': '#B87B44',
+  'CHERRY': '#801818',
+  'CLASSIC': '#1A1A1A',
+  'COAL BLACK': '#141414',
+  'COFFEE BROWN': '#3D2314',
+  'DARK BLACK': '#111111',
+  'DARK BROWN': '#4A2E18',
+  'DARK OLIVE': '#3B481E',
+  'DEEP BROWN': '#4A2E18',
+  'DEEP OLIVE': '#3B481E',
+  'DOVE GREY': '#A8B2BD',
+  'DUSTY PURPLE': '#8C6D83',
+  'GREY': '#6B7280',
+  'IVORY BEIGE': '#F2E7DC',
+  'IVORY CREAM': '#FDFBF7',
+  'JET BLACK': '#111111',
+  'LIGHTGREY NAVY': 'linear-gradient(135deg, #A8B2BD 50%, #1E3A8A 50%)',
+  'MAUVE PURPLE': '#743867',
+  'MINK BROWN': '#5C4033',
+  'MOCHA BROWN': '#4E3629',
+  'MONSOON GREY': '#5C6670',
+  'MOUSE': '#8E8A82',
+  'MOUSE BEIGE': '#BAAC9D',
+  'NAVY BLUE': '#1E3A8A',
+  'NAVY GREY': 'linear-gradient(135deg, #1E3A8A 50%, #6B7280 50%)',
+  'NAVY SKY': 'linear-gradient(135deg, #1E3A8A 50%, #BAE6FD 50%)',
+  'NAVY WHITE': 'linear-gradient(135deg, #1E3A8A 50%, #FFFFFF 50%)',
+  'OLIVE': '#4B5320',
+  'OLIVE BEIGE': 'linear-gradient(135deg, #4B5320 50%, #D2B48C 50%)',
+  'ONION PINK': '#CE7B8B',
+  'PALE BEIGE': '#DFD2C2',
+  'PASTEL PEACH': '#FDBA8C',
+  'PEACH': '#F6A27E',
+  'PINK BEIGE': '#E8C4B8',
+  'PLUM PURPLE': '#6B305B',
+  'PURPLE': '#5B2C6F',
+  'REDDISH TAN': '#8B2500',
+  'RICH BLACK': '#161616',
+  'RUSTIC TAN': '#9E5E32',
+  'SAND BEIGE': '#D8C7B5',
+  'SNOW WHITE': '#FFFFFF',
+  'SULTAN': '#C59B27',
+  'SULTAN GOLD': '#C59B27',
+  'TAN': '#A0522D',
+  'TAN BROWN': '#8B4513',
+  'TAN HIDE': '#B36733',
+  'WARM GREY': '#8C857B',
+  'WHITE': '#FFFFFF',
+  'WHITE SKY': 'linear-gradient(135deg, #FFFFFF 50%, #BAE6FD 50%)',
+};
+
 function getHex(name) {
   const n = (name || '').toUpperCase().trim();
-  if (n.includes('BLACK') || n.includes('COAL') || n.includes('JET') || n.includes('CLASSIC') || n === 'BK') return '#1A1A1A';
-  if (n.includes('GOLD') || n.includes('SULTAN')) return '#C59B27';
-  if (n.includes('CHERRY') || n.includes('REDDISH') || n.includes('RDTAN') || n.includes('MAROON')) return '#8B2500';
-  if (n.includes('RUSTIC TAN') || n.includes('TAN HIDE') || n.includes('TAN BROWN') || n.includes('CAMEL TAN') || n.includes('TANHD') || n.includes('TAN')) return '#9C5B2D';
-  if (n.includes('CAMEL')) return '#C19A6B';
-  if (n.includes('ALMOND')) return '#D8C3A5';
-  if (n.includes('MOCHA') || n.includes('COFFEE') || n.includes('MINK') || n.includes('DEEP BROWN') || n.includes('DARK BROWN') || n.includes('BROWN')) return '#5A381E';
-  if (n.includes('PLUM') || n.includes('MAUVE') || n.includes('PURPLE') || n.includes('LAVENDER')) return '#8A4F7D';
-  if (n.includes('CREAM') || n.includes('IVORY') || n.includes('CR')) return '#F5EBE1';
-  if (n.includes('SAND') || n.includes('PALE BEIGE') || n.includes('BEIGE') || n.includes('BG')) return '#D2B48C';
-  if (n.includes('SNOW') || n.includes('WHITE') || n === 'WH') return '#FFFFFF';
-  if (n.includes('SKY')) return '#BAE6FD';
-  if (n.includes('NAVY') || n.includes('BLUE')) return '#1E3A8A';
-  if (n.includes('DOVE')) return '#9AA5B1';
-  if (n.includes('MONSOON')) return '#7B8794';
-  if (n.includes('MOUSE')) return '#737373';
-  if (n.includes('GREY') || n.includes('GRAY') || n.includes('SLATE') || n.includes('GY')) return '#6B7280';
-  if (n.includes('PEACH') || n.includes('ONION') || n.includes('PASTEL PEACH') || n.includes('PINK') || n.includes('PNK')) return '#F472B6';
-  if (n.includes('OLIVE') || n.includes('GREEN') || n.includes('OLI')) return '#3F6212';
-  if (n.includes('SULPHUR') || n.includes('SUL')) return '#C28B5B';
-  if (n.includes('ORANGE') || n.includes('RUST')) return '#C2410C';
-  if (n.includes('YELLOW') || n.includes('MUSTARD')) return '#D97706';
-  if (n.includes('TEAL')) return '#0F766E';
+  if (EXACT_COLOR_PALETTE[n]) return EXACT_COLOR_PALETTE[n];
+
+  for (const [key, hex] of Object.entries(EXACT_COLOR_PALETTE)) {
+    if (n === key || n.replace(/[^A-Z]/g, '') === key.replace(/[^A-Z]/g, '')) return hex;
+  }
+
+  for (const [key, hex] of Object.entries(EXACT_COLOR_PALETTE)) {
+    if (n.includes(key)) return hex;
+  }
+
   return '#333333';
 }
 
@@ -248,11 +298,14 @@ for (const row of wsProducts) {
     const cName = ce.colour;
     const cHex = getHex(cName);
     const cImg = (ce.gallery && ce.gallery[0]) || ce.swatch_image;
+    const cHover = (ce.gallery && ce.gallery.length > 1) ? ce.gallery[1] : '';
 
     colorVariants.push({
       name: cName,
       hex: cHex,
       imageUrl: cImg,
+      hoverImageUrl: cHover,
+      galleryImages: ce.gallery || [],
       amazonUrl: ce.variant_link,
     });
 
@@ -271,13 +324,18 @@ for (const row of wsProducts) {
       name: 'CLASSIC',
       hex: '#1A1A1A',
       imageUrl: fallbackImg,
+      hoverImageUrl: '',
+      galleryImages: [fallbackImg],
       amazonUrl: link,
     });
     allGallery.push(fallbackImg);
   }
 
   const parts = skuCode.split('-');
-  const skuColorToken = parts.length > 1 ? parts[1].toUpperCase() : '';
+  let skuColorToken = parts.length > 1 ? parts[1].toUpperCase() : '';
+  if (skuCode.startsWith('BBSILK-11')) {
+    skuColorToken = 'WH';
+  }
   const availableColorNames = colorVariants.map(cv => cv.name);
   const matchedIdx = normalizeTokenToColorName(skuColorToken, availableColorNames);
 
@@ -287,7 +345,7 @@ for (const row of wsProducts) {
   }
 
   const primaryImage = colorVariants[0].imageUrl;
-  const hoverImage = allGallery.length > 1 ? allGallery[1] : (colorVariants.length > 1 ? colorVariants[1].imageUrl : primaryImage);
+  const hoverImage = colorVariants[0].hoverImageUrl || (colorVariants[0].galleryImages && colorVariants[0].galleryImages.length > 1 ? colorVariants[0].galleryImages[1] : primaryImage);
 
   const rawSizesSet = sizesByParent[pAsin] || new Set();
   const sortedSizes = Array.from(rawSizesSet).sort((a, b) => {

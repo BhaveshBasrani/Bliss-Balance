@@ -198,3 +198,15 @@
 .img-hover-zoom:hover img {
   transform: scale(1.05);
 }
+
+/* ============================================
+   MOBILE SAFE AREA UTILITIES
+   ============================================ */
+
+.safe-area-pb {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.safe-area-pt {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}

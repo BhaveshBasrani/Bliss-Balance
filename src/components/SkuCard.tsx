@@ -15,9 +15,10 @@ interface SkuCardProps {
 export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGenderBadge }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [activeColor, setActiveColor] = useState<ColorVariant | null>(
-    sku.colorVariants && sku.colorVariants.length > 0 ? sku.colorVariants[0] : null
-  );
+  const [activeColor, setActiveColor] = useState<ColorVariant | null>(() => {
+    if (!sku.colorVariants || sku.colorVariants.length === 0) return null;
+    return sku.colorVariants.find(cv => cv.imageUrl === sku.imageUrl) || sku.colorVariants[0];
+  });
   const [previewColor, setPreviewColor] = useState<ColorVariant | null>(null);
   const [isSwatchesHovered, setIsSwatchesHovered] = useState(false);
 
@@ -33,12 +34,13 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
 
   useEffect(() => {
     if (sku.colorVariants && sku.colorVariants.length > 0) {
-      setActiveColor(sku.colorVariants[0]);
+      const match = sku.colorVariants.find(cv => cv.imageUrl === sku.imageUrl) || sku.colorVariants[0];
+      setActiveColor(match);
     } else {
       setActiveColor(null);
     }
     setPreviewColor(null);
-  }, [sku.id, sku.colorVariants]);
+  }, [sku.id, sku.imageUrl, sku.colorVariants]);
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -68,13 +70,11 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
     ? effectiveColor.imageUrl
     : sku.imageUrl;
 
-  // Resolve Secondary Hover Image with Smart Fallbacks
-  const hoverImage = (sku.hoverImageUrl && sku.hoverImageUrl.trim() !== '' && sku.hoverImageUrl !== currentImage)
+  // Resolve Secondary Hover Image for the active color only (never cross to a different color)
+  const hoverImage = (effectiveColor as any)?.hoverImageUrl && (effectiveColor as any).hoverImageUrl !== currentImage
+    ? (effectiveColor as any).hoverImageUrl
+    : (effectiveColor?.name === sku.colorVariants?.[0]?.name && sku.hoverImageUrl && sku.hoverImageUrl !== currentImage)
     ? sku.hoverImageUrl
-    : (sku.galleryImages && sku.galleryImages.length > 0 && sku.galleryImages.find(img => img && img !== currentImage))
-    ? sku.galleryImages.find(img => img && img !== currentImage)
-    : (sku.colorVariants && sku.colorVariants.length > 1 && sku.colorVariants.find(cv => cv.imageUrl && cv.imageUrl !== currentImage)?.imageUrl)
-    ? sku.colorVariants.find(cv => cv.imageUrl && cv.imageUrl !== currentImage)!.imageUrl
     : null;
 
   // Only show hover angle image if:
@@ -253,7 +253,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                       onMouseLeave={() => {
                         setPreviewColor(null);
                       }}
-                      className={`p-0.5 rounded-full transition-all duration-200 cursor-pointer ${
+                      className={`p-1 sm:p-0.5 rounded-full transition-all duration-200 cursor-pointer touch-manipulation ${
                         isSelected
                           ? 'ring-2 ring-brand-black dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-[#121212] scale-110'
                           : 'opacity-70 hover:opacity-100 hover:scale-105'
@@ -261,8 +261,8 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                       title={cv.name}
                     >
                       <span
-                        className="w-3.5 h-3.5 rounded-full border border-black/10 dark:border-white/10 block shadow-2xs"
-                        style={{ backgroundColor: cv.hex }}
+                        className="w-3.5 h-3.5 rounded-full border border-black/15 dark:border-white/20 block shadow-2xs"
+                        style={{ background: cv.hex }}
                       />
                     </button>
                   );

@@ -335,7 +335,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors font-mono select-none">
       <Navbar onOpenSearch={() => setSearchOpen(true)} />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 w-full space-y-8 sm:space-y-12">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-24 sm:pb-12 w-full space-y-8 sm:space-y-12">
         
         {/* Back Link */}
         <button
@@ -487,7 +487,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                           {cv.imageUrl ? (
                             <img src={cv.imageUrl} alt={cv.name} className="w-full h-full object-cover rounded-lg" />
                           ) : (
-                            <div className="w-full h-full rounded-lg flex items-center justify-center" style={{ backgroundColor: cv.hex }} />
+                            <div className="w-full h-full rounded-lg flex items-center justify-center" style={{ background: cv.hex }} />
                           )}
                         </div>
                         <span className="text-[10px] font-mono font-black uppercase text-neutral-950 dark:text-white truncate max-w-full">
@@ -780,6 +780,46 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         </section>
 
       </main>
+
+      {/* MOBILE FLOATING BUY BAR */}
+      <div className="fixed bottom-0 inset-x-0 sm:hidden bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-neutral-200 dark:border-neutral-800 px-4 py-3 z-30 flex items-center justify-between gap-3 shadow-2xl safe-area-pb">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-lg font-black text-neutral-950 dark:text-white">
+              ₹{sku.price.toLocaleString('en-IN')}
+            </span>
+            {sku.originalPrice && (
+              <span className="text-[10px] text-neutral-400 line-through">
+                ₹{sku.originalPrice.toLocaleString('en-IN')}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-bold text-neutral-500 uppercase truncate">
+            {selectedSize} {selectedColor ? `• ${selectedColor}` : ''}
+          </span>
+        </div>
+
+        {resolvedAmazonUrl && resolvedAmazonUrl.trim() !== '' ? (
+          <a
+            href={resolvedAmazonUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-5 py-3 rounded-xl bg-[#FF9900] active:scale-95 text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md touch-manipulation"
+          >
+            <span>BUY NOW</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        ) : (
+          <button
+            onClick={() => {
+              window.scrollTo({ top: 300, behavior: 'smooth' });
+            }}
+            className="px-5 py-3 rounded-xl bg-red-600 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md touch-manipulation"
+          >
+            <span>OPTIONS</span>
+          </button>
+        )}
+      </div>
 
       <Footer />
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} skus={allSkus} />

@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { fetchSupabaseSettings } from '@/lib/supabaseClient';
 
-export const dynamic = 'force-static';
-export const revalidate = false;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
     const settings = await fetchSupabaseSettings();
     return NextResponse.json(settings || {}, {
       headers: {
-        'Cache-Control': 'public, s-maxage=7200, stale-while-revalidate=86400',
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       },
     });
   } catch (error) {

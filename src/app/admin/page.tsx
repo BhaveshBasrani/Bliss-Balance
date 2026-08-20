@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
-import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, getStoredReviews, saveStoredReviews, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
+import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, fetchCloudSettings, getStoredReviews, saveStoredReviews, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
 import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
 import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide } from '@/lib/types';
@@ -184,6 +184,11 @@ export default function AdminPage() {
     setSkus(currentSkus);
     setSettings(getStoredSettings());
     getStorageQuotaStats(currentSkus).then(setQuotaStats);
+
+    // Fetch live settings & hero slides from Supabase cloud on mount
+    fetchCloudSettings(undefined, true).then(cloudSettings => {
+      if (cloudSettings) setSettings(cloudSettings);
+    }).catch(() => {});
 
     // Fetch live products from Supabase/cloud on mount safely
     fetchCloudSKUs(undefined, false).then(cloudSkus => {
