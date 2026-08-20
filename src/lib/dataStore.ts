@@ -116,8 +116,8 @@ export const INITIAL_COLLECTIONS: CollectionItem[] = [
 export { INITIAL_SKUS };
 
 // Persistence Storage Keys
-const SKUS_STORAGE_KEY = 'bliss_balance_skus_v12';
-const SKUS_TIME_KEY = 'bliss_balance_skus_time_v12';
+const SKUS_STORAGE_KEY = 'bliss_balance_skus_v13';
+const SKUS_TIME_KEY = 'bliss_balance_skus_time_v13';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
 const SETTINGS_TIME_KEY = 'bliss_balance_settings_time_v4';
 

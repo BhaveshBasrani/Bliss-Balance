@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles, ArrowRight, Flame } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SkuCard } from './SkuCard';
 import { FootwearSKU } from '@/lib/types';
-import Link from 'next/link';
 
 interface ProductSliderProps {
   skus: FootwearSKU[];
@@ -14,8 +13,8 @@ interface ProductSliderProps {
 
 export const ProductSlider: React.FC<ProductSliderProps> = ({
   skus,
-  title = 'OFFICIAL FOOTWEAR CATALOG',
-  subtitle = 'FEEL THE BLISS • HIGH-PERFORMANCE SLIDER',
+  title = '',
+  subtitle = '',
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -40,7 +39,6 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
       const progress = Math.min(Math.max(scrollLeft / maxScroll, 0), 1);
       setScrollProgress(progress);
 
-      // Smoothly maps progress proportionally from 1 to totalItems
       const index = Math.min(
         Math.round(progress * (totalItems - 1)) + 1,
         totalItems
@@ -54,14 +52,13 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = 320;
+    const scrollAmount = 340;
     scrollContainerRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
     });
   };
 
-  // Mouse Drag to Scroll
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollContainerRef.current) return;
     setIsDragging(true);
@@ -73,7 +70,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
     if (!isDragging || !scrollContainerRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Drag multiplier
+    const walk = (x - startX) * 1.5;
     scrollContainerRef.current.scrollLeft = scrollLeftState - walk;
   };
 
@@ -84,7 +81,6 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (el) {
-      // Ensure carousel starts at the beginning (0)
       el.scrollLeft = 0;
       el.addEventListener('scroll', updateScrollState, { passive: true });
       updateScrollState();
@@ -97,108 +93,104 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
   if (totalItems === 0) return null;
 
   return (
-    <div className="relative w-full space-y-6 font-mono select-none overflow-hidden group/slider">
+    <div className="relative w-full space-y-6 font-body select-none overflow-hidden group/slider">
       
-      {/* Background Subtle Gradient Glow */}
-      <div className="absolute top-1/2 -left-20 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-1/2 -right-20 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none -z-10" />
-
-      {/* Header Bar with Counter & Precision Controls */}
-      {title || subtitle ? (
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
+      {/* Optional Title & Controls */}
+      {(title || subtitle) && (
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
           <div className="space-y-1">
             {subtitle && (
-              <span className="text-[10px] sm:text-[11px] font-black tracking-[0.25em] text-red-600 uppercase flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 fill-red-600 animate-pulse" /> {subtitle}
+              <span className="text-[11px] font-medium tracking-widest text-brand-stone uppercase">
+                {subtitle}
               </span>
             )}
             {title && (
-              <h3 className="font-heading text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
+              <h3 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-brand-black dark:text-white">
                 {title}
               </h3>
             )}
           </div>
 
-          {/* Minimal High-Tech Controls */}
-          <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-auto">
-            {/* Index Counter Pill */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs font-black text-neutral-900 dark:text-white shadow-xs">
-              <span className="text-red-600 font-black text-sm">
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <span className="text-xs font-medium text-brand-stone">
+              <span className="text-brand-black dark:text-white font-semibold">
                 {String(currentIndex).padStart(2, '0')}
-              </span>
-              <span className="text-neutral-400">/</span>
-              <span className="text-neutral-500">{String(totalItems).padStart(2, '0')}</span>
-            </div>
+              </span>{' '}
+              / {String(totalItems).padStart(2, '0')}
+            </span>
 
-            {/* Navigational Arrows */}
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => scroll('left')}
                 disabled={!canScrollLeft}
-                className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+                className={`p-2 rounded-full border transition-all duration-200 ${
                   canScrollLeft
-                    ? 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-700 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 shadow-xs hover:scale-105 active:scale-95'
-                    : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-400 opacity-40 cursor-not-allowed'
+                    ? 'border-neutral-300 dark:border-neutral-700 text-brand-black dark:text-white hover:bg-brand-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
                 }`}
                 aria-label="Scroll Left"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => scroll('right')}
                 disabled={!canScrollRight}
-                className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+                className={`p-2 rounded-full border transition-all duration-200 ${
                   canScrollRight
-                    ? 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-700 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 shadow-xs hover:scale-105 active:scale-95'
-                    : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-400 opacity-40 cursor-not-allowed'
+                    ? 'border-neutral-300 dark:border-neutral-700 text-brand-black dark:text-white hover:bg-brand-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
                 }`}
                 aria-label="Scroll Right"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
-      ) : (
-        <div className="flex items-center justify-end gap-3 pb-2">
-          {/* Minimal High-Tech Controls */}
+      )}
+
+      {/* Floating Controls when no explicit title */}
+      {!title && !subtitle && (
+        <div className="flex items-center justify-between pb-1">
+          <span className="text-xs font-medium text-brand-stone">
+            Swipe or drag to explore
+          </span>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs font-black text-neutral-900 dark:text-white shadow-xs">
-              <span className="text-red-600 font-black text-sm">
+            <span className="text-xs font-medium text-brand-stone">
+              <span className="text-brand-black dark:text-white font-semibold">
                 {String(currentIndex).padStart(2, '0')}
-              </span>
-              <span className="text-neutral-400">/</span>
-              <span className="text-neutral-500">{String(totalItems).padStart(2, '0')}</span>
-            </div>
+              </span>{' '}
+              / {String(totalItems).padStart(2, '0')}
+            </span>
 
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => scroll('left')}
                 disabled={!canScrollLeft}
-                className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+                className={`p-2 rounded-full border transition-all duration-200 ${
                   canScrollLeft
-                    ? 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-700 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 shadow-xs hover:scale-105 active:scale-95'
-                    : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-400 opacity-40 cursor-not-allowed'
+                    ? 'border-neutral-300 dark:border-neutral-700 text-brand-black dark:text-white hover:bg-brand-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
                 }`}
                 aria-label="Scroll Left"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => scroll('right')}
                 disabled={!canScrollRight}
-                className={`p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+                className={`p-2 rounded-full border transition-all duration-200 ${
                   canScrollRight
-                    ? 'bg-white dark:bg-black border-neutral-300 dark:border-neutral-700 text-neutral-950 dark:text-white hover:bg-red-600 hover:text-white hover:border-red-600 shadow-xs hover:scale-105 active:scale-95'
-                    : 'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-400 opacity-40 cursor-not-allowed'
+                    ? 'border-neutral-300 dark:border-neutral-700 text-brand-black dark:text-white hover:bg-brand-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
                 }`}
                 aria-label="Scroll Right"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -207,14 +199,13 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
 
       {/* HORIZONTAL DRAGGABLE SLIDER TRACK */}
       <div className="relative">
-        {/* The Draggable Card Track */}
         <div
           ref={scrollContainerRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
-          className={`flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-1 cursor-${
+          className={`flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2 cursor-${
             isDragging ? 'grabbing' : 'grab'
           }`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -222,7 +213,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
           {skus.map((sku, idx) => (
             <div
               key={sku?.id || idx}
-              className="w-[240px] sm:w-[280px] shrink-0 snap-start transition-transform duration-300 hover:-translate-y-1.5"
+              className="w-[260px] sm:w-[300px] shrink-0 snap-start transition-transform duration-300 hover:-translate-y-1"
             >
               <SkuCard sku={sku} />
             </div>
@@ -231,14 +222,13 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
       </div>
 
       {/* DYNAMIC PROGRESS SCRUBBER BAR */}
-      <div className="relative w-full h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">
+      <div className="relative w-full h-[2px] bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">
         <div
-          className="h-full bg-red-600 rounded-full transition-all duration-150 ease-out shadow-[0_0_8px_rgba(220,38,38,0.8)]"
-          style={{ width: `${Math.max(scrollProgress * 100, 8)}%` }}
+          className="h-full bg-brand-black dark:bg-white rounded-full transition-all duration-200 ease-out"
+          style={{ width: `${Math.max(scrollProgress * 100, 10)}%` }}
         />
       </div>
 
     </div>
   );
 };
-

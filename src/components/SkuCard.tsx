@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FootwearSKU, ColorVariant } from '@/lib/types';
 import { prefetchProduct } from '@/lib/dataStore';
-import { Heart, Star, ArrowRight, TrendingUp } from 'lucide-react';
+import { Heart, Star, ArrowUpRight } from 'lucide-react';
 
 interface SkuCardProps {
   sku: FootwearSKU;
@@ -67,188 +67,193 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    // Directive 7: Prefetch product data & images instantly on hover
     prefetchProduct(sku);
   };
+
+  const displayName = sku.subtitle && sku.subtitle.trim() !== ''
+    ? sku.subtitle
+    : sku.title;
 
   return (
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-xl overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between"
+      className="group relative rounded-2xl overflow-hidden bg-white dark:bg-[#121212] border border-neutral-200/70 dark:border-neutral-800/80 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all duration-300 flex flex-col justify-between hover:shadow-lg dark:hover:shadow-neutral-900/50"
     >
       <Link href={`/product/${sku.id}`} className="block flex-1 flex flex-col">
         
-        {/* Product Image Container with Ultra-Smooth Dual-Image Crossfade Animation */}
-        <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+        {/* Full-Bleed Product Image Container */}
+        <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
           
-          {/* Primary / Active Image */}
+          {/* Primary Full Image */}
           {currentImage ? (
             <img
               src={currentImage}
               alt={sku.title}
               loading="lazy"
               decoding="async"
-              className={`w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              className={`w-full h-full object-cover transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 isHovered && hoverImage
-                  ? 'opacity-0 scale-105 blur-[0.5px]'
+                  ? 'opacity-0 scale-[1.04]'
                   : isHovered
-                  ? 'scale-105 brightness-105'
+                  ? 'scale-[1.06]'
                   : 'opacity-100 scale-100'
               }`}
             />
           ) : (
-            <div className="w-full h-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-mono text-xs text-neutral-400">
-              NO IMAGE
+            <div className="w-full h-full flex items-center justify-center text-xs text-brand-stone">
+              No Image
             </div>
           )}
 
-          {/* Secondary Alternate Hover Image (Instant Smooth Crossfade on Hover) */}
+          {/* Secondary Hover Image Crossfade */}
           {hoverImage && (
             <img
               src={hoverImage}
-              alt={`${sku.title} hover preview`}
+              alt={`${sku.title} preview`}
               loading="lazy"
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
-                isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
+                isHovered ? 'opacity-100 scale-[1.04]' : 'opacity-0 scale-100'
               }`}
             />
           )}
 
-          {/* Top Badges (Bestseller, Gender, Discount, Wishlist) */}
-          <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10 pointer-events-none">
-            <div className="flex items-center gap-1.5 pointer-events-auto">
-              {bestsellerRank !== undefined ? (
-                <span className="text-[9px] font-mono font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  #{bestsellerRank} BESTSELLER
+          {/* Top Badges */}
+          <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10 pointer-events-none">
+            <div className="flex flex-col gap-1.5 pointer-events-auto">
+              {bestsellerRank !== undefined && (
+                <span className="text-[10px] font-body font-bold uppercase tracking-wider bg-brand-black text-white dark:bg-white dark:text-black px-2.5 py-0.5 rounded-full shadow-xs">
+                  #{bestsellerRank} Bestseller
                 </span>
-              ) : (
-                <>
-                  {!hideGenderBadge && (
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-black/85 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
-                      {sku.gender}
-                    </span>
-                  )}
-                  {discountPercent > 0 && (
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
-                      {discountPercent}% OFF
-                    </span>
-                  )}
-                </>
+              )}
+              {discountPercent > 0 && bestsellerRank === undefined && (
+                <span className="text-[10px] font-body font-bold bg-brand-red text-white px-2.5 py-0.5 rounded-full shadow-xs">
+                  {discountPercent}% OFF
+                </span>
+              )}
+              {!hideGenderBadge && bestsellerRank === undefined && !discountPercent && (
+                <span className="text-[9px] font-body font-medium uppercase tracking-widest bg-black/40 text-white px-2.5 py-0.5 rounded-full backdrop-blur-md">
+                  {sku.gender}
+                </span>
               )}
             </div>
 
-            {/* Wishlist Button */}
+            {/* Floating Wishlist Button */}
             <button
               type="button"
               onClick={toggleWishlist}
               aria-label={isWishlisted ? `Remove ${sku.title} from Wishlist` : `Add ${sku.title} to Wishlist`}
-              className={`p-1.5 rounded-md transition-all duration-200 border pointer-events-auto ${
+              className={`p-2 rounded-full transition-all duration-200 pointer-events-auto shadow-xs ${
                 isWishlisted
-                  ? 'bg-red-600 text-white border-red-600'
-                  : 'bg-white/90 dark:bg-black/90 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:text-red-600 backdrop-blur-xs'
+                  ? 'bg-brand-red text-white'
+                  : 'bg-white/95 dark:bg-black/80 text-brand-black dark:text-white hover:bg-brand-red hover:text-white backdrop-blur-sm'
               }`}
               title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
               <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-white' : ''}`} />
             </button>
           </div>
+
+          {/* Quick View Pill on Hover */}
+          <div className="absolute bottom-3 inset-x-3 flex justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+            <span className="px-4 py-1.5 rounded-full bg-brand-black/90 dark:bg-white/95 text-white dark:text-black text-[11px] font-semibold uppercase tracking-wider shadow-md backdrop-blur-xs flex items-center gap-1">
+              <span>View Silhouette</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </span>
+          </div>
         </div>
 
-        {/* Product Details, Color Swatches & Price */}
-        <div className="p-2.5 sm:p-4 space-y-1.5 sm:space-y-3 flex-1 flex flex-col justify-between font-mono">
+        {/* Product Details Block */}
+        <div className="p-4 space-y-2.5 flex-1 flex flex-col justify-between">
           <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] sm:text-[10px] font-black text-red-600 uppercase">
+            {/* Category & Rating */}
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[11px] font-medium text-brand-stone uppercase tracking-wider font-body">
                 {sku.category}
               </span>
-
-              {/* Star Rating Badge */}
-              <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-[11px] font-black text-amber-500">
-                <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 text-amber-400" />
-                <span>{sku.rating || '5.0'}</span>
+              <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                <span>{sku.rating || '4.9'}</span>
               </div>
             </div>
 
-            <span className="font-heading block text-xs sm:text-base font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
-              {sku.title}
-            </span>
+            {/* Main Product Title */}
+            <h3 className="font-heading text-[15px] font-bold text-brand-black dark:text-white tracking-tight leading-snug line-clamp-1 group-hover:text-brand-red transition-colors duration-200">
+              {displayName}
+            </h3>
 
-            <p className="font-mono text-[10px] sm:text-xs text-neutral-500 line-clamp-1 font-bold">
-              {sku.subtitle}
+            {/* Model Subtitle / Code */}
+            <p className="text-[11px] text-brand-stone line-clamp-1 font-medium">
+              Model {sku.title} • Anti-Skid Grip
             </p>
 
-            {/* INTERACTIVE LUXURY COLOR SWATCHES BAR ON CATALOG CARD */}
+            {/* Luxury Interactive Color Dots */}
             {Array.isArray(sku?.colorVariants) && sku.colorVariants.length > 0 && (
               <div
-                className="flex items-center justify-between gap-1.5 pt-1.5 relative z-20"
+                className="flex items-center gap-1.5 pt-2 relative z-20"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
               >
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {sku.colorVariants.map((cv) => {
-                    const isSelected = activeColor?.name === cv.name;
-                    return (
-                      <button
-                        key={cv.name}
-                        type="button"
-                        aria-label={`Select ${cv.name} color variant for ${sku.title}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setActiveColor(cv);
-                        }}
-                        onTouchEnd={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setActiveColor(cv);
-                        }}
-                        onMouseEnter={() => setActiveColor(cv)}
-                        className={`p-0.5 rounded-full transition-all duration-200 relative group/swatch flex items-center justify-center ${
-                          isSelected
-                            ? 'ring-2 ring-red-600 ring-offset-2 ring-offset-white dark:ring-offset-black scale-115 shadow-sm'
-                            : 'opacity-85 hover:opacity-100 hover:scale-110 active:scale-95'
-                        }`}
-                        title={cv.name}
-                      >
-                        <span
-                          className="w-4 h-4 sm:w-3.5 sm:h-3.5 rounded-full border border-black/20 dark:border-white/30 block shadow-inner"
-                          style={{ backgroundColor: cv.hex }}
-                        />
-                        {isSelected && (
-                          <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/20 pointer-events-none" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                <span className="text-[9px] font-bold text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-2 py-0.5 rounded-full tracking-wider uppercase ml-1 shrink-0">
-                  {sku.colorVariants.length} {sku.colorVariants.length === 1 ? 'COLOR' : 'COLORS'}
+                {sku.colorVariants.map((cv) => {
+                  const isSelected = activeColor?.name === cv.name;
+                  return (
+                    <button
+                      key={cv.name}
+                      type="button"
+                      aria-label={`Select ${cv.name} color variant for ${sku.title}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setActiveColor(cv);
+                      }}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setActiveColor(cv);
+                      }}
+                      onMouseEnter={() => setActiveColor(cv)}
+                      className={`p-0.5 rounded-full transition-all duration-200 ${
+                        isSelected
+                          ? 'ring-2 ring-brand-black dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-[#121212] scale-110'
+                          : 'opacity-70 hover:opacity-100 hover:scale-105'
+                      }`}
+                      title={cv.name}
+                    >
+                      <span
+                        className="w-3.5 h-3.5 rounded-full border border-black/10 dark:border-white/10 block shadow-2xs"
+                        style={{ backgroundColor: cv.hex }}
+                      />
+                    </button>
+                  );
+                })}
+                <span className="text-[10px] font-medium text-brand-stone ml-1">
+                  {sku.colorVariants.length} {sku.colorVariants.length === 1 ? 'Color' : 'Colors'}
                 </span>
               </div>
             )}
           </div>
 
-          <div className="pt-1.5 sm:pt-2 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
-            <div className="flex items-baseline gap-1 sm:gap-2">
-              <span className="text-xs sm:text-base font-black text-neutral-950 dark:text-white">
+          {/* Pricing Row */}
+          <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800/80 flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-base font-heading font-extrabold text-brand-black dark:text-white">
                 ₹{sku.price.toLocaleString('en-IN')}
               </span>
               {sku.originalPrice && (
-                <span className="text-[9px] sm:text-xs text-neutral-400 line-through">
+                <span className="text-xs text-brand-stone line-through font-medium">
                   ₹{sku.originalPrice.toLocaleString('en-IN')}
                 </span>
               )}
             </div>
 
-            <span className="inline-flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs font-black text-red-600 group-hover:translate-x-1 transition-transform duration-300 uppercase">
-              <span>VIEW</span>
-              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            </span>
+            {discountPercent > 0 && (
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md">
+                Save ₹{(sku.originalPrice! - sku.price).toLocaleString('en-IN')}
+              </span>
+            )}
           </div>
 
         </div>

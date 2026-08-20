@@ -5,7 +5,6 @@ import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { CategoryGrid } from '@/components/CategoryGrid';
-import { SkuCard } from '@/components/SkuCard';
 import { PressMarquee } from '@/components/PressMarquee';
 import { Footer } from '@/components/Footer';
 import { SearchModal } from '@/components/SearchModal';
@@ -15,7 +14,7 @@ import { BestsellerSection } from '@/components/BestsellerSection';
 import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
 import { getStoredSKUs, getStoredSettings, fetchCloudSKUs, fetchCloudSettings, getStoredReviews, INITIAL_COLLECTIONS, DEFAULT_SITE_SETTINGS, INITIAL_SKUS } from '@/lib/dataStore';
 import { FootwearSKU, SiteSettings, ProductReview } from '@/lib/types';
-import { ArrowRight, Zap, Plus, Cloud, ShieldCheck, Feather, Award, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, Plus, Cloud, ShieldCheck, Feather, Award, Star, CheckCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -24,12 +23,9 @@ export default function HomePage() {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'All' | 'Men' | 'Women'>('All');
-  const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
     const local = getStoredSKUs();
     if (local && local.length > 0) {
       setSkus(local);
@@ -37,12 +33,10 @@ export default function HomePage() {
     setSettings(getStoredSettings());
     setReviews(getStoredReviews());
 
-    // Auto-dismiss the signature brand intro screen smoothly
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 650);
 
-    // Live Dynamic Cloud Fetch from Supabase
     fetchCloudSKUs().then(cloudSkus => {
       if (cloudSkus && cloudSkus.length > 0) {
         setSkus(cloudSkus);
@@ -78,7 +72,7 @@ export default function HomePage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300 select-none relative">
+    <div className="flex flex-col min-h-screen bg-[#FAFAF8] dark:bg-[#0A0A0A] text-brand-black dark:text-white transition-colors duration-300 select-none relative font-body">
       {/* Brand Splash Screen Intro Overlay */}
       {showSplash && (
         <div className="fixed inset-0 z-[99999] pointer-events-none transition-opacity duration-300">
@@ -96,76 +90,33 @@ export default function HomePage() {
         {/* Full-Bleed Editorial Hero Banner */}
         <HeroSection settings={settings} />
 
-        {/* LIVE TRUST METRICS COUNTER BAR */}
-        <section className="bg-neutral-50/50 dark:bg-neutral-950/50 border-b border-neutral-200 dark:border-neutral-800 py-6 font-mono text-xs font-black uppercase">
-          <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <ScrollReveal direction="up" delay={0.05}>
-              <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-all">
-                <span className="block text-xl font-heading font-black text-red-600">1,00,000+</span>
-                <span className="text-[10px] text-neutral-500 font-bold">PAIRS DELIVERED ACROSS INDIA</span>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={0.1}>
-              <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-all">
-                <span className="block text-xl font-heading font-black text-amber-500 flex items-center justify-center gap-1">
-                  <Star className="w-4 h-4 fill-amber-400" /> 4.9 / 5.0
-                </span>
-                <span className="text-[10px] text-neutral-500 font-bold">PATRON SATISFACTION RATING</span>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={0.15}>
-              <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-all">
-                <span className="block text-xl font-heading font-black text-emerald-600">7 DAYS</span>
-                <span className="text-[10px] text-neutral-500 font-bold">HASSLE-FREE EASY RETURNS</span>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={0.2}>
-              <div className="p-4 rounded-xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-all">
-                <span className="block text-xl font-heading font-black text-neutral-950 dark:text-white">100%</span>
-                <span className="text-[10px] text-neutral-500 font-bold">ORIGINAL CRAFTSMANSHIP</span>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* 1. FEATURED FOOTWEAR DROPS GRID */}
-        <section className="py-20 sm:py-28 bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900 transition-colors relative select-none">
-          
-          {/* Background Subtle Watermark */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] dark:opacity-[0.06] select-none">
-            <span className="font-heading font-black text-[15rem] lg:text-[22rem] tracking-tighter uppercase text-black dark:text-white leading-none whitespace-nowrap">
-              BLISS
-            </span>
-          </div>
-
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* 1. FEATURED FOOTWEAR DROPS SLIDER SECTION */}
+        <section className="py-20 sm:py-28 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-12 sm:space-y-16">
             
             {/* Header & Gender Tabs */}
             <ScrollReveal direction="up">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-neutral-200 dark:border-neutral-800 pb-6">
-                <div className="space-y-1">
-                  <span className="text-[11px] font-black tracking-[0.25em] text-red-600 uppercase flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5" /> OFFICIAL DROPS
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                <div className="space-y-2">
+                  <span className="text-[11px] font-medium tracking-[0.25em] text-brand-stone uppercase block font-body">
+                    Official Drops
                   </span>
-                  <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
-                    FEATURED <span className="text-red-600">FOOTWEAR</span>
+                  <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-brand-black dark:text-white">
+                    Featured Drops
                   </h2>
                 </div>
 
                 <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-auto">
                   {/* Gender Filter Tabs */}
-                  <div className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-950 p-1.5 rounded-none border border-neutral-200 dark:border-neutral-800">
+                  <div className="flex items-center gap-1.5 bg-[#F4F2EE] dark:bg-neutral-900 p-1.5 rounded-full border border-neutral-200/60 dark:border-neutral-800">
                     {(['All', 'Men', 'Women'] as const).map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
-                        className={`px-4 py-1.5 rounded-none text-[11px] font-black uppercase tracking-widest transition-all ${
+                        className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                           selectedTab === tab
-                            ? 'bg-red-600 text-white'
-                            : 'text-neutral-600 dark:text-neutral-400 hover:text-red-600'
+                            ? 'bg-brand-black text-white dark:bg-white dark:text-black shadow-xs'
+                            : 'text-brand-stone hover:text-brand-black dark:hover:text-white'
                         }`}
                       >
                         {tab}
@@ -173,39 +124,28 @@ export default function HomePage() {
                     ))}
                   </div>
 
-                  {/* Top Right VIEW ALL Link matching user screenshot */}
                   <Link
                     href="/collections"
-                    className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider text-red-600 hover:text-neutral-950 dark:hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-black dark:text-white hover:text-brand-red dark:hover:text-brand-red transition-colors"
                   >
-                    <span>VIEW ALL DROPS</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>View All</span>
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
             </ScrollReveal>
 
-            {/* Compact Horizontal Product Slider */}
-            {loading ? (
-              <div className="flex gap-6 overflow-hidden animate-pulse">
-                {Array.from({ length: 4 }).map((_, idx) => (
-                  <div key={idx} className="w-[260px] shrink-0 rounded-none bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 space-y-4">
-                    <div className="aspect-square w-full rounded-none bg-neutral-200 dark:bg-neutral-800" />
-                    <div className="h-4 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
-                    <div className="h-6 w-3/4 bg-neutral-200 dark:bg-neutral-800 rounded-none" />
-                  </div>
-                ))}
-              </div>
-            ) : displayedSkus.length === 0 ? (
-              <div className="text-center py-16 bg-neutral-50 dark:bg-neutral-950 rounded-none border border-neutral-200 dark:border-neutral-800 space-y-4">
-                <p className="text-neutral-500 text-xs font-black uppercase">
-                  NO PRODUCTS ADDED YET
+            {/* Product Slider Track */}
+            {displayedSkus.length === 0 ? (
+              <div className="text-center py-16 bg-[#F4F2EE] dark:bg-neutral-950 rounded-3xl border border-neutral-200 dark:border-neutral-800 space-y-4">
+                <p className="text-brand-stone text-xs font-medium uppercase">
+                  No products in this category yet
                 </p>
                 <Link
                   href="/admin"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-none bg-red-600 text-white font-black text-xs uppercase border border-red-600"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-black text-white font-semibold text-xs uppercase"
                 >
-                  <Plus className="w-4 h-4" /> ADD FIRST FOOTWEAR
+                  <Plus className="w-4 h-4" /> Add First Footwear
                 </Link>
               </div>
             ) : (
@@ -214,159 +154,165 @@ export default function HomePage() {
               </ScrollReveal>
             )}
 
-            {/* Minimal Compact View Catalog Button */}
-            <ScrollReveal direction="up" delay={0.2}>
-              <div className="text-center pt-2">
-                <Link
-                  href="/collections"
-                  className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-none bg-neutral-950 text-white dark:bg-white dark:text-black font-black text-[11px] uppercase tracking-widest border border-neutral-900 dark:border-white hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm"
-                >
-                  <span>VIEW FULL CATALOG</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </ScrollReveal>
-
           </div>
         </section>
 
-        {/* 2. EXPLORE COLLECTIONS */}
+        {/* 2. EXPLORE COLLECTIONS GRID */}
         <CategoryGrid collections={INITIAL_COLLECTIONS} />
 
-        {/* 3. DYNAMIC OUR BEST SELLERS SECTION */}
+        {/* 3. BEST SELLERS SHOWCASE */}
         <BestsellerSection skus={skus} />
 
-        {/* 3. THE BLISS STANDARDS SECTION */}
-        <section className="py-12 sm:py-24 bg-white dark:bg-black border-b border-neutral-200 dark:border-neutral-800 transition-colors relative select-none overflow-hidden">
-          
-          {/* Background Subtle Watermark */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] dark:opacity-[0.06] select-none">
-            <span className="font-heading font-black text-[8rem] sm:text-[15rem] lg:text-[22rem] tracking-tighter uppercase text-black dark:text-white leading-none whitespace-nowrap">
-              BALANCE
-            </span>
-          </div>
-
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-12">
-            <div className="text-center space-y-1.5 sm:space-y-2 max-w-xl mx-auto">
-              <span className="text-[10px] sm:text-[11px] font-black text-red-600 uppercase tracking-[0.25em] flex items-center justify-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> THE BLISS STANDARDS
+        {/* 4. THE BLISS STANDARDS / BRAND CRAFTSMANSHIP */}
+        <section className="py-20 sm:py-32 bg-[#FAFAF8] dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-16 sm:space-y-20">
+            
+            <div className="max-w-2xl space-y-3">
+              <span className="text-[11px] font-medium tracking-[0.25em] text-brand-stone uppercase block font-body">
+                The Bliss Standards
               </span>
-              <h2 className="font-heading text-2xl sm:text-5xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                ENGINEERED FOR <span className="text-red-600">EVERYDAY BALANCE</span>
+              <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-brand-black dark:text-white leading-tight">
+                Engineered for everyday balance.
               </h2>
+              <p className="text-base text-brand-stone leading-relaxed font-medium">
+                Every silhouette is thoughtfully engineered to combine orthopedic posture alignment, featherlight cushioning, and high-traction durability.
+              </p>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-              {/* Card 1 */}
-              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Cloud className="w-5 h-5" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+              
+              {/* Feature 01 */}
+              <div className="p-8 rounded-3xl bg-white dark:bg-[#121212] border border-neutral-200/70 dark:border-neutral-800/80 space-y-6 shadow-xs hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F4F2EE] dark:bg-[#1C1C1C] flex items-center justify-center group-hover:bg-brand-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
+                    <Cloud className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-black text-brand-stone font-heading">01</span>
                 </div>
-                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  CLOUD COMFORT SOLE
-                </h3>
-                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-                  Dual-density EVA memory cushioning designed to absorb impact and relieve heel pressure for all-day standing comfort.
-                </p>
+                <div className="space-y-2">
+                  <h3 className="font-heading text-lg font-bold text-brand-black dark:text-white uppercase tracking-tight">
+                    Cloud Comfort Sole
+                  </h3>
+                  <p className="text-sm text-brand-stone leading-relaxed">
+                    Dual-density EVA bounce cushioning absorbs shock on every step, relieving pressure on heels and knees.
+                  </p>
+                </div>
               </div>
 
-              {/* Card 2 */}
-              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <ShieldCheck className="w-5 h-5" />
+              {/* Feature 02 */}
+              <div className="p-8 rounded-3xl bg-white dark:bg-[#121212] border border-neutral-200/70 dark:border-neutral-800/80 space-y-6 shadow-xs hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F4F2EE] dark:bg-[#1C1C1C] flex items-center justify-center group-hover:bg-brand-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-black text-brand-stone font-heading">02</span>
                 </div>
-                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  ANTI-SKID DEPENDABILITY
-                </h3>
-                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-                  Engineered anti-slip wave tread outsoles providing maximum friction and stable traction on wet tiles & asphalt.
-                </p>
+                <div className="space-y-2">
+                  <h3 className="font-heading text-lg font-bold text-brand-black dark:text-white uppercase tracking-tight">
+                    Anti-Skid Wave Grip
+                  </h3>
+                  <p className="text-sm text-brand-stone leading-relaxed">
+                    Engineered wave tread outsoles deliver maximum friction and stable footing on wet marble, tiles, and pavement.
+                  </p>
+                </div>
               </div>
 
-              {/* Card 3 */}
-              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Feather className="w-5 h-5" />
+              {/* Feature 03 */}
+              <div className="p-8 rounded-3xl bg-white dark:bg-[#121212] border border-neutral-200/70 dark:border-neutral-800/80 space-y-6 shadow-xs hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F4F2EE] dark:bg-[#1C1C1C] flex items-center justify-center group-hover:bg-brand-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
+                    <Feather className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-black text-brand-stone font-heading">03</span>
                 </div>
-                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  FEATHERLIGHT BUILD
-                </h3>
-                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-                  Ultralight construction weighing under 180 grams per footwear item for an effortless, weightless walking experience.
-                </p>
+                <div className="space-y-2">
+                  <h3 className="font-heading text-lg font-bold text-brand-black dark:text-white uppercase tracking-tight">
+                    Featherlight Build
+                  </h3>
+                  <p className="text-sm text-brand-stone leading-relaxed">
+                    Ultralight construction weighing under 180 grams per shoe for an effortless, weightless all-day stride.
+                  </p>
+                </div>
               </div>
 
-              {/* Card 4 */}
-              <div className="p-4 sm:p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-3 font-mono hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 group shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Award className="w-5 h-5" />
+              {/* Feature 04 */}
+              <div className="p-8 rounded-3xl bg-white dark:bg-[#121212] border border-neutral-200/70 dark:border-neutral-800/80 space-y-6 shadow-xs hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F4F2EE] dark:bg-[#1C1C1C] flex items-center justify-center group-hover:bg-brand-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
+                    <Award className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-black text-brand-stone font-heading">04</span>
                 </div>
-                <h3 className="font-heading text-sm sm:text-base font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                  CRAFTED IN INDIA
-                </h3>
-                <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-medium">
-                  Designed, engineered, and manufactured in India with premium grade non-toxic materials built for daily Indian conditions.
-                </p>
+                <div className="space-y-2">
+                  <h3 className="font-heading text-lg font-bold text-brand-black dark:text-white uppercase tracking-tight">
+                    Crafted in India
+                  </h3>
+                  <p className="text-sm text-brand-stone leading-relaxed">
+                    Hand-finished and manufactured in India using non-toxic, skin-friendly materials built for daily endurance.
+                  </p>
+                </div>
               </div>
+
             </div>
           </div>
         </section>
 
-        {/* 4. REAL CUSTOMER TESTIMONIALS & SOCIAL PROOF SHOWCASE (ONLY ACTUAL SUBMITTED REVIEWS) */}
+        {/* 5. VERIFIED PATRON REVIEWS SHOWCASE */}
         {reviews.length > 0 && (
-          <section className="py-14 sm:py-24 bg-neutral-50/70 dark:bg-neutral-950/70 border-b border-neutral-200 dark:border-neutral-800 relative select-none overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
-                <div className="space-y-1.5">
-                  <span className="text-[10px] sm:text-[11px] font-black text-red-600 uppercase tracking-[0.25em] flex items-center gap-1.5 font-mono">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> VERIFIED CUSTOMER REVIEWS
+          <section className="py-20 sm:py-28 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
+            <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-12 sm:space-y-16">
+              
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div className="space-y-2">
+                  <span className="text-[11px] font-medium tracking-[0.25em] text-brand-stone uppercase flex items-center gap-1.5 font-body">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> Verified Customer Reviews
                   </span>
-                  <h2 className="font-heading text-2xl sm:text-4xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                    LOVED BY CUSTOMERS <span className="text-red-600">ACROSS INDIA</span>
+                  <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-brand-black dark:text-white">
+                    Loved Across India
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-2 font-mono text-xs font-bold text-neutral-500">
-                  <span className="px-3 py-1 rounded-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200">
-                    ⭐ {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} / 5.0 Rating ({reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'})
+                <div className="flex items-center gap-2 text-xs font-semibold text-brand-stone">
+                  <span className="px-4 py-2 rounded-full bg-[#F4F2EE] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-brand-black dark:text-white shadow-xs">
+                    ★ {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} / 5.0 Rating ({reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'})
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 font-mono">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {reviews.slice(0, 6).map((rev) => (
                   <div
                     key={rev.id}
-                    className="p-6 rounded-2xl bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm hover:border-red-600 dark:hover:border-red-600 transition-colors flex flex-col justify-between"
+                    className="p-8 rounded-3xl bg-[#FAFAF8] dark:bg-[#141414] border border-neutral-200/80 dark:border-neutral-800 space-y-5 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <div className="flex text-amber-400 gap-0.5">
+                        <div className="flex text-amber-400 gap-1">
                           {[...Array(Math.max(1, Math.min(5, rev.rating)))].map((_, i) => (
                             <Star key={i} className="w-4 h-4 fill-amber-400" />
                           ))}
                         </div>
                         {rev.verified && (
-                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full flex items-center gap-1 border border-emerald-200/60 dark:border-emerald-900/40">
                             <CheckCircle className="w-3 h-3" /> Verified Buyer
                           </span>
                         )}
                       </div>
 
                       {rev.headline && (
-                        <p className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white line-clamp-1">
+                        <p className="font-heading text-base font-bold text-brand-black dark:text-white line-clamp-1">
                           {rev.headline}
                         </p>
                       )}
 
-                      <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium line-clamp-4">
+                      <p className="text-sm text-brand-stone leading-relaxed line-clamp-4">
                         &ldquo;{rev.comment}&rdquo;
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between text-xs">
-                      <span className="font-heading font-black text-neutral-950 dark:text-white uppercase">{rev.authorName}</span>
-                      <span className="text-[10px] text-neutral-400">{rev.date}</span>
+                    <div className="pt-4 border-t border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between text-xs">
+                      <span className="font-bold text-brand-black dark:text-white uppercase tracking-wider">{rev.authorName}</span>
+                      <span className="text-[11px] text-brand-stone font-medium">{rev.date}</span>
                     </div>
                   </div>
                 ))}
@@ -375,54 +321,46 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* 5. AS APPRECIATED ON PRESS MARQUEE (COMET STYLE) */}
+        {/* 6. PARTNERS MARQUEE STRIP */}
         <PressMarquee />
 
-        {/* EDITORIAL MARQUEE STRIP */}
-        <section className="bg-red-600 text-white py-6 border-y border-neutral-900 dark:border-neutral-800 font-mono uppercase font-black tracking-[0.2em] text-xs sm:text-base text-center select-none overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-1.5">
-            <span>10 MILLION+ HAPPY CUSTOMERS • ENGINEERED FOR EVERYDAY BALANCE</span>
-            <span className="text-white/95">CRAFTED IN INDIA</span>
-          </div>
-        </section>
-
-        {/* 6. SEARCH ENGINE & AI KNOWLEDGE GRAPH AUTHORITY SECTION */}
-        <section className="py-12 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 font-mono text-neutral-600 dark:text-neutral-400 text-xs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div className="space-y-2">
-              <h2 className="font-heading text-lg sm:text-2xl font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                BLISS BALANCE® — INDIA’S OFFICIAL ONLINE FOOTWEAR STORE
+        {/* 7. SEARCH ENGINE & AI KNOWLEDGE GRAPH AUTHORITY SECTION */}
+        <section className="py-16 bg-[#FAFAF8] dark:bg-[#0A0A0A] border-t border-neutral-200/60 dark:border-neutral-800/60 text-brand-stone text-xs">
+          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-8">
+            <div className="space-y-3">
+              <h2 className="font-heading text-base sm:text-lg font-black text-brand-black dark:text-white tracking-tight uppercase">
+                Bliss Balance® — Official Online Footwear Store India
               </h2>
-              <p className="leading-relaxed font-medium">
-                Welcome to the official online home of <strong>Bliss Balance</strong> (blissbalance.co), India’s premier footwear brand headquartered in Abids, Hyderabad. Engineered for all-day comfort, posture alignment, and anti-skid safety, Bliss Balance designs and manufactures orthopedic slippers, doctor-recommended comfort sandals, memory foam slides, waterproof clogs, and streetwear sneakers built for daily Indian conditions.
+              <p className="leading-relaxed font-normal max-w-4xl text-sm">
+                Bliss Balance (blissbalance.co) is a modern Indian footwear brand headquartered in Abids, Hyderabad. Engineered for all-day comfort, posture alignment, and anti-skid safety, Bliss Balance designs and manufactures doctor-recommended orthopedic slippers, cushioned slides, comfort sandals, waterproof clogs, and streetwear sneakers built for daily Indian conditions.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-              <div className="space-y-1.5">
-                <h3 className="font-heading text-xs font-black uppercase text-neutral-950 dark:text-white">
-                  DOCTOR & ORTHO SLIPPERS
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-neutral-200/60 dark:border-neutral-800/60">
+              <div className="space-y-2">
+                <h3 className="font-heading text-xs font-bold text-brand-black dark:text-white uppercase tracking-wider">
+                  Doctor & Ortho Slippers
                 </h3>
-                <p className="text-[11px] leading-relaxed">
-                  Engineered with high-density EVA bounce-back footbeds, soft acupressure nodes, and anatomical arch contouring to alleviate plantar fasciitis, heel discomfort, and daily foot fatigue for men and women.
+                <p className="text-xs leading-relaxed text-brand-stone">
+                  Engineered with bounce-back EVA footbeds and anatomical arch contouring to alleviate foot fatigue and heel pressure.
                 </p>
               </div>
 
-              <div className="space-y-1.5">
-                <h3 className="font-heading text-xs font-black uppercase text-neutral-950 dark:text-white">
-                  COMFORT SANDALS & CLOGS
+              <div className="space-y-2">
+                <h3 className="font-heading text-xs font-bold text-brand-black dark:text-white uppercase tracking-wider">
+                  Comfort Sandals & Slides
                 </h3>
-                <p className="text-[11px] leading-relaxed">
-                  Featuring adjustable dual-strap doctor sandals, ultra-lightweight waterproof clogs with breathable ventilation ports, and handcrafted heritage Kolhapuri chappals re-engineered with modern cushioning.
+                <p className="text-xs leading-relaxed text-brand-stone">
+                  Featuring adjustable straps, waterproof lightweight build, and handcrafted comfort chappals re-engineered with modern cushioning.
                 </p>
               </div>
 
-              <div className="space-y-1.5">
-                <h3 className="font-heading text-xs font-black uppercase text-neutral-950 dark:text-white">
-                  STREETWEAR SNEAKERS
+              <div className="space-y-2">
+                <h3 className="font-heading text-xs font-bold text-brand-black dark:text-white uppercase tracking-wider">
+                  Everyday Sneakers & Clogs
                 </h3>
-                <p className="text-[11px] leading-relaxed">
-                  Built for active everyday living with breathable knitted uppers, effortless zip & lace convenience, and high-traction anti-skid wave outsoles engineered for reliable all-day grip and stability.
+                <p className="text-xs leading-relaxed text-brand-stone">
+                  Built for active living with breathable uppers, high-traction anti-skid wave outsoles, and durable shock absorption.
                 </p>
               </div>
             </div>

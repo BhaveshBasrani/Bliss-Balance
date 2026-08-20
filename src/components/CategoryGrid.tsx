@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { ImagePlaceholder } from './ImagePlaceholder';
+import { ArrowUpRight } from 'lucide-react';
 import { CollectionItem } from '@/lib/types';
 import { ScrollReveal } from './ScrollReveal';
 
@@ -23,86 +22,84 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
   });
 
   return (
-    <section className="py-20 sm:py-28 bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900 transition-colors select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 sm:py-28 bg-[#FAFAF8] dark:bg-[#0A0A0A] transition-colors select-none">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-12 sm:space-y-16">
         
-        {/* Section Title & Filter Tabs */}
+        {/* Section Header */}
         <ScrollReveal direction="up" delay={0.1}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6 font-mono">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
-              <span className="text-[11px] font-black tracking-[0.25em] text-red-600 uppercase block">
-                EXPLORE FOOTWEAR COLLECTIONS
+              <span className="text-[11px] font-medium tracking-[0.25em] text-brand-stone uppercase block font-body">
+                Curated Silhouettes
               </span>
-              <h2 className="font-heading text-3xl sm:text-5xl font-black text-neutral-950 dark:text-white uppercase tracking-tight">
-                BUILT FOR <span className="text-red-600">EVERY STEP</span>
+              <h2 className="font-heading text-3xl sm:text-5xl font-black text-brand-black dark:text-white tracking-tight uppercase">
+                Explore by Category
               </h2>
             </div>
 
-            {/* Gender Filter Tabs */}
-            <div className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-950 p-1.5 rounded-none border border-neutral-200 dark:border-neutral-800 overflow-x-auto no-scrollbar">
+            {/* Filter Tabs */}
+            <div className="flex items-center gap-1.5 bg-white dark:bg-neutral-900 p-1.5 rounded-full border border-neutral-200/80 dark:border-neutral-800 shadow-xs">
               {(['All', 'Men', 'Women', 'Kids'] as const).map((gender) => (
                 <button
                   key={gender}
                   onClick={() => setActiveGender(gender)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-none font-mono text-xs font-black uppercase tracking-wider transition-all ${
+                  className={`whitespace-nowrap px-5 py-2 rounded-full font-body text-xs font-bold tracking-wider uppercase transition-all duration-300 ${
                     activeGender === gender
-                      ? 'bg-red-600 text-white'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:text-red-600'
+                      ? 'bg-brand-black text-white dark:bg-white dark:text-black shadow-sm'
+                      : 'text-brand-stone hover:text-brand-black dark:hover:text-white'
                   }`}
                 >
-                  {gender === 'All' ? 'ALL COLLECTIONS' : gender}
+                  {gender === 'All' ? 'All Silhouettes' : gender}
                 </button>
               ))}
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Collections Cards Grid - Compact 2-Column Mobile Layout */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
+        {/* Collections Lookbook Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredCollections.map((item, idx) => (
             <ScrollReveal key={item.id} direction="up" delay={idx * 0.05}>
-              <div className="group relative rounded-xl overflow-hidden bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 hover:border-red-600 dark:hover:border-red-500 transition-all duration-300 flex flex-col justify-between h-full">
-                {/* Compact Category Image Banner */}
-                <div className="p-1.5 sm:p-2.5">
-                  <ImagePlaceholder
-                    dimensions={item.imageDimensions || "800 x 600 px (4:3)"}
-                    aspectRatio="aspect-[16/10] sm:aspect-[16/9]"
-                    label={`${item.title} BANNER`}
-                    imageUrl={item.imageUrl}
-                  />
+              <Link
+                href={`/collections/${item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                className="group relative rounded-3xl overflow-hidden bg-neutral-900 block aspect-[4/3] sm:aspect-[16/11] transition-all duration-500 shadow-sm hover:shadow-2xl"
+              >
+                {/* Background Image with Cinematic Hover Zoom */}
+                <img
+                  src={item.imageUrl || '/og-image.jpg'}
+                  alt={item.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-108"
+                />
+
+                {/* Dark Editorial Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+
+                {/* Top Pill Tag */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="px-3.5 py-1 rounded-full bg-white/90 dark:bg-black/80 text-brand-black dark:text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-md shadow-xs">
+                    {item.gender}
+                  </span>
                 </div>
 
-                {/* Card Content */}
-                <div className="p-2.5 sm:p-4 pt-1 space-y-1.5 sm:space-y-2.5 font-mono flex-1 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-red-600 text-white px-1.5 py-0.5">
-                        {item.gender}
-                      </span>
-                      <span className="hidden sm:inline text-[9px] font-bold text-neutral-400">COLLECTION</span>
-                    </div>
-
-                    <span className="font-heading block text-xs sm:text-xl font-black text-neutral-950 dark:text-white uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-1">
+                {/* Bottom Content Overlaid on Card */}
+                <div className="absolute inset-x-0 bottom-0 p-6 z-10 space-y-2 flex items-end justify-between">
+                  <div className="space-y-1 max-w-[80%]">
+                    <h3 className="font-heading text-xl sm:text-2xl font-black text-white uppercase tracking-tight leading-tight group-hover:text-red-400 transition-colors">
                       {item.title}
-                    </span>
-
-                    <p className="hidden sm:block font-body text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                    </h3>
+                    <p className="text-xs text-white/70 font-medium line-clamp-1">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="pt-1.5 sm:pt-2.5 border-t border-neutral-200/60 dark:border-neutral-800/60 mt-auto">
-                    <Link
-                      href={`/collections/${item.slug || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                      className="inline-flex items-center gap-1 sm:gap-2 font-mono text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-600 hover:text-red-500 group/link"
-                      aria-label={`Explore ${item.title}`}
-                    >
-                      <span className="truncate">EXPLORE {item.title}</span>
-                      <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover/link:translate-x-1 shrink-0" />
-                    </Link>
+                  {/* Circular Action Button */}
+                  <div className="w-10 h-10 rounded-full bg-white text-brand-black flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:bg-brand-red group-hover:text-white shrink-0">
+                    <ArrowUpRight className="w-5 h-5" />
                   </div>
                 </div>
-              </div>
+
+              </Link>
             </ScrollReveal>
           ))}
         </div>

@@ -109,27 +109,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-900 transition-colors duration-300 select-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 w-full bg-white/98 dark:bg-black/98 backdrop-blur-xl border-b border-neutral-100 dark:border-neutral-900 transition-colors duration-300 select-none">
+        <div className="max-w-[1400px] mx-auto px-5 sm:px-8">
           
           {/* MOBILE HEADER (lg:hidden) */}
-          <div className="flex lg:hidden items-center justify-between h-16 w-full font-mono">
-            <div className="flex items-center gap-1 shrink-0">
+          <div className="flex lg:hidden items-center justify-between h-16 w-full">
+            <div className="flex items-center gap-0.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                className="p-2.5 text-brand-black dark:text-white hover:opacity-60 transition-opacity"
                 aria-label="Open navigation menu"
               >
                 <Menu className="w-5 h-5" />
-              </button>
-              <button
-                type="button"
-                onClick={onOpenSearch}
-                className="p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
-                aria-label="Search products"
-              >
-                <Search className="w-5 h-5" />
               </button>
             </div>
 
@@ -138,17 +130,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               <BrandTitleText size="sm" showSubtitle={false} className="shrink min-w-0" />
             </Link>
 
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-0.5 shrink-0">
+              <button
+                type="button"
+                onClick={onOpenSearch}
+                className="p-2.5 text-brand-black dark:text-white hover:opacity-60 transition-opacity"
+                aria-label="Search products"
+              >
+                <Search className="w-5 h-5" />
+              </button>
               <button
                 type="button"
                 onClick={() => setWishlistModalOpen(true)}
-                className="relative p-2 rounded-xl text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                className="relative p-2.5 text-brand-black dark:text-white hover:opacity-60 transition-opacity"
                 aria-label={`View Wishlist (${wishlistCount} items)`}
                 title="View Wishlist"
               >
                 <Heart className="w-5 h-5" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white font-mono text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 bg-brand-red text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
                     {wishlistCount}
                   </span>
                 )}
@@ -156,57 +156,56 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </div>
           </div>
 
-          {/* DESKTOP HEADER (hidden on mobile, lg:flex) - HIGH-FASHION CHK STYLE MINIMALIST CENTERPIECE */}
-          <div className="hidden lg:flex items-center justify-between h-20 relative">
+          {/* DESKTOP HEADER (hidden on mobile, lg:flex) */}
+          <div className="hidden lg:flex items-center justify-between h-[72px] relative">
             
-            {/* LEFT NAV LINKS (Spaced out, clean tracking) */}
-            <nav className="flex items-center space-x-8 xl:space-x-10 font-mono text-xs font-black tracking-widest text-neutral-800 dark:text-neutral-200 uppercase">
-              <Link href="/collections" className="hover:text-red-600 transition-colors py-2 relative group">
-                SHOP ALL
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+            {/* LEFT NAV LINKS */}
+            <nav className="flex items-center gap-8 xl:gap-10 font-body text-[13px] font-semibold tracking-wide text-brand-black dark:text-white uppercase">
+              <Link href="/collections" className="hover:opacity-50 transition-opacity duration-200 py-2">
+                Shop
               </Link>
-              <Link href="/men" className="hover:text-red-600 transition-colors py-2 relative group">
-                MEN
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              <Link href="/men" className="hover:opacity-50 transition-opacity duration-200 py-2">
+                Men
               </Link>
-              <Link href="/women" className="hover:text-red-600 transition-colors py-2 relative group">
-                WOMEN
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              <Link href="/women" className="hover:opacity-50 transition-opacity duration-200 py-2">
+                Women
               </Link>
-              <Link href="/about" className="hover:text-red-600 transition-colors py-2 relative group">
-                OUR STORY
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full" />
+              <Link href="/about" className="hover:opacity-50 transition-opacity duration-200 py-2">
+                About
               </Link>
             </nav>
 
-            {/* EXACT CENTER: BRAND LOGO & TITLE CENTERPIECE */}
+            {/* CENTER: BRAND LOGO */}
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto z-10">
-              <Link href="/" className="flex items-center gap-3 group px-4 py-1.5 rounded-2xl hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50 transition-all duration-300 relative">
-                <div className="absolute inset-0 bg-red-600/10 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                <BrandLogo size="md" className="group-hover:scale-105 transition-transform duration-300" />
-                <BrandTitleText size="md" showSubtitle={true} className="shrink min-w-0" />
+              <Link href="/" className="flex items-center gap-3 group py-2 transition-opacity duration-200 hover:opacity-80">
+                <BrandLogo size="md" className="transition-transform duration-300" />
+                <BrandTitleText size="md" showSubtitle={false} className="shrink min-w-0" />
               </Link>
             </div>
 
-            {/* RIGHT ACTIONS (Text + Minimal Icon Labels) */}
-            <div className="flex items-center space-x-8 xl:space-x-10 font-mono text-xs font-black tracking-widest text-neutral-800 dark:text-neutral-200 uppercase">
+            {/* RIGHT ACTIONS */}
+            <div className="flex items-center gap-6 xl:gap-8 font-body text-[13px] font-semibold tracking-wide text-brand-black dark:text-white uppercase">
               <button
                 type="button"
                 onClick={onOpenSearch}
                 aria-label="Open search dialog"
-                className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5"
+                className="hover:opacity-50 transition-opacity duration-200 py-2"
               >
-                <span>SEARCH</span>
-                <Search className="w-3.5 h-3.5 text-neutral-400" />
+                <Search className="w-[18px] h-[18px]" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setWishlistModalOpen(true)}
                 aria-label={`Open Wishlist (${wishlistCount} items)`}
-                className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5 relative"
+                className="hover:opacity-50 transition-opacity duration-200 py-2 relative"
               >
-                <span>WISHLIST ({wishlistCount})</span>
+                <Heart className="w-[18px] h-[18px]" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-2 bg-brand-red text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
               </button>
 
               <div className="relative">
@@ -216,31 +215,29 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                   onMouseEnter={() => setUserDropdownOpen(true)}
                   aria-label="Open Account Menu"
                   aria-expanded={userDropdownOpen}
-                  className="hover:text-red-600 transition-colors py-2 flex items-center gap-1.5"
+                  className="hover:opacity-50 transition-opacity duration-200 py-2 flex items-center gap-1"
                 >
-                  <span>ACCOUNT</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
+                  <UserIcon className="w-[18px] h-[18px]" />
                 </button>
 
-                {/* Account Dropdown Popover Box */}
+                {/* Account Dropdown */}
                 {userDropdownOpen && (
                   <div
                     onMouseLeave={() => setUserDropdownOpen(false)}
-                    className="absolute right-0 top-full mt-3 w-72 bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-xl p-5 space-y-4 z-50 font-mono text-xs animate-in fade-in zoom-in-95 duration-150 select-none"
+                    className="absolute right-0 top-full mt-3 w-72 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl p-5 space-y-4 z-50 font-body text-xs animate-fade-in select-none"
                   >
-                    {/* Top Accent Pill */}
-                    <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2.5">
-                      <span className="text-[9px] font-mono font-black text-red-600 uppercase tracking-widest">
-                        BLISS BALANCE • ACCOUNT
+                    {/* Top accent */}
+                    <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
+                      <span className="text-[10px] font-semibold text-brand-muted uppercase tracking-widest">
+                        Account
                       </span>
-                      <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
                     </div>
 
                     {currentUser ? (
                       <>
                         <div className="space-y-1">
-                          <p className="text-[9px] font-mono font-bold text-neutral-400 uppercase">LOGGED IN AS</p>
-                          <p className="text-xs font-black text-neutral-950 dark:text-white truncate">
+                          <p className="text-[10px] font-medium text-brand-stone uppercase tracking-wide">Signed in as</p>
+                          <p className="text-sm font-semibold text-brand-black dark:text-white truncate">
                             {currentUser.displayName || currentUser.email || 'Customer'}
                           </p>
                         </div>
@@ -248,27 +245,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                         <Link
                           href="/account"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center gap-2.5 p-3 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-950 hover:text-white dark:hover:bg-neutral-100 dark:hover:text-black font-black uppercase text-xs rounded-xl border border-neutral-200 dark:border-neutral-800 transition-all duration-200"
+                          className="flex items-center gap-2.5 p-3 bg-neutral-50 dark:bg-neutral-900 hover:bg-brand-black hover:text-white dark:hover:bg-white dark:hover:text-black font-semibold text-xs rounded-xl transition-all duration-200"
                         >
-                          <UserIcon className="w-4 h-4 text-red-600" />
-                          <span>MY ORDERS & PROFILE</span>
+                          <UserIcon className="w-4 h-4" />
+                          <span>My Orders & Profile</span>
                         </Link>
 
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center justify-center gap-2 p-2.5 bg-red-600/10 hover:bg-red-600 hover:text-white font-black uppercase text-xs text-red-600 rounded-xl border border-red-600/30 transition-all duration-200"
+                          className="w-full flex items-center justify-center gap-2 p-2.5 text-brand-red hover:bg-brand-red hover:text-white font-semibold text-xs rounded-xl border border-brand-red/20 transition-all duration-200"
                         >
                           <LogOut className="w-4 h-4" />
-                          <span>SIGN OUT</span>
+                          <span>Sign Out</span>
                         </button>
                       </>
                     ) : (
                       <>
                         <div className="space-y-1.5">
-                          <p className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white tracking-tight">
-                            WELCOME TO BLISS BALANCE
+                          <p className="font-heading text-sm font-bold text-brand-black dark:text-white">
+                            Welcome
                           </p>
-                          <p className="text-[11px] text-neutral-500 font-bold leading-relaxed">
+                          <p className="text-[11px] text-brand-stone leading-relaxed">
                             Sign in to save wishlist items, track orders and manage delivery addresses.
                           </p>
                         </div>
@@ -278,9 +275,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                             setUserDropdownOpen(false);
                             setAuthModalOpen(true);
                           }}
-                          className="w-full py-3 bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest rounded-xl transition-all duration-200 shadow-md border border-red-600 active:scale-98"
+                          className="w-full py-3 bg-brand-black dark:bg-white text-white dark:text-black font-semibold text-xs uppercase tracking-wider rounded-full transition-all duration-200 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red"
                         >
-                          SIGN IN / REGISTER
+                          Sign In / Register
                         </button>
                       </>
                     )}
@@ -293,158 +290,163 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
         </div>
       </header>
 
-      {/* FULL SCREEN ACCORDION MOBILE DRAWER WITH CUBIC-BEZIER FLUID ANIMATION */}
+      {/* FULL SCREEN MOBILE DRAWER */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-white dark:bg-black text-neutral-950 dark:text-white flex flex-col font-mono animate-in slide-in-from-right duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-white dark:bg-black text-brand-black dark:text-white flex flex-col font-body overflow-y-auto animate-fade-in">
           
           {/* Drawer Top Header */}
-          <div className="p-4 sm:p-6 border-b-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-3"
             >
               <BrandLogo size="md" />
-              <BrandTitleText size="md" showSubtitle={true} />
+              <BrandTitleText size="md" showSubtitle={false} />
             </Link>
 
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2 rounded-full border-2 border-neutral-900 dark:border-neutral-100 hover:bg-red-600 hover:text-white transition-colors"
+              className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
               aria-label="Close menu"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Drawer Nav Content */}
-          <div className="flex-1 p-6 sm:p-8 space-y-6">
+          <div className="flex-1 px-6 py-8 space-y-2">
             
-            {/* Quick Auth Banner in Mobile Drawer */}
-            <div className="p-4 bg-neutral-100 dark:bg-neutral-900 rounded-none border-2 border-neutral-900 dark:border-neutral-100 flex items-center justify-between">
-              <div>
-                {currentUser ? (
-                  <>
-                    <p className="text-[10px] font-black text-red-600 uppercase">LOGGED IN AS</p>
-                    <p className="text-xs font-bold truncate max-w-[180px]">
-                      {currentUser.displayName || currentUser.email || 'Customer'}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-xs font-black uppercase">ACCOUNT ACCESS</p>
-                    <p className="text-[10px] text-neutral-500 font-bold">Track orders & save wishlist</p>
-                  </>
-                )}
-              </div>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (currentUser) {
-                    window.location.href = '/account';
-                  } else {
+            {/* Quick Auth Banner */}
+            {!currentUser && (
+              <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-950 rounded-2xl flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold">Account</p>
+                  <p className="text-xs text-brand-stone">Track orders & wishlist</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
                     setAuthModalOpen(true);
-                  }
-                }}
-                className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-black uppercase border border-red-600"
-              >
-                {currentUser ? 'MY ACCOUNT' : 'LOGIN / REGISTER'}
-              </button>
-            </div>
+                  }}
+                  className="px-4 py-2 bg-brand-black dark:bg-white text-white dark:text-black text-[11px] font-semibold uppercase tracking-wider rounded-full"
+                >
+                  Sign In
+                </button>
+              </div>
+            )}
 
-            {/* Accordion Links */}
-            <div className="space-y-4 font-mono text-sm font-black uppercase">
+            {currentUser && (
+              <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-950 rounded-2xl flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-medium text-brand-stone uppercase tracking-wide">Signed in</p>
+                  <p className="text-sm font-semibold truncate max-w-[180px]">
+                    {currentUser.displayName || currentUser.email || 'Customer'}
+                  </p>
+                </div>
+                <Link
+                  href="/account"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2 bg-brand-black dark:bg-white text-white dark:text-black text-[11px] font-semibold uppercase tracking-wider rounded-full"
+                >
+                  Account
+                </Link>
+              </div>
+            )}
+
+            {/* Navigation Links */}
+            <div className="space-y-0">
               
               <Link
                 href="/collections"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 border-b border-neutral-200 dark:border-neutral-800 hover:text-red-600 transition-colors"
+                className="block py-4 text-2xl font-heading font-bold tracking-tight border-b border-neutral-100 dark:border-neutral-900 hover:opacity-60 transition-opacity"
               >
-                SHOP ALL FOOTWEAR
+                Shop All
               </Link>
 
               {/* MEN ACCORDION */}
-              <div className="border-b border-neutral-200 dark:border-neutral-800">
+              <div className="border-b border-neutral-100 dark:border-neutral-900">
                 <button
                   onClick={() => toggleAccordion('men')}
-                  className="w-full py-3 flex items-center justify-between text-left hover:text-red-600 transition-colors"
+                  className="w-full py-4 flex items-center justify-between text-left text-2xl font-heading font-bold tracking-tight hover:opacity-60 transition-opacity"
                 >
-                  <span>MEN'S COLLECTION</span>
+                  <span>Men</span>
                   {openAccordion === 'men' ? (
-                    <Minus className="w-4 h-4 text-red-600" />
+                    <Minus className="w-5 h-5 text-brand-stone" />
                   ) : (
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5 text-brand-stone" />
                   )}
                 </button>
                 {openAccordion === 'men' && (
-                  <div className="pl-4 pb-3 space-y-2 text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                  <div className="pl-1 pb-4 space-y-3 text-base text-brand-muted">
                     <Link
                       href="/men"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      ALL MEN'S FOOTWEAR
+                      All Men&apos;s Footwear
                     </Link>
                     <Link
                       href="/collections/slippers"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      SLIPPERS & FLIP-FLOPS
+                      Slippers & Flip-Flops
                     </Link>
                     <Link
                       href="/collections/slides"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      SLIDES & CLOGS
+                      Slides & Clogs
                     </Link>
                     <Link
                       href="/collections/casual-shoes"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      SNEAKERS & CASUAL SHOES
+                      Sneakers & Casual
                     </Link>
                   </div>
                 )}
               </div>
 
               {/* WOMEN ACCORDION */}
-              <div className="border-b border-neutral-200 dark:border-neutral-800">
+              <div className="border-b border-neutral-100 dark:border-neutral-900">
                 <button
                   onClick={() => toggleAccordion('women')}
-                  className="w-full py-3 flex items-center justify-between text-left hover:text-red-600 transition-colors"
+                  className="w-full py-4 flex items-center justify-between text-left text-2xl font-heading font-bold tracking-tight hover:opacity-60 transition-opacity"
                 >
-                  <span>WOMEN'S COLLECTION</span>
+                  <span>Women</span>
                   {openAccordion === 'women' ? (
-                    <Minus className="w-4 h-4 text-red-600" />
+                    <Minus className="w-5 h-5 text-brand-stone" />
                   ) : (
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5 text-brand-stone" />
                   )}
                 </button>
                 {openAccordion === 'women' && (
-                  <div className="pl-4 pb-3 space-y-2 text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                  <div className="pl-1 pb-4 space-y-3 text-base text-brand-muted">
                     <Link
                       href="/women"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      ALL WOMEN'S FOOTWEAR
+                      All Women&apos;s Footwear
                     </Link>
                     <Link
                       href="/collections/slides"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      SLIDES & SLIPPERS
+                      Slides & Slippers
                     </Link>
                     <Link
                       href="/collections/sandals"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block py-1 hover:text-red-600"
+                      className="block py-1 hover:text-brand-black dark:hover:text-white transition-colors"
                     >
-                      SANDALS & FLATS
+                      Sandals & Flats
                     </Link>
                   </div>
                 )}
@@ -453,41 +455,41 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
               <Link
                 href="/about"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 border-b border-neutral-200 dark:border-neutral-800 hover:text-red-600 transition-colors"
+                className="block py-4 text-2xl font-heading font-bold tracking-tight border-b border-neutral-100 dark:border-neutral-900 hover:opacity-60 transition-opacity"
               >
-                OUR STORY / ABOUT US
+                About
               </Link>
             </div>
 
-            {/* Social Icons & Contact */}
-            <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800 space-y-4">
-              <p className="text-xs font-mono font-black uppercase tracking-widest text-red-600">
-                CONNECT WITH BLISS BALANCE
+            {/* Social & Contact */}
+            <div className="pt-8 space-y-4">
+              <p className="text-xs font-medium text-brand-stone uppercase tracking-widest">
+                Follow Us
               </p>
-              <div className="flex items-center gap-4 text-neutral-700 dark:text-neutral-300">
+              <div className="flex items-center gap-3">
                 <a
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-full hover:border-red-600 hover:text-red-600 transition-colors"
+                  className="p-2.5 border border-neutral-200 dark:border-neutral-800 rounded-full hover:border-brand-black dark:hover:border-white transition-colors"
                 >
-                  <Instagram className="w-5 h-5" />
+                  <Instagram className="w-4 h-4" />
                 </a>
                 <a
                   href="https://facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-full hover:border-red-600 hover:text-red-600 transition-colors"
+                  className="p-2.5 border border-neutral-200 dark:border-neutral-800 rounded-full hover:border-brand-black dark:hover:border-white transition-colors"
                 >
-                  <Facebook className="w-5 h-5" />
+                  <Facebook className="w-4 h-4" />
                 </a>
                 <a
                   href="https://youtube.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 border border-neutral-300 dark:border-neutral-700 rounded-full hover:border-red-600 hover:text-red-600 transition-colors"
+                  className="p-2.5 border border-neutral-200 dark:border-neutral-800 rounded-full hover:border-brand-black dark:hover:border-white transition-colors"
                 >
-                  <Youtube className="w-5 h-5" />
+                  <Youtube className="w-4 h-4" />
                 </a>
               </div>
             </div>
@@ -495,9 +497,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
           </div>
 
           {/* Drawer Footer */}
-          <div className="p-6 border-t-2 border-neutral-900 dark:border-neutral-100 bg-neutral-50 dark:bg-neutral-900 text-center font-mono text-xs">
-            <p className="font-bold text-neutral-500">
-              © {new Date().getFullYear()} BLISS BALANCE FOOTWEAR. ALL RIGHTS RESERVED.
+          <div className="px-6 py-5 border-t border-neutral-200 dark:border-neutral-800 text-center">
+            <p className="text-xs text-brand-stone">
+              © {new Date().getFullYear()} Bliss Balance Footwear
             </p>
           </div>
 

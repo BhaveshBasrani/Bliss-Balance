@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = await fetchSupabaseSingleSKU(params.id);
   const siteUrl = 'https://blissbalance.co';
 
-  let jsonLd = null;
+  let jsonLd: any = null;
   if (product) {
     const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') ? product.imageUrl : `${siteUrl}/og-image.jpg`;
     jsonLd = {

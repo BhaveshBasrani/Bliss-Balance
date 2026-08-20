@@ -4,26 +4,28 @@ import React from 'react';
 
 export const PressMarquee: React.FC = () => {
   const storePartners = [
-    'AMAZON',
-    'FLIPKART',
-    'MYNTRA',
+    { name: 'AMAZON', desc: 'Prime Delivery & Verified Store' },
+    { name: 'FLIPKART', desc: 'Plus Assured Partner' },
+    { name: 'MYNTRA', desc: 'Curated Fashion Drop' },
   ];
 
   return (
-    <section className="py-8 bg-white dark:bg-black border-b-2 border-neutral-900 dark:border-neutral-800 overflow-hidden select-none font-mono">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-        <span className="text-[10px] font-black tracking-[0.35em] text-red-600 uppercase block">
-          OFFICIAL ONLINE STORES & PARTNERS
+    <section className="py-14 sm:py-20 bg-brand-warm dark:bg-black border-y border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden select-none font-body">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 text-center space-y-6">
+        <span className="text-[11px] font-medium tracking-[0.25em] text-brand-stone uppercase block">
+          Available on India&apos;s Leading Platforms
         </span>
 
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-neutral-900 dark:text-neutral-100 font-heading font-black text-lg sm:text-2xl tracking-tighter">
+        <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-20 text-brand-black dark:text-white">
           {storePartners.map((store) => (
-            <span
-              key={store}
-              className="hover:text-red-600 transition-colors uppercase border-b-2 border-transparent hover:border-red-600 cursor-default"
-            >
-              {store}
-            </span>
+            <div key={store.name} className="flex flex-col items-center group cursor-default transition-transform hover:-translate-y-0.5">
+              <span className="font-heading font-extrabold text-2xl sm:text-3xl tracking-tight text-neutral-800 dark:text-neutral-200 group-hover:text-brand-black dark:group-hover:text-white transition-colors duration-200">
+                {store.name}
+              </span>
+              <span className="text-[10px] text-brand-stone uppercase tracking-wider font-medium mt-0.5">
+                {store.desc}
+              </span>
+            </div>
           ))}
         </div>
       </div>
