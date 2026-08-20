@@ -75,6 +75,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     const loadedSkus = getStoredSKUs();
     setAllSkus(loadedSkus);
     
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const urlColor = searchParams?.get('color');
+
     const found = loadedSkus.find(s => 
       s.id.toLowerCase() === targetId || 
       encodeURIComponent(s.id).toLowerCase() === targetId
@@ -82,13 +85,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
     if (found) {
       setSku(found);
-      const activeColorImg = (found.colorVariants && found.colorVariants.length > 0 && found.colorVariants[0].imageUrl && found.colorVariants[0].imageUrl.trim() !== '')
-        ? found.colorVariants[0].imageUrl
+      const matchedCv = found.colorVariants?.find(
+        cv => urlColor && cv.name.toLowerCase() === urlColor.toLowerCase()
+      );
+      const activeCv = matchedCv || (found.colorVariants && found.colorVariants.length > 0 ? found.colorVariants[0] : null);
+      const activeColorImg = (activeCv && activeCv.imageUrl && activeCv.imageUrl.trim() !== '')
+        ? activeCv.imageUrl
         : (found.imageUrl || '');
 
       setSelectedImage(activeColorImg);
-      if (found.colorVariants && found.colorVariants.length > 0) {
-        setSelectedColor(found.colorVariants[0].name);
+      if (activeCv) {
+        setSelectedColor(activeCv.name);
       }
       setIsLoading(false);
     }
@@ -98,13 +105,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       fetchSingleProduct(productId).then(cloudFound => {
         if (cloudFound) {
           setSku(cloudFound);
-          const cloudImg = (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && cloudFound.colorVariants[0].imageUrl && cloudFound.colorVariants[0].imageUrl.trim() !== '')
-            ? cloudFound.colorVariants[0].imageUrl
+          const matchedCv = cloudFound.colorVariants?.find(
+            cv => urlColor && cv.name.toLowerCase() === urlColor.toLowerCase()
+          );
+          const activeCv = matchedCv || (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 ? cloudFound.colorVariants[0] : null);
+          const cloudImg = (activeCv && activeCv.imageUrl && activeCv.imageUrl.trim() !== '')
+            ? activeCv.imageUrl
             : (cloudFound.imageUrl || '');
 
-          setSelectedImage(prev => (prev && prev.trim() !== '') ? prev : cloudImg);
-          if (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 && !selectedColor) {
-            setSelectedColor(cloudFound.colorVariants[0].name);
+          setSelectedImage(cloudImg);
+          if (activeCv) {
+            setSelectedColor(activeCv.name);
           }
         }
         setIsLoading(false);
@@ -372,7 +383,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {allGalleryThumbnails.map((item, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedImage(item.url)}
+                  onClick={() => {
+                    setSelectedImage(item.url);
+                    const matchedCv = sku.colorVariants?.find(cv => cv.imageUrl === item.url || cv.name.toLowerCase() === item.label.toLowerCase());
+                    if (matchedCv) {
+                      setSelectedColor(matchedCv.name);
+                    }
+                  }}
                   className={`relative w-20 h-20 rounded-xl overflow-hidden border transition-all shrink-0 p-1 bg-white dark:bg-black ${
                     selectedImage === item.url 
                       ? 'border-red-600 ring-2 ring-red-600/30' 
@@ -455,6 +472,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                         onClick={() => {
                           setSelectedColor(cv.name);
                           if (cv.imageUrl) setSelectedImage(cv.imageUrl);
+                          try {
+                            const newUrl = `${window.location.pathname}?color=${encodeURIComponent(cv.name)}`;
+                            window.history.replaceState(null, '', newUrl);
+                          } catch (e) {}
                         }}
                         className={`relative rounded-xl overflow-hidden p-2 transition-all flex flex-col items-center gap-1 bg-white dark:bg-black border ${
                           isSelected

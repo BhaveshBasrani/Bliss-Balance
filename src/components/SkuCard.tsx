@@ -18,6 +18,8 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
   const [activeColor, setActiveColor] = useState<ColorVariant | null>(
     sku.colorVariants && sku.colorVariants.length > 0 ? sku.colorVariants[0] : null
   );
+  const [previewColor, setPreviewColor] = useState<ColorVariant | null>(null);
+  const [isSwatchesHovered, setIsSwatchesHovered] = useState(false);
 
   useEffect(() => {
     try {
@@ -28,6 +30,15 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
       }
     } catch (e) {}
   }, [sku.id]);
+
+  useEffect(() => {
+    if (sku.colorVariants && sku.colorVariants.length > 0) {
+      setActiveColor(sku.colorVariants[0]);
+    } else {
+      setActiveColor(null);
+    }
+    setPreviewColor(null);
+  }, [sku.id, sku.colorVariants]);
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,9 +62,10 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
     ? Math.round(((sku.originalPrice - sku.price) / sku.originalPrice) * 100)
     : 0;
 
-  // Resolve Primary Active Image
-  const currentImage = activeColor && activeColor.imageUrl
-    ? activeColor.imageUrl
+  // Resolve Effective Color & Image
+  const effectiveColor = previewColor || activeColor;
+  const currentImage = effectiveColor && effectiveColor.imageUrl
+    ? effectiveColor.imageUrl
     : sku.imageUrl;
 
   // Resolve Secondary Hover Image with Smart Fallbacks
@@ -65,6 +77,13 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
     ? sku.colorVariants.find(cv => cv.imageUrl && cv.imageUrl !== currentImage)!.imageUrl
     : null;
 
+  // Only show hover angle image if:
+  // 1) Card is hovered
+  // 2) User is not actively previewing or hovering on color dots
+  // 3) Either no custom variant is picked OR active variant is the default first one
+  const isDefaultVariantActive = !activeColor || (sku.colorVariants && sku.colorVariants.length > 0 && activeColor.name === sku.colorVariants[0].name);
+  const showHoverImage = isHovered && !isSwatchesHovered && !previewColor && isDefaultVariantActive && Boolean(hoverImage);
+
   const handleMouseEnter = () => {
     setIsHovered(true);
     prefetchProduct(sku);
@@ -74,13 +93,21 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
     ? sku.subtitle
     : sku.title;
 
+  const productUrl = activeColor
+    ? `/product/${encodeURIComponent(sku.id)}?color=${encodeURIComponent(activeColor.name)}`
+    : `/product/${encodeURIComponent(sku.id)}`;
+
   return (
     <div
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsSwatchesHovered(false);
+        setPreviewColor(null);
+      }}
       className="group relative rounded-2xl overflow-hidden bg-white dark:bg-[#121212] border border-neutral-200/70 dark:border-neutral-800/80 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all duration-300 flex flex-col justify-between hover:shadow-lg dark:hover:shadow-neutral-900/50"
     >
-      <Link href={`/product/${sku.id}`} className="block flex-1 flex flex-col">
+      <Link href={productUrl} className="block flex-1 flex flex-col">
         
         {/* Full-Bleed Product Image Container */}
         <div className="relative aspect-square w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
@@ -88,15 +115,16 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
           {/* Primary Full Image */}
           {currentImage ? (
             <img
+              key={currentImage}
               src={currentImage}
-              alt={sku.title}
+              alt={`${sku.title} ${effectiveColor ? effectiveColor.name : ''}`}
               loading="lazy"
               decoding="async"
-              className={`w-full h-full object-cover transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                isHovered && hoverImage
+              className={`w-full h-full object-cover transition-all duration-300 ease-out ${
+                showHoverImage
                   ? 'opacity-0 scale-[1.04]'
                   : isHovered
-                  ? 'scale-[1.06]'
+                  ? 'scale-[1.05]'
                   : 'opacity-100 scale-100'
               }`}
             />
@@ -107,15 +135,13 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
           )}
 
           {/* Secondary Hover Image Crossfade */}
-          {hoverImage && (
+          {hoverImage && showHoverImage && (
             <img
               src={hoverImage}
               alt={`${sku.title} preview`}
               loading="lazy"
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
-                isHovered ? 'opacity-100 scale-[1.04]' : 'opacity-0 scale-100'
-              }`}
+              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out scale-[1.04] opacity-100 pointer-events-none"
             />
           )}
 
@@ -183,22 +209,27 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               {displayName}
             </h3>
 
-            {/* Model Subtitle / Code */}
+            {/* Model Subtitle / Code & Active Color indicator */}
             <p className="text-[11px] text-brand-stone line-clamp-1 font-medium">
-              Model {sku.title} • Anti-Skid Grip
+              Model {sku.title} • {effectiveColor ? effectiveColor.name : 'Anti-Skid Grip'}
             </p>
 
             {/* Luxury Interactive Color Dots */}
             {Array.isArray(sku?.colorVariants) && sku.colorVariants.length > 0 && (
               <div
                 className="flex items-center gap-1.5 pt-2 relative z-20"
+                onMouseEnter={() => setIsSwatchesHovered(true)}
+                onMouseLeave={() => {
+                  setIsSwatchesHovered(false);
+                  setPreviewColor(null);
+                }}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
               >
                 {sku.colorVariants.map((cv) => {
-                  const isSelected = activeColor?.name === cv.name;
+                  const isSelected = (previewColor?.name || activeColor?.name) === cv.name;
                   return (
                     <button
                       key={cv.name}
@@ -208,14 +239,21 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                         e.preventDefault();
                         e.stopPropagation();
                         setActiveColor(cv);
+                        setPreviewColor(null);
                       }}
                       onTouchEnd={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         setActiveColor(cv);
+                        setPreviewColor(null);
                       }}
-                      onMouseEnter={() => setActiveColor(cv)}
-                      className={`p-0.5 rounded-full transition-all duration-200 ${
+                      onMouseEnter={() => {
+                        setPreviewColor(cv);
+                      }}
+                      onMouseLeave={() => {
+                        setPreviewColor(null);
+                      }}
+                      className={`p-0.5 rounded-full transition-all duration-200 cursor-pointer ${
                         isSelected
                           ? 'ring-2 ring-brand-black dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-[#121212] scale-110'
                           : 'opacity-70 hover:opacity-100 hover:scale-105'

@@ -7,8 +7,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Slippers",
-    "price": 848.0,
-    "originalPrice": 1499.0,
+    "price": 848,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/61bANM0ByGL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/812VT6suJzL._SL1500_.jpg",
     "galleryImages": [
@@ -128,8 +128,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Slippers",
-    "price": 849.0,
-    "originalPrice": 1499.0,
+    "price": 849,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/P/B0GY1PHLRF.01._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/P/B0GY1PHLRF.01._SL1500_.jpg",
     "galleryImages": [
@@ -205,8 +205,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Slippers",
-    "price": 890.0,
-    "originalPrice": 1499.0,
+    "price": 890,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71+jn9aWs+L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81GIYdoJ2YL._SL1500_.jpg",
     "galleryImages": [
@@ -314,8 +314,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Slippers",
-    "price": 848.0,
-    "originalPrice": 1499.0,
+    "price": 848,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71xgtTVCcZL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81sny20W0NL._SL1500_.jpg",
     "galleryImages": [
@@ -417,8 +417,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Ortho-Friendly Adjustable Doctor Sandal",
     "gender": "Men",
     "category": "Sandals",
-    "price": 1695.0,
-    "originalPrice": 2999.0,
+    "price": 1695,
+    "originalPrice": 2999,
     "imageUrl": "https://m.media-amazon.com/images/I/81DmSyNpZvL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71c5oXCG-bL._SL1500_.jpg",
     "galleryImages": [
@@ -526,8 +526,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Slippers",
-    "price": 1249.0,
-    "originalPrice": 2499.0,
+    "price": 1249,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/71xsLyWvwAL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/715MCKNxL7L._SL1500_.jpg",
     "galleryImages": [
@@ -636,8 +636,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Slippers",
-    "price": 1249.0,
-    "originalPrice": 2499.0,
+    "price": 1249,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/71lHkcBMShL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71WpvoJrC7L._SL1500_.jpg",
     "galleryImages": [
@@ -746,8 +746,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Comfort Ortho Friendly Lightweight Walking Sandals",
     "gender": "Men",
     "category": "Sandals",
-    "price": 1375.0,
-    "originalPrice": 2499.0,
+    "price": 1375,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/81+VG3qdASL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81-3yDBC-CL._SL1500_.jpg",
     "galleryImages": [
@@ -867,8 +867,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Men",
     "category": "Slides",
-    "price": 1249.0,
-    "originalPrice": 2499.0,
+    "price": 1249,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/81cvJOsfrtL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/811GPbuSLIL._SL1500_.jpg",
     "galleryImages": [
@@ -902,7 +902,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "REDDISH TAN",
-        "hex": "#8B4513",
+        "hex": "#8B2500",
         "imageUrl": "https://m.media-amazon.com/images/I/81cvJOsfrtL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -982,8 +982,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Ortho-Friendly Adjustable Doctor Sandal",
     "gender": "Men",
     "category": "Sandals",
-    "price": 1398.0,
-    "originalPrice": 2599.0,
+    "price": 1398,
+    "originalPrice": 2599,
     "imageUrl": "https://m.media-amazon.com/images/I/71H-0QsYk+L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71zDR7o2qYL._SL1500_.jpg",
     "galleryImages": [
@@ -1100,8 +1100,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Sandals",
-    "price": 998.0,
-    "originalPrice": 1999.0,
+    "price": 998,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/71C90Bja4ZL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71h635fa4lL._SL1500_.jpg",
     "galleryImages": [
@@ -1217,8 +1217,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Men",
     "category": "Sandals",
-    "price": 999.0,
-    "originalPrice": 1999.0,
+    "price": 999,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/71W2lzPSY-L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71ufYwb54NL._SL1500_.jpg",
     "galleryImages": [
@@ -1334,8 +1334,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Maharashtrian Ethnic Kolhapuri & Puneri Chappal",
     "gender": "Men",
     "category": "Kolhapuri & Puneri Chappal",
-    "price": 1499.0,
-    "originalPrice": 2999.0,
+    "price": 1499,
+    "originalPrice": 2999,
     "imageUrl": "https://m.media-amazon.com/images/I/61MoB2vDztL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81GiCBdAm2L._SL1500_.jpg",
     "galleryImages": [
@@ -1378,7 +1378,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "REDDISH TAN",
-        "hex": "#8B4513",
+        "hex": "#8B2500",
         "imageUrl": "https://m.media-amazon.com/images/I/71nCFslprlL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -1464,8 +1464,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Unisex",
     "category": "Slippers",
-    "price": 1299.0,
-    "originalPrice": 2499.0,
+    "price": 1299,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/71GEv9qLqrL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71PRsl+32nL._SL1500_.jpg",
     "galleryImages": [
@@ -1561,8 +1561,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Ortho-Friendly Adjustable Doctor Sandal",
     "gender": "Men",
     "category": "Sandals",
-    "price": 998.0,
-    "originalPrice": 1999.0,
+    "price": 998,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/717OFKYYK9L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/712SYq1F1IL._SL1500_.jpg",
     "galleryImages": [
@@ -1689,9 +1689,9 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Hybrid Streetwear Sneakers with Cushion Outsole",
     "gender": "Men",
     "category": "Sneakers",
-    "price": 1785.0,
-    "originalPrice": 3499.0,
-    "imageUrl": "https://m.media-amazon.com/images/I/71bXgmDsjfL._SL1500_.jpg",
+    "price": 1785,
+    "originalPrice": 3499,
+    "imageUrl": "https://m.media-amazon.com/images/I/71c3ldMBAyL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71OBoBY4JoL._SL1500_.jpg",
     "galleryImages": [
       "https://m.media-amazon.com/images/I/71bXgmDsjfL._SL1500_.jpg",
@@ -1723,15 +1723,15 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     ],
     "colorVariants": [
       {
-        "name": "DEEP OLIVE",
-        "hex": "#3F6212",
-        "imageUrl": "https://m.media-amazon.com/images/I/71bXgmDsjfL._SL1500_.jpg",
-        "amazonUrl": "page_source_exact_colour_variant"
-      },
-      {
         "name": "DEEP BROWN",
         "hex": "#5A381E",
         "imageUrl": "https://m.media-amazon.com/images/I/71c3ldMBAyL._SL1500_.jpg",
+        "amazonUrl": "page_source_exact_colour_variant"
+      },
+      {
+        "name": "DEEP OLIVE",
+        "hex": "#3F6212",
+        "imageUrl": "https://m.media-amazon.com/images/I/71bXgmDsjfL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
@@ -1792,8 +1792,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Ortho-Friendly Adjustable Doctor Sandal",
     "gender": "Men",
     "category": "Sandals",
-    "price": 1375.0,
-    "originalPrice": 2999.0,
+    "price": 1375,
+    "originalPrice": 2999,
     "imageUrl": "https://m.media-amazon.com/images/I/81CEKZxx9aL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/91YpZzSCZUL._SL1500_.jpg",
     "galleryImages": [
@@ -1827,7 +1827,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "REDDISH TAN",
-        "hex": "#8B4513",
+        "hex": "#8B2500",
         "imageUrl": "https://m.media-amazon.com/images/I/81CEKZxx9aL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -1895,8 +1895,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 1447.0,
-    "originalPrice": 2499.0,
+    "price": 1447,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/71rjxEaWiNL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71fBi6cyX4L._SL1500_.jpg",
     "galleryImages": [
@@ -2011,8 +2011,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Comfort Ortho Friendly Lightweight Walking Sandals",
     "gender": "Women",
     "category": "Sandals",
-    "price": 1449.0,
-    "originalPrice": 2499.0,
+    "price": 1449,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/81CYZsRtt9L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81htjI9gK7L._SL1500_.jpg",
     "galleryImages": [
@@ -2127,8 +2127,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Fashionable Lightweight Clogs with Cushioned Backstrap",
     "gender": "Women",
     "category": "Clogs",
-    "price": 689.0,
-    "originalPrice": 1999.0,
+    "price": 689,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/71YydHhuFSL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71khocMrxzL._SL1500_.jpg",
     "galleryImages": [
@@ -2173,7 +2173,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "DUSTY PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71b2U54R6dL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       }
@@ -2223,9 +2223,9 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Unisex",
     "category": "Slippers",
-    "price": 748.0,
-    "originalPrice": 2499.0,
-    "imageUrl": "https://m.media-amazon.com/images/I/71HlyUPhqiL._SL1500_.jpg",
+    "price": 748,
+    "originalPrice": 2499,
+    "imageUrl": "https://m.media-amazon.com/images/I/71YRpz4oPVL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81x3-1cCTlL._SL1500_.jpg",
     "galleryImages": [
       "https://m.media-amazon.com/images/I/71HlyUPhqiL._SL1500_.jpg",
@@ -2256,16 +2256,16 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     ],
     "colorVariants": [
       {
+        "name": "NAVY SKY",
+        "hex": "#BAE6FD",
+        "imageUrl": "https://m.media-amazon.com/images/I/71YRpz4oPVL._SL1500_.jpg",
+        "amazonUrl": "https://www.amazon.in/dp/B0H1X3H8QL"
+      },
+      {
         "name": "BEIGE BROWN",
         "hex": "#5A381E",
         "imageUrl": "https://m.media-amazon.com/images/I/71HlyUPhqiL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H1X88SLK"
-      },
-      {
-        "name": "NAVY SKY",
-        "hex": "#1E3A8A",
-        "imageUrl": "https://m.media-amazon.com/images/I/71YRpz4oPVL._SL1500_.jpg",
-        "amazonUrl": "https://www.amazon.in/dp/B0H1X3H8QL"
       },
       {
         "name": "LIGHTGREY NAVY",
@@ -2325,8 +2325,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Unisex",
     "category": "Slippers",
-    "price": 699.0,
-    "originalPrice": 2499.0,
+    "price": 699,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/71p77+cS8ZL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81EBH2lQPVL._SL1500_.jpg",
     "galleryImages": [
@@ -2421,8 +2421,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Men",
     "category": "Slippers",
-    "price": 669.0,
-    "originalPrice": 2499.0,
+    "price": 669,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/71NXwrEmicL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71OxTXmnb5L._SL1500_.jpg",
     "galleryImages": [
@@ -2517,8 +2517,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Hybrid Streetwear Sneakers with Cushion Outsole",
     "gender": "Men",
     "category": "Sneakers",
-    "price": 1675.0,
-    "originalPrice": 4499.0,
+    "price": 1675,
+    "originalPrice": 4499,
     "imageUrl": "https://m.media-amazon.com/images/I/7154SuEEXoL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81aFA5wHKNL._SL1500_.jpg",
     "galleryImages": [
@@ -2551,7 +2551,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "IVORY BEIGE",
-        "hex": "#D2B48C",
+        "hex": "#F5EBE1",
         "imageUrl": "https://m.media-amazon.com/images/I/7154SuEEXoL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -2607,8 +2607,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 949.0,
-    "originalPrice": 1499.0,
+    "price": 949,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71pCjmU-5tL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71H54J-jMuL._SL1500_.jpg",
     "galleryImages": [
@@ -2717,8 +2717,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 949.0,
-    "originalPrice": 1499.0,
+    "price": 949,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71x4c5qvsBL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/712mkASF4zL._SL1500_.jpg",
     "galleryImages": [
@@ -2765,7 +2765,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/81Hl1UMB33L._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7HNQDN"
       },
@@ -2833,8 +2833,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 949.0,
-    "originalPrice": 1499.0,
+    "price": 949,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71oIukw6OXL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71fX6C5YGSL._SL1500_.jpg",
     "galleryImages": [
@@ -2869,7 +2869,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/71oIukw6OXL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7GQZHP"
       },
@@ -2887,7 +2887,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71l1vnAQWGL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7DGK5T"
       },
@@ -2961,8 +2961,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 949.0,
-    "originalPrice": 1499.0,
+    "price": 949,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71sjJFt6GtL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81xE7HLvZ6L._SL1500_.jpg",
     "galleryImages": [
@@ -3003,13 +3003,13 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "CHERRY",
-        "hex": "#2A2A2A",
+        "hex": "#8B2500",
         "imageUrl": "https://m.media-amazon.com/images/I/71e5Pz7FAcL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7DNGDM"
       },
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/71FUBV8H+wL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7D44RB"
       },
@@ -3083,8 +3083,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 975.0,
-    "originalPrice": 1499.0,
+    "price": 975,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/71TeQw9RYAL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71ASXhnG1uL._SL1500_.jpg",
     "galleryImages": [
@@ -3119,7 +3119,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/71TeQw9RYAL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7PSXRB"
       },
@@ -3137,7 +3137,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/7183QXIJ8SL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7DKLMQ"
       },
@@ -3211,8 +3211,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 949.0,
-    "originalPrice": 1499.0,
+    "price": 949,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/61Ik6qUAKvL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71jNeWWgGDL._SL1500_.jpg",
     "galleryImages": [
@@ -3253,7 +3253,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/71IsqsGdc9L._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7DTSCY"
       },
@@ -3265,7 +3265,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71bufvupGxL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GV7CYLGB"
       },
@@ -3339,8 +3339,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 730.0,
-    "originalPrice": 1299.0,
+    "price": 730,
+    "originalPrice": 1299,
     "imageUrl": "https://m.media-amazon.com/images/I/71hyau-Dg5L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/714DqPQ4h9L._SL1500_.jpg",
     "galleryImages": [
@@ -3381,7 +3381,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/71fA-uzsl9L._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -3455,8 +3455,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Ortho-Friendly Adjustable Doctor Sandal",
     "gender": "Women",
     "category": "Sandals",
-    "price": 999.0,
-    "originalPrice": 1699.0,
+    "price": 999,
+    "originalPrice": 1699,
     "imageUrl": "https://m.media-amazon.com/images/I/71Ab+aQDxdL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81Bh0NA3MZL._SL1500_.jpg",
     "galleryImages": [
@@ -3497,7 +3497,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/716jMk50mIL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GT9NJ19L"
       },
@@ -3509,7 +3509,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71TgMn0pkWL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GT9NLC2X"
       },
@@ -3583,8 +3583,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Women",
     "category": "Slippers",
-    "price": 985.0,
-    "originalPrice": 1799.0,
+    "price": 985,
+    "originalPrice": 1799,
     "imageUrl": "https://m.media-amazon.com/images/I/81VPJPdcgRL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71zO-uEuKSL._SL1500_.jpg",
     "galleryImages": [
@@ -3618,7 +3618,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/81VPJPdcgRL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GSHFHT7P"
       },
@@ -3680,8 +3680,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Ortho-Friendly Adjustable Doctor Sandal",
     "gender": "Women",
     "category": "Sandals",
-    "price": 968.0,
-    "originalPrice": 1699.0,
+    "price": 968,
+    "originalPrice": 1699,
     "imageUrl": "https://m.media-amazon.com/images/I/71lr36mRJQL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81c5986IyfL._SL1500_.jpg",
     "galleryImages": [
@@ -3722,7 +3722,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "SULTAN",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/715ySyr41uL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -3802,8 +3802,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Extra Soft Diabetic & Orthopedic Doctor Slippers",
     "gender": "Women",
     "category": "Slippers",
-    "price": 739.0,
-    "originalPrice": 1499.0,
+    "price": 739,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/713dZ3znw5L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71dvoKRC+UL._SL1500_.jpg",
     "galleryImages": [
@@ -3845,7 +3845,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "CHERRY",
-        "hex": "#2A2A2A",
+        "hex": "#8B2500",
         "imageUrl": "https://m.media-amazon.com/images/I/71xAMJNpOSL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GY9ND54Q"
       },
@@ -3931,8 +3931,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 985.0,
-    "originalPrice": 1999.0,
+    "price": 985,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/71S+k8dCLXL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/618GHlq-HuL._SL1500_.jpg",
     "galleryImages": [
@@ -3968,13 +3968,13 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "DOVE GREY",
-        "hex": "#6B7280",
+        "hex": "#9AA5B1",
         "imageUrl": "https://m.media-amazon.com/images/I/71S+k8dCLXL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GZQYCNHZ"
       },
       {
         "name": "MONSOON GREY",
-        "hex": "#6B7280",
+        "hex": "#7B8794",
         "imageUrl": "https://m.media-amazon.com/images/I/71lI3RJICyL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GZR47FCB"
       },
@@ -3986,13 +3986,13 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "SULTAN GOLD",
-        "hex": "#9C5B2D",
+        "hex": "#C59B27",
         "imageUrl": "https://m.media-amazon.com/images/I/71D7nTThGaL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GZQT1615"
       },
       {
         "name": "MAUVE PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71cZj3fikcL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0GZQRG1DC"
       },
@@ -4066,8 +4066,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 975.0,
-    "originalPrice": 1999.0,
+    "price": 975,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/81F7QOQsxTL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71b7E7GOBBL._SL1500_.jpg",
     "galleryImages": [
@@ -4109,19 +4109,19 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "DOVE GREY",
-        "hex": "#6B7280",
+        "hex": "#9AA5B1",
         "imageUrl": "https://m.media-amazon.com/images/I/81nHvIq55uL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
         "name": "PLUM PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71gwOQZfvrL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H3FX1QPM"
       },
       {
         "name": "MONSOON GREY",
-        "hex": "#6B7280",
+        "hex": "#7B8794",
         "imageUrl": "https://m.media-amazon.com/images/I/715-kDRn8AL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -4207,8 +4207,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 999.0,
-    "originalPrice": 1999.0,
+    "price": 999,
+    "originalPrice": 1999,
     "imageUrl": "https://m.media-amazon.com/images/I/71dhdhLTugL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71u--tGU9mL._SL1500_.jpg",
     "galleryImages": [
@@ -4247,13 +4247,13 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "PLUM PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/71FYjxMkUOL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H6J8Q3GC"
       },
       {
         "name": "MONSOON GREY",
-        "hex": "#6B7280",
+        "hex": "#7B8794",
         "imageUrl": "https://m.media-amazon.com/images/I/716WI0QB4rL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H9MM81PX"
       },
@@ -4315,9 +4315,9 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Sandals",
-    "price": 974.0,
-    "originalPrice": 1999.0,
-    "imageUrl": "https://m.media-amazon.com/images/I/71EuDCAAeUL._SL1500_.jpg",
+    "price": 974,
+    "originalPrice": 1999,
+    "imageUrl": "https://m.media-amazon.com/images/I/716-3PTu-nL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71KdkkCPwUL._SL1500_.jpg",
     "galleryImages": [
       "https://m.media-amazon.com/images/I/81sDEh-ZLGL._SL1500_.jpg",
@@ -4351,26 +4351,26 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     ],
     "colorVariants": [
       {
-        "name": "SULTAN GOLD",
+        "name": "TAN HIDE",
         "hex": "#9C5B2D",
-        "imageUrl": "https://m.media-amazon.com/images/I/71EuDCAAeUL._SL1500_.jpg",
+        "imageUrl": "https://m.media-amazon.com/images/I/716-3PTu-nL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
         "name": "DOVE GREY",
-        "hex": "#6B7280",
+        "hex": "#9AA5B1",
         "imageUrl": "https://m.media-amazon.com/images/I/81sDEh-ZLGL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
         "name": "PLUM PURPLE",
-        "hex": "#2A2A2A",
+        "hex": "#8A4F7D",
         "imageUrl": "https://m.media-amazon.com/images/I/715R8qpBYGL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
         "name": "MONSOON GREY",
-        "hex": "#6B7280",
+        "hex": "#7B8794",
         "imageUrl": "https://m.media-amazon.com/images/I/71kO7kAAveL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
@@ -4381,9 +4381,9 @@ export const INITIAL_SKUS: FootwearSKU[] = [
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
-        "name": "TAN HIDE",
-        "hex": "#9C5B2D",
-        "imageUrl": "https://m.media-amazon.com/images/I/716-3PTu-nL._SL1500_.jpg",
+        "name": "SULTAN GOLD",
+        "hex": "#C59B27",
+        "imageUrl": "https://m.media-amazon.com/images/I/71EuDCAAeUL._SL1500_.jpg",
         "amazonUrl": "page_source_exact_colour_variant"
       },
       {
@@ -4456,8 +4456,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Slippers",
-    "price": 689.0,
-    "originalPrice": 2499.0,
+    "price": 689,
+    "originalPrice": 2499,
     "imageUrl": "https://m.media-amazon.com/images/I/711c6RtFz5L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81GOz7BmSsL._SL1500_.jpg",
     "galleryImages": [
@@ -4491,13 +4491,13 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "colorVariants": [
       {
         "name": "ALMOND",
-        "hex": "#2A2A2A",
+        "hex": "#D8C3A5",
         "imageUrl": "https://m.media-amazon.com/images/I/711c6RtFz5L._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H2N1442M"
       },
       {
         "name": "MOUSE",
-        "hex": "#6B7280",
+        "hex": "#737373",
         "imageUrl": "https://m.media-amazon.com/images/I/71SOOBw5wIL._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H2N6RT6N"
       },
@@ -4559,9 +4559,9 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Ultra-Soft Cushioned Acupressure Flip-Flops",
     "gender": "Women",
     "category": "Slippers",
-    "price": 688.0,
-    "originalPrice": 2499.0,
-    "imageUrl": "https://m.media-amazon.com/images/I/71a5MKxQ1kL._SL1500_.jpg",
+    "price": 688,
+    "originalPrice": 2499,
+    "imageUrl": "https://m.media-amazon.com/images/I/71PwI9EIv7L._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/71OmmuAC7aL._SL1500_.jpg",
     "galleryImages": [
       "https://m.media-amazon.com/images/I/71aHcv75uTL._SL1500_.jpg",
@@ -4591,10 +4591,10 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     ],
     "colorVariants": [
       {
-        "name": "MOUSE BEIGE",
+        "name": "PINK BEIGE",
         "hex": "#D2B48C",
-        "imageUrl": "https://m.media-amazon.com/images/I/71a5MKxQ1kL._SL1500_.jpg",
-        "amazonUrl": "https://www.amazon.in/dp/B0GVG59N5F"
+        "imageUrl": "https://m.media-amazon.com/images/I/71PwI9EIv7L._SL1500_.jpg",
+        "amazonUrl": "https://www.amazon.in/dp/B0GXC4DF4G"
       },
       {
         "name": "BLACK BEIGE",
@@ -4603,16 +4603,16 @@ export const INITIAL_SKUS: FootwearSKU[] = [
         "amazonUrl": "https://www.amazon.in/dp/B0GXC4YL31"
       },
       {
-        "name": "BROWN ALMOND",
-        "hex": "#5A381E",
-        "imageUrl": "https://m.media-amazon.com/images/I/71VzqtyFdEL._SL1500_.jpg",
-        "amazonUrl": "https://www.amazon.in/dp/B0GYSRTTWC"
+        "name": "MOUSE BEIGE",
+        "hex": "#D2B48C",
+        "imageUrl": "https://m.media-amazon.com/images/I/71a5MKxQ1kL._SL1500_.jpg",
+        "amazonUrl": "https://www.amazon.in/dp/B0GVG59N5F"
       },
       {
-        "name": "PINK BEIGE",
-        "hex": "#D2B48C",
-        "imageUrl": "https://m.media-amazon.com/images/I/71PwI9EIv7L._SL1500_.jpg",
-        "amazonUrl": "https://www.amazon.in/dp/B0GXC4DF4G"
+        "name": "BROWN ALMOND",
+        "hex": "#D8C3A5",
+        "imageUrl": "https://m.media-amazon.com/images/I/71VzqtyFdEL._SL1500_.jpg",
+        "amazonUrl": "https://www.amazon.in/dp/B0GYSRTTWC"
       }
     ],
     "sizeMarketplaceUrls": {
@@ -4654,8 +4654,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Super Soft Kids Playtime Clogs with Back Strap",
     "gender": "Kids",
     "category": "Clogs",
-    "price": 629.0,
-    "originalPrice": 1099.0,
+    "price": 629,
+    "originalPrice": 1099,
     "imageUrl": "https://m.media-amazon.com/images/I/61MHp2tp3RL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/81N55BIRX1L._SL1500_.jpg",
     "galleryImages": [
@@ -4755,8 +4755,8 @@ export const INITIAL_SKUS: FootwearSKU[] = [
     "subtitle": "Fashionable Lightweight Clogs with Cushioned Backstrap",
     "gender": "Women",
     "category": "Clogs",
-    "price": 748.0,
-    "originalPrice": 1499.0,
+    "price": 748,
+    "originalPrice": 1499,
     "imageUrl": "https://m.media-amazon.com/images/I/61Ap45joeYL._SL1500_.jpg",
     "hoverImageUrl": "https://m.media-amazon.com/images/I/710Lj5RmBPL._SL1500_.jpg",
     "galleryImages": [
@@ -4806,7 +4806,7 @@ export const INITIAL_SKUS: FootwearSKU[] = [
       },
       {
         "name": "MOUSE",
-        "hex": "#6B7280",
+        "hex": "#737373",
         "imageUrl": "https://m.media-amazon.com/images/I/81xUFH0qe7L._SL1500_.jpg",
         "amazonUrl": "https://www.amazon.in/dp/B0H4RT7L35"
       },
