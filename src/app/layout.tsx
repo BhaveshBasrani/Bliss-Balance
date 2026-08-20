@@ -110,13 +110,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon-48x48.png', type: 'image/png', sizes: '48x48' },
       { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon-144x144.png', type: 'image/png', sizes: '144x144' },
       { url: '/favicon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/icon.svg', type: 'image/svg+xml' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon-48x48.png',
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
@@ -266,13 +267,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${syne.variable} ${jakarta.variable} ${outfit.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
         <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png" />
         <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon-48x48.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#DC2626" />
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
