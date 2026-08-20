@@ -10,6 +10,7 @@
     "sync:excel": "node scripts/sync_excel.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "clsx": "^2.1.1",
     "firebase": "^10.14.0",
     "framer-motion": "^11.11.9",

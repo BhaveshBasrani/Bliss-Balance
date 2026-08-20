@@ -121,9 +121,9 @@ const SKUS_TIME_KEY = 'bliss_balance_skus_time_v28';
 const SETTINGS_STORAGE_KEY = 'bliss_balance_settings_v4';
 const SETTINGS_TIME_KEY = 'bliss_balance_settings_time_v4';
 
-// Long-lived Cache TTLs for 99% Database Egress Reduction
-const CATALOG_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
-const SETTINGS_CACHE_TTL_MS = 30 * 1000; // 30 seconds for near-instant live banner updates
+// Cache TTLs — SKUs are large (30min cache), Settings are tiny & must sync fast (2min cache)
+const CATALOG_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes — products rarely change, large payload
+const SETTINGS_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes — banners/tickers are tiny (~1KB), must sync across all devices quickly
 
 // TURBO SPEED IN-MEMORY CACHE
 let memorySkusCache: FootwearSKU[] | null = null;

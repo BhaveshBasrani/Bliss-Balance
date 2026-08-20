@@ -462,35 +462,32 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </div>
 
             {/* Social & Contact */}
-            <div className="pt-8 space-y-4">
-              <p className="text-xs font-medium text-brand-stone uppercase tracking-widest">
-                Follow Us
-              </p>
-              <div className="flex items-center gap-3">
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 border border-neutral-200 dark:border-neutral-800 rounded-full hover:border-brand-black dark:hover:border-white transition-colors"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 border border-neutral-200 dark:border-neutral-800 rounded-full hover:border-brand-black dark:hover:border-white transition-colors"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 border border-neutral-200 dark:border-neutral-800 rounded-full hover:border-brand-black dark:hover:border-white transition-colors"
-                >
-                  <Youtube className="w-4 h-4" />
-                </a>
+            <div className="pt-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-black text-brand-stone uppercase tracking-[0.2em] relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-8 after:h-[2px] after:bg-brand-red">
+                  Connect With Bliss
+                </p>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              </div>
+              <div className="grid grid-cols-5 gap-3 pt-2">
+                {[
+                  { icon: <Instagram className="w-5 h-5" />, label: 'Instagram', url: 'https://www.instagram.com/blissbalance.co?igsh=MWJpbmRpNGxnOW83NA==', color: 'hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-purple-500 hover:to-indigo-500 hover:text-white' },
+                  { icon: <Facebook className="w-5 h-5" />, label: 'Facebook', url: 'https://www.facebook.com/share/1Bhmz8KL1w/', color: 'hover:bg-[#1877F2] hover:text-white' },
+                  { icon: <Twitter className="w-5 h-5" />, label: 'Twitter', url: 'https://x.com/blissbalance_', color: 'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black' },
+                  { icon: <Youtube className="w-5 h-5" />, label: 'YouTube', url: 'https://youtube.com/@blissbalance_26?si=5xinn2mC-29ifst9', color: 'hover:bg-[#FF0000] hover:text-white' },
+                  { icon: <MessageSquare className="w-5 h-5" />, label: 'WhatsApp', url: 'https://wa.me/919440961776?text=Hi%20Bliss%20Balance%20Team%2C%20I%20have%20a%20query', color: 'hover:bg-[#25D366] hover:text-white' },
+                ].map((social, sIdx) => (
+                  <a
+                    key={sIdx}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className={`flex items-center justify-center p-3.5 border border-neutral-200 dark:border-neutral-800/80 rounded-2xl transition-all duration-500 transform hover:-translate-y-2 active:scale-95 ${social.color} hover:border-transparent hover:shadow-[0_10px_20px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_10px_20px_rgba(255,255,255,0.08)]`}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
               </div>
             </div>
 

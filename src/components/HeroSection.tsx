@@ -63,10 +63,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
       onTouchEnd={handleTouchEnd}
     >
       {/* Hero Container */}
-      <div className="relative w-full flex flex-col sm:block min-h-[500px] sm:min-h-[600px] lg:min-h-[85vh] overflow-hidden">
+      <div className="relative w-full flex flex-col sm:block sm:min-h-[600px] lg:min-h-[85vh] overflow-hidden">
         
         {/* Background Image */}
-        <div className="relative w-full h-[300px] sm:absolute sm:inset-0 sm:h-full overflow-hidden bg-neutral-900">
+        <div className="relative w-full h-[280px] sm:absolute sm:inset-0 sm:h-full overflow-hidden bg-neutral-900">
           <picture>
             <source media="(max-width: 639px)" srcSet={mobileBg} />
             <img
@@ -101,16 +101,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         </div>
 
         {/* Content Block */}
-        <div className="relative z-20 max-w-[1400px] mx-auto px-6 lg:px-8 w-full sm:h-full sm:min-h-[600px] lg:min-h-[85vh] flex items-center py-8 sm:py-16">
-          <div className="max-w-lg lg:max-w-xl space-y-5 sm:space-y-7">
+        <div className="relative z-20 max-w-[1400px] mx-auto px-5 sm:px-6 lg:px-8 w-full sm:h-full sm:min-h-[600px] lg:min-h-[85vh] flex items-center py-6 sm:py-16">
+          <div className="max-w-lg lg:max-w-xl space-y-4 sm:space-y-7">
             
             {/* Subtle badge */}
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/80 text-[10px] sm:text-[11px] font-body font-medium tracking-wider uppercase">
+            <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/80 text-[10px] sm:text-[11px] font-body font-medium tracking-wider uppercase">
               {activeSlide.badgeText || 'Crafted in India'}
             </div>
 
             {/* Hero Title */}
-            <h1 className="font-heading text-3xl sm:text-[2.75rem] lg:text-[3.5rem] font-black uppercase tracking-tight text-white leading-[1.1] sm:leading-[1.05]">
+            <h1 className="font-heading text-[1.65rem] sm:text-[2.75rem] lg:text-[3.5rem] font-black uppercase tracking-tight text-white leading-[1.12] sm:leading-[1.05]">
               {activeSlide.titleText || 'Step Into Perfect Balance.'}
             </h1>
 
@@ -120,20 +120,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-row flex-wrap sm:flex-nowrap gap-2 sm:gap-4 pt-1 sm:pt-2 w-full max-w-[320px] sm:max-w-full">
+            <div className="flex flex-row gap-2.5 sm:gap-4 pt-1 sm:pt-2">
               <Link
                 href={activeSlide.ctaLink || '/men'}
-                className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-3.5 sm:px-8 sm:py-4 rounded-full bg-white text-brand-black font-body font-bold text-[11px] sm:text-sm uppercase tracking-wider hover:bg-brand-red hover:text-white transition-all duration-300 text-center"
+                className="group inline-flex items-center justify-center gap-1.5 px-5 py-3 sm:px-8 sm:py-4 rounded-full bg-white text-brand-black font-body font-bold text-[11px] sm:text-sm uppercase tracking-wider hover:bg-brand-red hover:text-white transition-all duration-300 text-center"
               >
                 <span>{activeSlide.ctaText || 'Shop Men'}</span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
 
               <Link
-                href="/women"
-                className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-3.5 sm:px-8 sm:py-4 rounded-full bg-transparent text-white font-body font-bold text-[11px] sm:text-sm uppercase tracking-wider border border-white/30 hover:bg-white hover:text-brand-black transition-all duration-300 text-center"
+                href={activeSlide.ctaLink2 || '/women'}
+                className="group inline-flex items-center justify-center gap-1.5 px-5 py-3 sm:px-8 sm:py-4 rounded-full bg-transparent text-white font-body font-bold text-[11px] sm:text-sm uppercase tracking-wider border border-white/30 hover:bg-white hover:text-brand-black transition-all duration-300 text-center"
               >
-                <span>Shop Women</span>
+                <span>{activeSlide.ctaText2 || 'Shop Women'}</span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </div>

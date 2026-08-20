@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
 import { BrandTitleText } from './BrandTitleText';
 import { PaymentLogos } from './PaymentLogos';
-import { Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube, Instagram, Sun, Moon } from 'lucide-react';
+import { Mail, MessageSquare, MapPin, ExternalLink, Facebook, Twitter, Youtube, Instagram, Sun, Moon, ArrowUp } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const waveRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -14,8 +14,7 @@ export const Footer: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const animationFrameRef = useRef<number | null>(null);
 
-  const barCount = 28;
-  const waveColor = 'rgb(220, 38, 38)';
+  const barCount = 23;
 
   useEffect(() => {
     try {
@@ -34,7 +33,7 @@ export const Footer: React.FC = () => {
         const [entry] = entries;
         setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0.1 }
+      { threshold: 0.2 }
     );
 
     if (footerRef.current) {
@@ -61,20 +60,26 @@ export const Footer: React.FC = () => {
     } catch (e) {}
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Animated wave effect from animated-footer
   useEffect(() => {
     let t = 0;
 
     const animateWave = () => {
       const waveElements = waveRefs.current;
+      let offset = 0;
 
       waveElements.forEach((element, index) => {
         if (element) {
-          const y = Math.sin(t + (index * 0.5)) * 15;
-          element.style.transform = `translateY(${y}px)`;
+          offset += Math.max(0, 20 * Math.sin((t + index) * 0.3));
+          element.style.transform = `translateY(${index + offset}px)`;
         }
       });
 
-      t += 0.05;
+      t += 0.1;
       animationFrameRef.current = requestAnimationFrame(animateWave);
     };
 
@@ -97,7 +102,7 @@ export const Footer: React.FC = () => {
     <footer ref={footerRef} className="w-full bg-white dark:bg-black text-brand-black dark:text-white border-t border-neutral-200 dark:border-neutral-800 transition-colors duration-300 font-body relative overflow-hidden select-none">
       
       {/* Main Footer Content */}
-      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 py-12 sm:py-16 lg:py-20 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 py-10 sm:py-16 lg:py-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10 lg:gap-14">
           
           {/* Brand Info & Story */}
@@ -247,17 +252,10 @@ export const Footer: React.FC = () => {
 
         </div>
 
-        {/* Large Minimal Watermark */}
-        <div className="w-full select-none pointer-events-none opacity-[0.03] dark:opacity-[0.06] pt-8 sm:pt-12 pb-4 text-center overflow-hidden">
-          <span className="font-heading font-black text-4xl sm:text-8xl lg:text-9xl tracking-tighter uppercase whitespace-nowrap block">
-            BLISS BALANCE
-          </span>
-        </div>
-
-        {/* Bottom Bar: Copyright, Theme Switcher & Payment Logos */}
-        <div className="pt-6 sm:pt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-stone text-center sm:text-left">
+        {/* Bottom Bar: Copyright, Back to Top, Theme Switcher & Payment Logos */}
+        <div className="pt-8 sm:pt-10 mt-8 sm:mt-10 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-stone text-center sm:text-left">
           <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
-            <span>© {new Date().getFullYear()} Bliss Balance Footwear.</span>
+            <span>© {new Date().getFullYear()} Bliss Balance Footwear. All rights reserved.</span>
             
             <button
               type="button"
@@ -278,6 +276,16 @@ export const Footer: React.FC = () => {
                 </>
               )}
             </button>
+
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-warm dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-[11px] font-medium text-brand-black dark:text-white hover:border-brand-black dark:hover:border-white transition-all touch-manipulation"
+              aria-label="Back to top"
+            >
+              <ArrowUp className="w-3 h-3" />
+              <span>Top</span>
+            </button>
           </div>
 
           <PaymentLogos />
@@ -285,28 +293,29 @@ export const Footer: React.FC = () => {
 
       </div>
 
-      {/* Signature Red Animated Wave Canvas Bar at Footer Bottom */}
+      {/* Animated Wave Bar — from animated-footer.tsx pattern */}
       <div
         id="waveContainer"
         aria-hidden="true"
-        className="w-full h-16 sm:h-28 lg:h-36 opacity-95 pointer-events-none overflow-hidden flex items-end justify-between px-1"
+        style={{ overflow: 'hidden', height: 200 }}
+        className="w-full"
       >
-        {Array.from({ length: barCount }).map((_, index) => (
-          <div
-            key={index}
-            ref={(el) => {
-              waveRefs.current[index] = el;
-            }}
-            className="wave-segment w-full mx-[1px] sm:mx-[2px]"
-            style={{
-              height: `${40 + Math.sin(index * 0.5) * 20}%`,
-              backgroundColor: waveColor,
-              borderTopLeftRadius: '9999px',
-              borderTopRightRadius: '9999px',
-              willChange: 'transform',
-            }}
-          />
-        ))}
+        <div style={{ marginTop: 0 }}>
+          {Array.from({ length: barCount }).map((_, index) => (
+            <div
+              key={index}
+              ref={(el) => { waveRefs.current[index] = el; }}
+              className="wave-segment"
+              style={{
+                height: `${index + 1}px`,
+                backgroundColor: 'rgb(220, 38, 38)',
+                transition: 'transform 0.1s ease',
+                willChange: 'transform',
+                marginTop: '-2px',
+              }}
+            />
+          ))}
+        </div>
       </div>
 
     </footer>
