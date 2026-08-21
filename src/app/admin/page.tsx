@@ -1575,11 +1575,11 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
                           <div>
                             <label className="block text-[10px] font-black uppercase text-neutral-600 dark:text-neutral-400 mb-1">
-                              Mobile Banner Photo (Optimal: 800 x 600 px)
+                              Mobile Banner Photo (Optimal: 1080 x 1920 px)
                             </label>
                             <ImagePlaceholder
-                              dimensions="800 x 600 px (Mobile Banner)"
-                              aspectRatio="aspect-[4/3]"
+                              dimensions="1080 x 1920 px (Mobile Portrait Banner)"
+                              aspectRatio="aspect-[4/5]"
                               label={`MOBILE SLIDE #${sIdx + 1}`}
                               imageUrl={slide.mobileImageUrl}
                               onImageUploaded={(base64) => {

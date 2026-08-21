@@ -63,10 +63,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
       onTouchEnd={handleTouchEnd}
     >
       {/* Hero Container */}
-      <div className="relative w-full flex flex-col sm:block sm:min-h-[600px] lg:min-h-[85vh] overflow-hidden">
+      <div className="relative w-full min-h-[550px] sm:min-h-[600px] lg:min-h-[85vh] flex flex-col justify-end sm:justify-center overflow-hidden">
         
         {/* Background Image */}
-        <div className="relative w-full h-[280px] sm:absolute sm:inset-0 sm:h-full overflow-hidden bg-neutral-900">
+        <div className="absolute inset-0 w-full h-full overflow-hidden bg-neutral-900">
           <picture>
             <source media="(max-width: 639px)" srcSet={mobileBg} />
             <img
@@ -75,14 +75,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
               alt={activeSlide.titleText || 'Bliss Balance Footwear Hero'}
               loading="eager"
               fetchPriority="high"
-              className="w-full h-full object-cover object-center sm:object-right lg:object-center transition-all duration-1000 animate-fade-in"
+              className="w-full h-full object-cover object-center transition-all duration-1000 animate-fade-in"
             />
           </picture>
-          {/* Gradient overlays removed as requested */}
+
+          {/* Slight gradient on mobile to ensure text is visible without a solid black box */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:hidden" />
 
           {/* Mobile slide dots */}
           {slides.length > 1 && (
-            <div className="sm:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            <div className="sm:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
               {slides.map((_, idx) => (
                 <button
                   key={idx}
@@ -99,7 +101,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         </div>
 
         {/* Content Block */}
-        <div className="relative z-20 max-w-[1400px] mx-auto px-5 sm:px-6 lg:px-8 w-full sm:h-full sm:min-h-[600px] lg:min-h-[85vh] flex items-center py-6 sm:py-16">
+        <div className="relative z-20 max-w-[1400px] mx-auto px-5 sm:px-6 lg:px-8 w-full pt-20 pb-16 sm:py-16">
           <div className="max-w-lg lg:max-w-xl space-y-4 sm:space-y-7">
             
             {/* Subtle badge */}
