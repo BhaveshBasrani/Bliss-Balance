@@ -279,12 +279,13 @@ export async function getStorageQuotaStats(skus: FootwearSKU[]): Promise<Storage
 export async function fetchSupabaseSettings(): Promise<any | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?id=eq.site_settings&select=data`, {
       method: 'GET',
       headers: HEADERS,
       signal: controller.signal,
+      cache: 'no-store', // Bypasses Next.js 2MB data cache limit for massive base64 image payloads
     });
     clearTimeout(timeoutId);
 

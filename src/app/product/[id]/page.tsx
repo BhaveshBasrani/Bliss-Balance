@@ -81,8 +81,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   let jsonLd: any = null;
   if (product) {
     const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') ? product.imageUrl : `${siteUrl}/og-image.jpg`;
-    jsonLd = {
-      '@context': 'https://schema.org',
+    const productSchema: any = {
       '@type': 'Product',
       name: product.title,
       image: imageUrl,
@@ -108,12 +107,42 @@ export default async function ProductPage({ params }: ProductPageProps) {
     
     // Add AggregateRating if it exists
     if (product.rating && product.reviewCount && product.reviewCount > 0) {
-      jsonLd.aggregateRating = {
+      productSchema.aggregateRating = {
         '@type': 'AggregateRating',
         ratingValue: product.rating,
         reviewCount: product.reviewCount
       };
     }
+
+    jsonLd = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        productSchema,
+        {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            {
+              '@type': 'ListItem',
+              'position': 1,
+              'name': 'Home',
+              'item': siteUrl
+            },
+            {
+              '@type': 'ListItem',
+              'position': 2,
+              'name': 'Collections',
+              'item': `${siteUrl}/collections`
+            },
+            {
+              '@type': 'ListItem',
+              'position': 3,
+              'name': product.title,
+              'item': `${siteUrl}/product/${product.id}`
+            }
+          ]
+        }
+      ]
+    };
   }
 
   return (

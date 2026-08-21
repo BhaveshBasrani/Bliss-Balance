@@ -36,8 +36,8 @@ const siteUrl = 'https://blissbalance.co';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Bliss Balance® — Official Online Store India',
-    template: '%s | Bliss Balance®',
+    default: 'Bliss Balance',
+    template: '%s | Bliss Balance',
   },
   description:
     "Bliss Balance is India's official footwear brand creating cushioned slippers, flip-flops, slides, sandals, clogs & sneakers for everyday comfort and grip.",
@@ -70,10 +70,10 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: siteUrl,
-    title: 'Bliss Balance® — Step Into Perfect Balance | Official Store',
+    title: 'Bliss Balance | Comfortable Footwear for Everyday Life',
     description:
       'Step into perfect balance. Premium comfort slippers, doctor sandals, cushioned slides, waterproof clogs & lifestyle sneakers. 100% Original, Free Delivery across India.',
-    siteName: 'Bliss Balance Footwear',
+    siteName: 'Bliss Balance',
     images: [
       {
         url: `${siteUrl}/og-image.jpg`,
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@blissbalance_',
     creator: '@blissbalance_',
-    title: 'Bliss Balance® — Step Into Perfect Balance',
+    title: 'Bliss Balance | Comfortable Footwear for Everyday Life',
     description:
       'Step into perfect balance. Premium comfort slippers, doctor sandals, cushioned slides, waterproof clogs & lifestyle sneakers.',
     images: [`${siteUrl}/og-image.jpg`],
@@ -156,10 +156,7 @@ export default function RootLayout({
         name: 'Bliss Balance',
         alternateName: [
           'Bliss Balance Footwear',
-          'Bliss Balance Shoes',
-          'Bliss Balance Official Online Store',
           'Bliss Balance India',
-          'Bliss Balance Brand',
         ],
         url: siteUrl,
         logo: `${siteUrl}/Logo.svg`,
@@ -180,8 +177,7 @@ export default function RootLayout({
       {
         '@type': 'Organization',
         '@id': `${siteUrl}/#organization`,
-        name: 'Bliss Balance Footwear',
-        legalName: 'Bliss Balance',
+        name: 'Bliss Balance',
         url: siteUrl,
         logo: `${siteUrl}/Logo.svg`,
         image: `${siteUrl}/og-image.jpg`,
@@ -248,7 +244,6 @@ export default function RootLayout({
         '@id': `${siteUrl}/#website`,
         url: siteUrl,
         name: 'Bliss Balance',
-        alternateName: 'Bliss Balance Footwear',
         publisher: {
           '@id': `${siteUrl}/#brand`,
         },
@@ -275,7 +270,7 @@ export default function RootLayout({
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="shortcut icon" href="/favicon-48x48.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#DC2626" />
+        <meta name="theme-color" content="#000000" />
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <link rel="manifest" href="/manifest.json" />
 
