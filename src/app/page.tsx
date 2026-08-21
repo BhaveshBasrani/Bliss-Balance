@@ -22,8 +22,6 @@ export const metadata: Metadata = {
 import { fetchSupabaseSKUs, fetchSupabaseSettings } from '@/lib/supabaseClient';
 import { DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
 
-export const revalidate = 7200; // 2 hours window before devices update
-
 export default async function HomePage() {
   let initialSkus: any[] = [];
   let initialSettings: any = null;

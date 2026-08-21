@@ -11,9 +11,6 @@ interface ProductPageProps {
 }
 
 export const dynamicParams = true;
-// Revalidate every 12 hours (43200 seconds)
-export const revalidate = 43200;
-
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const product = await fetchSupabaseSingleSKU(params.id);
   const siteUrl = 'https://blissbalance.co';
