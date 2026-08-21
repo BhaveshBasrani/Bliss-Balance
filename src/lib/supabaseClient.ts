@@ -311,7 +311,7 @@ export async function upsertSupabaseSettings(settings: any): Promise<boolean> {
       updated_at: new Date().toISOString(),
     };
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/settings`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/settings?on_conflict=id`, {
       method: 'POST',
       headers: {
         ...HEADERS,

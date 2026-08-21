@@ -72,8 +72,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ collections }) => {
                   className="w-full h-full object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-108"
                 />
 
-                {/* Dark Editorial Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+                {/* Dark Editorial Gradient Overlay Removed */}
 
                 {/* Top Pill Tag */}
                 <div className="absolute top-4 left-4 z-10">

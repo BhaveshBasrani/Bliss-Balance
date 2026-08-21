@@ -658,6 +658,7 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                 <Key className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3.5" />
                 <input
                   type="password"
+                  autoComplete="new-password"
                   value={adminPin}
                   onChange={(e) => setAdminPin(e.target.value)}
                   placeholder="••••••••"
@@ -1557,11 +1558,11 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-[10px] font-black uppercase text-neutral-600 dark:text-neutral-400 mb-1">
-                              Desktop Banner Photo (1200 x 600 px)
+                              Desktop Banner Photo (Optimal: 1920 x 1080 px)
                             </label>
                             <ImagePlaceholder
-                              dimensions="1200 x 600 px (Desktop Banner)"
-                              aspectRatio="aspect-[2/1]"
+                              dimensions="1920 x 1080 px (Desktop Banner)"
+                              aspectRatio="aspect-[16/9]"
                               label={`DESKTOP SLIDE #${sIdx + 1}`}
                               imageUrl={slide.desktopImageUrl}
                               onImageUploaded={(base64) => {
@@ -1574,11 +1575,11 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
 
                           <div>
                             <label className="block text-[10px] font-black uppercase text-neutral-600 dark:text-neutral-400 mb-1">
-                              Mobile Banner Photo (800 x 800 px)
+                              Mobile Banner Photo (Optimal: 1080 x 1920 px)
                             </label>
                             <ImagePlaceholder
-                              dimensions="800 x 800 px (Mobile Square Banner)"
-                              aspectRatio="aspect-square"
+                              dimensions="1080 x 1920 px (Mobile Portrait Banner)"
+                              aspectRatio="aspect-[4/5]"
                               label={`MOBILE SLIDE #${sIdx + 1}`}
                               imageUrl={slide.mobileImageUrl}
                               onImageUploaded={(base64) => {

@@ -4,7 +4,6 @@
 
 @layer base {
   body {
-    overflow-x: hidden;
     background-color: #FAFAF8;
     color: #1A1A1A;
     -webkit-font-smoothing: antialiased;

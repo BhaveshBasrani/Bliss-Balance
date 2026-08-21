@@ -78,9 +78,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
               className="w-full h-full object-cover object-center sm:object-right lg:object-center transition-all duration-1000 animate-fade-in"
             />
           </picture>
-          {/* Gradient overlays */}
-          <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none" />
-          <div className="sm:hidden absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-brand-black to-transparent pointer-events-none" />
+          {/* Gradient overlays removed as requested */}
 
           {/* Mobile slide dots */}
           {slides.length > 1 && (

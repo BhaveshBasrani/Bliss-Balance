@@ -120,7 +120,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               alt={`${sku.title} ${effectiveColor ? effectiveColor.name : ''}`}
               loading="lazy"
               decoding="async"
-              className={`w-full h-full object-cover transition-all duration-300 ease-out ${
+              className={`w-full h-full object-contain transition-all duration-300 ease-out ${
                 showHoverImage
                   ? 'opacity-0 scale-[1.04]'
                   : isHovered
@@ -141,7 +141,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               alt={`${sku.title} preview`}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out scale-[1.04] opacity-100 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-contain transition-all duration-500 ease-out scale-[1.04] opacity-100 pointer-events-none"
             />
           )}
 
