@@ -312,35 +312,31 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     (resolvedFlipkartUrl && resolvedFlipkartUrl.trim() !== '');
 
   const allGalleryThumbnails: Array<{ url: string; label: string }> = [];
+  const seenUrls = new Set<string>();
+
+  const addThumbnail = (url: string | undefined, label: string) => {
+    if (url && url.trim() !== '' && url !== 'null' && url !== 'undefined' && !seenUrls.has(url)) {
+      allGalleryThumbnails.push({ url, label });
+      seenUrls.add(url);
+    }
+  };
   
   // If we have an active color variant, try to build a gallery STRICTLY from its specific photos
   if (activeColorObj) {
-    if (activeColorObj.imageUrl && activeColorObj.imageUrl.trim() !== '') {
-      allGalleryThumbnails.push({ url: activeColorObj.imageUrl, label: `${activeColorObj.name} Primary` });
-    }
-    if (activeColorObj.hoverImageUrl && activeColorObj.hoverImageUrl.trim() !== '') {
-      allGalleryThumbnails.push({ url: activeColorObj.hoverImageUrl, label: `${activeColorObj.name} Angle 2` });
-    }
+    addThumbnail(activeColorObj.imageUrl, `${activeColorObj.name} Primary`);
+    addThumbnail(activeColorObj.hoverImageUrl, `${activeColorObj.name} Angle 2`);
     activeColorObj.galleryImages?.forEach((img, i) => {
-      if (img && img.trim() !== '') {
-        allGalleryThumbnails.push({ url: img, label: `${activeColorObj.name} Gal ${i + 1}` });
-      }
+      addThumbnail(img, `${activeColorObj.name} Gal ${i + 1}`);
     });
   }
 
   // FALLBACK: If the active color has absolutely no photos (or no color selected), 
   // we fall back to the main SKU global photos. We DO NOT mix them.
   if (allGalleryThumbnails.length === 0) {
-    if (sku.imageUrl && sku.imageUrl.trim() !== '') {
-      allGalleryThumbnails.push({ url: sku.imageUrl, label: 'Primary' });
-    }
-    if (sku.hoverImageUrl && sku.hoverImageUrl.trim() !== '') {
-      allGalleryThumbnails.push({ url: sku.hoverImageUrl, label: 'Angle 2' });
-    }
+    addThumbnail(sku.imageUrl, 'Primary');
+    addThumbnail(sku.hoverImageUrl, 'Angle 2');
     sku.galleryImages?.forEach((img, i) => {
-      if (img && img.trim() !== '') {
-        allGalleryThumbnails.push({ url: img, label: `Catalog ${i + 1}` });
-      }
+      addThumbnail(img, `Catalog ${i + 1}`);
     });
   }
 
@@ -410,7 +406,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   }`}
                   title={item.label}
                 >
-                  <img src={item.url} alt={item.label} className="w-full h-full object-cover rounded-lg" />
+                  <img 
+                    src={item.url} 
+                    alt={item.label} 
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={(e) => {
+                      (e.currentTarget.parentNode as HTMLElement).style.display = 'none';
+                    }} 
+                  />
                 </button>
               ))}
             </div>

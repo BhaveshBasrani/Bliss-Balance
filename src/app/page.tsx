@@ -19,18 +19,16 @@ export const metadata: Metadata = {
   }
 };
 
-import { fetchSupabaseSKUs, fetchSupabaseSettings } from '@/lib/supabaseClient';
+import { fetchSupabaseSKUsServer, fetchSupabaseSettingsServer } from '@/lib/supabaseServer';
 import { DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
-
-export const dynamic = 'force-static';
 
 export default async function HomePage() {
   let initialSkus: any[] = [];
   let initialSettings: any = null;
   try {
     const [skus, settings] = await Promise.all([
-      fetchSupabaseSKUs(),
-      fetchSupabaseSettings()
+      fetchSupabaseSKUsServer(),
+      fetchSupabaseSettingsServer()
     ]);
     initialSkus = skus || [];
     initialSettings = settings ? { ...DEFAULT_SITE_SETTINGS, ...settings } : null;
