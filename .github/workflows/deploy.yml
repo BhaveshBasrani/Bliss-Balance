@@ -44,6 +44,9 @@ jobs:
           NEXT_PUBLIC_RECAPTCHA_SITE_KEY: '6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa'
           NEXT_PUBLIC_APPSCRIPT_URL: 'https://script.google.com/macros/s/AKfycbykDG_64LHgNhlS6gu-TowyNkTAC2Qfl3ohBoKmzQaub5oD0jj8Ah2Ow227lLG4D45ZzA/exec'
 
+      - name: Ping IndexNow
+        run: node scripts/ping-indexnow.js
+
       - name: Disable Jekyll on GitHub Pages (.nojekyll)
         run: mkdir -p ./out && touch ./out/.nojekyll
 
