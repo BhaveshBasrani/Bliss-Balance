@@ -280,7 +280,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(unifiedJsonLd) }}
         />
       </head>
-      <body suppressHydrationWarning className="bg-white dark:bg-black text-neutral-900 dark:text-white font-mono antialiased selection:bg-red-600 selection:text-white">
+      <body suppressHydrationWarning className="bg-white dark:bg-black text-neutral-900 dark:text-white font-mono antialiased selection:bg-red-600 selection:text-white overflow-x-hidden w-full">
         {children}
 
         {/* GOOGLE TAG / ANALYTICS (gtag.js) */}

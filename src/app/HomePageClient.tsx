@@ -83,7 +83,7 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
   });
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full bg-[#FAFAF8] dark:bg-[#0A0A0A] text-brand-black dark:text-white transition-colors duration-300 select-none relative font-body">
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-clip bg-[#FAFAF8] dark:bg-[#0A0A0A] text-brand-black dark:text-white transition-colors duration-300 select-none relative font-body">
       {/* Brand Splash Screen Intro Overlay */}
       {showSplash && (
         <div className="fixed inset-0 z-[99999] pointer-events-none transition-opacity duration-300">

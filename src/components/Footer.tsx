@@ -293,29 +293,11 @@ export const Footer: React.FC = () => {
 
       </div>
 
-      {/* Animated Wave Bar — from animated-footer.tsx pattern */}
-      <div
-        id="waveContainer"
-        aria-hidden="true"
-        style={{ overflow: 'hidden', height: 200 }}
-        className="w-full"
-      >
-        <div style={{ marginTop: 0 }}>
-          {Array.from({ length: barCount }).map((_, index) => (
-            <div
-              key={index}
-              ref={(el) => { waveRefs.current[index] = el; }}
-              className="wave-segment"
-              style={{
-                height: `${index + 1}px`,
-                backgroundColor: 'rgb(220, 38, 38)',
-                transition: 'transform 0.1s ease',
-                willChange: 'transform',
-                marginTop: '-2px',
-              }}
-            />
-          ))}
-        </div>
+      {/* Huge Bliss Balance Text - Gradient Touching Down */}
+      <div className="w-full overflow-hidden flex justify-center items-end mt-8 pointer-events-none select-none">
+        <span className="font-heading font-black text-[12.5vw] sm:text-[13vw] leading-[0.75] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-neutral-200 to-white dark:from-neutral-800 dark:to-black whitespace-nowrap">
+          BLISS BALANCE
+        </span>
       </div>
 
     </footer>
