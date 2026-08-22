@@ -63,7 +63,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
       onTouchEnd={handleTouchEnd}
     >
       {/* Hero Container */}
-      <div className="relative w-full min-h-[550px] sm:min-h-[600px] lg:min-h-[85vh] flex flex-col justify-end sm:justify-center overflow-hidden">
+      <div className="relative w-full min-h-[550px] sm:min-h-[600px] lg:min-h-0 lg:aspect-video flex flex-col justify-end sm:justify-center overflow-hidden">
         
         {/* Background Image */}
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-neutral-900">
