@@ -107,19 +107,19 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
     : null
   );
 
-  const extraColors = safeColorVariants.length > 4 ? safeColorVariants.length - 4 : 0;
-  const visibleSwatches = safeColorVariants.slice(0, 4);
+  const extraColors = safeColorVariants.length > 3 ? safeColorVariants.length - 3 : 0;
+  const visibleSwatches = safeColorVariants.slice(0, 3);
 
   return (
     <div
       onMouseEnter={() => { setIsHovered(true); prefetchProduct(sku); }}
       onMouseLeave={() => { setIsHovered(false); setIsSwatchesHovered(false); setPreviewColor(null); }}
-      className="group relative bg-white dark:bg-[#101010] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-200 flex flex-col select-none"
+      className="group relative bg-white dark:bg-[#0D0D0D] flex flex-col select-none h-full transition-colors"
     >
       <Link href={productUrl} className="block flex-1 flex flex-col">
 
         {/* ── IMAGE CANVAS ─────────────────────────────────────────── */}
-        <div className="relative aspect-square w-full overflow-hidden bg-white dark:bg-[#161616] flex items-center justify-center border-b border-neutral-100 dark:border-neutral-800/80">
+        <div className="relative aspect-square w-full overflow-hidden bg-white dark:bg-[#141414] flex items-center justify-center border-b border-neutral-100 dark:border-neutral-800">
 
           {/* Primary Image */}
           {currentImage ? (
@@ -129,12 +129,12 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               alt={`${sku.title} ${effectiveColor?.name || ''}`}
               loading="lazy"
               decoding="async"
-              className={`w-full h-full object-contain p-4 sm:p-5 transition-transform duration-500 ease-out ${
-                showHover ? 'opacity-0 scale-105' : isHovered ? 'scale-[1.05]' : 'scale-100'
+              className={`w-full h-full object-contain p-3 sm:p-5 transition-transform duration-500 ease-out ${
+                showHover ? 'opacity-0 scale-105' : isHovered ? 'scale-[1.06]' : 'scale-100'
               }`}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+            <div className="w-full h-full flex items-center justify-center text-[9px] font-mono text-neutral-400 uppercase tracking-widest">
               No Image
             </div>
           )}
@@ -146,14 +146,14 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               alt={`${sku.title} alternate angle`}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-contain p-4 sm:p-5 transition-all duration-500 scale-105 opacity-100 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-contain p-3 sm:p-5 transition-all duration-500 scale-105 opacity-100 pointer-events-none"
             />
           )}
 
           {/* ── TOP BAR: Badge + Wishlist ── */}
-          <div className="absolute top-0 left-0 right-0 flex items-start justify-between p-2.5 z-10 pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 flex items-start justify-between p-2 sm:p-2.5 z-10 pointer-events-none">
             {badgeLabel ? (
-              <span className="text-[9px] font-mono font-black uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 pointer-events-auto border border-black dark:border-white shadow-sm">
+              <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-wider sm:tracking-widest bg-black text-white dark:bg-white dark:text-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 pointer-events-auto border border-black dark:border-white shadow-sm">
                 {badgeLabel}
               </span>
             ) : <span />}
@@ -162,18 +162,18 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
               type="button"
               onClick={toggleWishlist}
               aria-label={isWishlisted ? `Remove ${sku.title} from wishlist` : `Add ${sku.title} to wishlist`}
-              className={`p-2 pointer-events-auto transition-all duration-200 active:scale-90 border ${
+              className={`p-1.5 sm:p-2 pointer-events-auto transition-all duration-200 active:scale-90 border ${
                 isWishlisted
                   ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white'
                   : 'bg-white/95 dark:bg-black/90 text-black dark:text-white border-neutral-200 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
               }`}
             >
-              <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
+              <Heart className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
             </button>
           </div>
 
           {/* ── QUICK SIZE SELECTOR DRAWER ── */}
-          <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+          <div className="hidden sm:block absolute inset-x-0 bottom-0 z-20 pointer-events-none translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
             <div className="bg-white/98 dark:bg-black/98 border-t border-neutral-200 dark:border-neutral-700 p-2 pointer-events-auto shadow-lg">
               <div className="flex items-center justify-between px-1 pb-1.5 text-[9px] font-mono font-bold uppercase tracking-widest text-neutral-400">
                 <span>Quick Size</span>
@@ -201,16 +201,16 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
         </div>
 
         {/* ── PRODUCT INFO BLOCK ───────────────────────────────────── */}
-        <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 gap-2.5 bg-white dark:bg-[#101010]">
+        <div className="p-2.5 sm:p-4 flex flex-col justify-between flex-1 gap-2 bg-white dark:bg-[#0D0D0D]">
 
-          <div className="space-y-1.5">
+          <div className="space-y-1 sm:space-y-1.5">
             {/* Category & Rating */}
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest truncate max-w-[170px]">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[10px] font-mono font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider truncate">
                 {!hideGenderBadge && sku.gender ? `${sku.gender} · ` : ''}{sku.category}
               </span>
               {sku.rating && (
-                <span className="flex items-center gap-0.5 text-[10px] font-mono font-black text-neutral-900 dark:text-white shrink-0">
+                <span className="flex items-center gap-0.5 text-[9px] sm:text-[10px] font-mono font-black text-neutral-900 dark:text-white shrink-0">
                   <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                   {sku.rating}
                 </span>
@@ -218,14 +218,14 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
             </div>
 
             {/* Product Title */}
-            <h3 className="font-heading text-sm sm:text-base font-black text-neutral-950 dark:text-white tracking-tight uppercase leading-tight line-clamp-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
+            <h3 className="font-heading text-xs sm:text-sm md:text-base font-black text-neutral-950 dark:text-white tracking-tight uppercase leading-tight line-clamp-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
               {displayName}
             </h3>
 
             {/* Color Swatches & Active Color Name */}
             {visibleSwatches.length > 0 && (
               <div
-                className="flex items-center gap-1.5 pt-0.5"
+                className="flex items-center gap-1 sm:gap-1.5 pt-0.5"
                 onMouseEnter={() => setIsSwatchesHovered(true)}
                 onMouseLeave={() => { setIsSwatchesHovered(false); setPreviewColor(null); }}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -240,7 +240,7 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveColor(cv); setPreviewColor(null); }}
                       onMouseEnter={() => setPreviewColor(cv)}
                       onMouseLeave={() => setPreviewColor(null)}
-                      className={`w-3.5 h-3.5 border transition-all duration-150 ${
+                      className={`w-3 h-3 sm:w-3.5 sm:h-3.5 border transition-all duration-150 ${
                         isSelected
                           ? 'border-black dark:border-white ring-1 ring-black dark:ring-white scale-110'
                           : 'border-neutral-300 dark:border-neutral-700 opacity-70 hover:opacity-100 hover:scale-110'
@@ -251,9 +251,9 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
                   );
                 })}
                 {extraColors > 0 && (
-                  <span className="text-[9px] font-mono font-bold text-neutral-400">+{extraColors}</span>
+                  <span className="text-[8px] sm:text-[9px] font-mono font-bold text-neutral-400">+{extraColors}</span>
                 )}
-                <span className="text-[9px] font-mono text-neutral-400 dark:text-neutral-500 ml-auto truncate max-w-[90px]">
+                <span className="text-[8px] sm:text-[9px] font-mono text-neutral-400 dark:text-neutral-500 ml-auto truncate max-w-[70px] sm:max-w-[90px]">
                   {effectiveColor?.name || ''}
                 </span>
               </div>
@@ -261,25 +261,25 @@ export const SkuCard: React.FC<SkuCardProps> = ({ sku, bestsellerRank, hideGende
           </div>
 
           {/* Pricing Row */}
-          <div className="flex items-center justify-between pt-2 border-t border-neutral-100 dark:border-neutral-800">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-base sm:text-lg font-heading font-black text-neutral-950 dark:text-white tracking-tight">
+          <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-neutral-100 dark:border-neutral-800">
+            <div className="flex items-baseline gap-1 sm:gap-1.5">
+              <span className="text-sm sm:text-base md:text-lg font-heading font-black text-neutral-950 dark:text-white tracking-tight">
                 ₹{sku.price.toLocaleString('en-IN')}
               </span>
               {sku.originalPrice && (
-                <span className="text-xs text-neutral-400 line-through font-medium">
+                <span className="text-[10px] sm:text-xs text-neutral-400 line-through font-medium">
                   ₹{sku.originalPrice.toLocaleString('en-IN')}
                 </span>
               )}
             </div>
 
             {discountPercent > 0 ? (
-              <span className="text-[9px] font-mono font-black uppercase text-black bg-[#E5FF00] px-2 py-0.5 border border-black">
+              <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase text-black bg-[#E5FF00] px-1.5 sm:px-2 py-0.5 border border-black">
                 −{discountPercent}%
               </span>
             ) : (
-              <div className="w-6 h-6 flex items-center justify-center text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">
-                <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+              <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-neutral-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
               </div>
             )}
           </div>

@@ -387,7 +387,7 @@ export function CollectionsClient({
           </div>
         ) : (
           <div className="space-y-12">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm">
               {filtered.slice(0, visibleCount).map((sku) => (
                 <SkuCard key={sku.id} sku={sku} />
               ))}

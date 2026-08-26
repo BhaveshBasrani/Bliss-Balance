@@ -52,7 +52,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = 340;
+    const scrollAmount = window.innerWidth < 640 ? 180 : 320;
     scrollContainerRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
@@ -93,119 +93,71 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
   if (totalItems === 0) return null;
 
   return (
-    <div className="relative w-full space-y-6 select-none overflow-hidden group/slider">
+    <div className="relative w-full space-y-4 sm:space-y-6 select-none overflow-hidden group/slider">
       
-      {/* Optional Title & Controls */}
-      {(title || subtitle) && (
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
-          <div className="space-y-1">
-            {subtitle && (
-              <span className="text-[11px] font-mono font-bold tracking-widest text-neutral-400 uppercase">
-                {subtitle}
-              </span>
-            )}
-            {title && (
-              <h3 className="font-heading text-2xl sm:text-3xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
-                {title}
-              </h3>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3 self-start sm:self-auto">
-            <span className="text-xs font-mono font-bold text-neutral-400">
-              <span className="text-neutral-950 dark:text-white font-black">
-                {String(currentIndex).padStart(2, '0')}
-              </span>{' '}
-              / {String(totalItems).padStart(2, '0')}
+      {/* Header Controls */}
+      <div className="flex items-end justify-between gap-4 pb-1">
+        <div className="space-y-0.5">
+          {subtitle && (
+            <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-widest text-neutral-400 uppercase">
+              {subtitle}
             </span>
-
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => scroll('left')}
-                disabled={!canScrollLeft}
-                className={`p-2.5 border transition-all ${
-                  canScrollLeft
-                    ? 'border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black'
-                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                }`}
-                aria-label="Scroll Left"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => scroll('right')}
-                disabled={!canScrollRight}
-                className={`p-2.5 border transition-all ${
-                  canScrollRight
-                    ? 'border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black'
-                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                }`}
-                aria-label="Scroll Right"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          )}
+          {title && (
+            <h3 className="font-heading text-xl sm:text-3xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
+              {title}
+            </h3>
+          )}
         </div>
-      )}
 
-      {/* Floating Controls when no explicit title */}
-      {!title && !subtitle && (
-        <div className="flex items-center justify-between pb-1">
-          <span className="text-xs font-mono font-medium text-neutral-400">
-            DRAG TO EXPLORE
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="text-[11px] sm:text-xs font-mono font-bold text-neutral-400">
+            <span className="text-neutral-950 dark:text-white font-black">
+              {String(currentIndex).padStart(2, '0')}
+            </span>{' '}
+            / {String(totalItems).padStart(2, '0')}
           </span>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-bold text-neutral-400">
-              <span className="text-neutral-950 dark:text-white font-black">
-                {String(currentIndex).padStart(2, '0')}
-              </span>{' '}
-              / {String(totalItems).padStart(2, '0')}
-            </span>
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => scroll('left')}
-                disabled={!canScrollLeft}
-                className={`p-2.5 border transition-all ${
-                  canScrollLeft
-                    ? 'border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black'
-                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                }`}
-                aria-label="Scroll Left"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => scroll('right')}
-                disabled={!canScrollRight}
-                className={`p-2.5 border transition-all ${
-                  canScrollRight
-                    ? 'border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black'
-                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                }`}
-                aria-label="Scroll Right"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => scroll('left')}
+              disabled={!canScrollLeft}
+              className={`p-2 sm:p-2.5 border transition-all ${
+                canScrollLeft
+                  ? 'border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black'
+                  : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
+              }`}
+              aria-label="Scroll Left"
+            >
+              <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scroll('right')}
+              disabled={!canScrollRight}
+              className={`p-2 sm:p-2.5 border transition-all ${
+                canScrollRight
+                  ? 'border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:bg-black hover:text-white hover:border-black dark:hover:bg-white dark:hover:text-black'
+                  : 'border-neutral-200 dark:border-neutral-800 text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
+              }`}
+              aria-label="Scroll Right"
+            >
+              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* HORIZONTAL DRAGGABLE TRACK */}
-      <div className="relative">
+      {/* HORIZONTAL JOINED MODULAR TRACK */}
+      <div className="relative border border-neutral-200 dark:border-neutral-800 overflow-hidden bg-neutral-200 dark:bg-neutral-800">
         <div
           ref={scrollContainerRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
-          className={`flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-1 cursor-${
+          className={`flex items-stretch gap-px overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory cursor-${
             isDragging ? 'grabbing' : 'grab'
           }`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -213,7 +165,7 @@ export const ProductSlider: React.FC<ProductSliderProps> = ({
           {skus.map((sku, idx) => (
             <div
               key={sku?.id || idx}
-              className="w-[260px] sm:w-[300px] shrink-0 snap-start transition-transform duration-300"
+              className="w-[170px] sm:w-[260px] md:w-[290px] shrink-0 snap-start bg-white dark:bg-[#0D0D0D]"
             >
               <SkuCard sku={sku} />
             </div>

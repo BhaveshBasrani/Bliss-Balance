@@ -5,6 +5,7 @@
  */
 
 import { FootwearSKU, NewsletterSubscriber } from './types';
+import { INITIAL_SKUS } from './initialSkus';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ummvwrzzxehetmtaugop.supabase.co';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtbXZ3cnp6eGVoZXRtdGF1Z29wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNTI1NzIsImV4cCI6MjEwMjYyODU3Mn0.CWzbUjICztb1Ga3u_gxjicbe362ZR519OdJK5YItu2E';
@@ -16,7 +17,6 @@ const HEADERS = {
   'Prefer': 'return=representation',
 };
 
-// Fields needed for catalog listing & filtering (Strips out heavy gallery, features, & marketplace URL maps)
 // Fields needed for catalog listing & filtering (Ultra-lightweight projection, saves 95%+ Egress)
 const LISTING_FIELDS = [
   'id',
@@ -55,12 +55,11 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        console.warn('Supabase product fetch returned non-200:', res.status);
-        return [];
+        return INITIAL_SKUS;
       }
 
       const rows = await res.json();
-      if (!Array.isArray(rows)) return [];
+      if (!Array.isArray(rows) || rows.length === 0) return INITIAL_SKUS;
 
       return rows.map((row: any): FootwearSKU => ({
         id: row.id,
@@ -89,19 +88,14 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
       }));
     } catch (e) {
       clearTimeout(timeoutId);
-      throw e;
+      return INITIAL_SKUS;
     }
   };
 
   try {
-    return await attemptFetch(12000);
-  } catch (e) {
-    try {
-      return await attemptFetch(8000);
-    } catch (err) {
-      console.error('Error fetching Supabase SKUs:', err);
-      return [];
-    }
+    return await attemptFetch(4000);
+  } catch (err) {
+    return INITIAL_SKUS;
   }
 }
 
@@ -109,9 +103,13 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
  * 2. Fetch Full Details for a Single Product ONLY when viewing /product/[id]
  */
 export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | null> {
+  const fallback = INITIAL_SKUS.find(
+    (sku) => sku.id.toLowerCase() === id.toLowerCase() || sku.id.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() === id.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+  ) || null;
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/skus?id=eq.${encodeURIComponent(id)}&select=*`, {
       method: 'GET',
@@ -120,9 +118,9 @@ export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | 
     });
     clearTimeout(timeoutId);
 
-    if (!res.ok) return null;
+    if (!res.ok) return fallback;
     const rows = await res.json();
-    if (!Array.isArray(rows) || rows.length === 0) return null;
+    if (!Array.isArray(rows) || rows.length === 0) return fallback;
 
     const row = rows[0];
     return {
@@ -151,8 +149,7 @@ export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | 
       createdAt: row.created_at || new Date().toISOString(),
     };
   } catch (e) {
-    console.error('Error fetching single Supabase SKU:', e);
-    return null;
+    return fallback;
   }
 }
 

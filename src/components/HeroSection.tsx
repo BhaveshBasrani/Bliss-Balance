@@ -58,7 +58,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative w-full min-h-[520px] sm:min-h-[580px] lg:min-h-0 lg:aspect-video flex flex-col justify-end sm:justify-center overflow-hidden">
+      <div className="relative w-full min-h-[480px] sm:min-h-[580px] lg:min-h-0 lg:aspect-video flex flex-col justify-end sm:justify-center overflow-hidden">
         
         {/* Background Banner */}
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-neutral-950">
@@ -74,18 +74,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             />
           </picture>
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent sm:bg-gradient-to-r sm:from-black/75 sm:via-black/25 sm:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent sm:bg-gradient-to-r sm:from-black/80 sm:via-black/30 sm:to-transparent" />
 
           {/* Mobile slide ticks */}
           {slides.length > 1 && (
-            <div className="sm:hidden absolute bottom-5 left-5 z-20 flex items-center gap-1.5">
+            <div className="sm:hidden absolute top-4 right-4 z-20 flex items-center gap-1">
               {slides.map((_, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setCurrentIndex(idx)}
                   className={`h-1 transition-all duration-300 ${
-                    currentIndex === idx ? 'w-8 bg-[#E5FF00]' : 'w-3 bg-white/40'
+                    currentIndex === idx ? 'w-6 bg-[#E5FF00]' : 'w-2 bg-white/40'
                   }`}
                   aria-label={`Slide ${idx + 1}`}
                 />
@@ -95,40 +95,40 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
         </div>
 
         {/* Content Block */}
-        <div className="relative z-20 max-w-[1400px] mx-auto px-5 sm:px-8 w-full pt-16 pb-16 sm:py-20">
-          <div className="max-w-lg lg:max-w-2xl space-y-4 sm:space-y-6">
+        <div className="relative z-20 max-w-[1400px] mx-auto px-4 sm:px-8 w-full pt-12 pb-10 sm:py-20">
+          <div className="max-w-lg lg:max-w-2xl space-y-3 sm:space-y-6">
             
             {/* Tag Badge */}
-            <div className="inline-flex items-center px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-white text-[10px] sm:text-xs font-mono font-bold tracking-widest uppercase">
+            <div className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 bg-black/80 backdrop-blur-md border border-white/20 text-white text-[9px] sm:text-xs font-mono font-bold tracking-widest uppercase">
               {activeSlide.badgeText || 'CRAFTED IN INDIA • 2026 ARCHIVE'}
             </div>
 
             {/* Title */}
-            <h1 className="font-heading text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white leading-[1.05]">
+            <h1 className="font-heading text-2xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white leading-[1.08]">
               {activeSlide.titleText || 'STEP INTO PERFECT BALANCE.'}
             </h1>
 
             {/* Subhead */}
-            <p className="font-body text-neutral-300 text-xs sm:text-base leading-relaxed max-w-md font-medium">
+            <p className="font-body text-neutral-300 text-xs sm:text-base leading-relaxed max-w-md font-medium line-clamp-2 sm:line-clamp-none">
               {activeSlide.subheadlineText || settings.heroSubheadline || 'Comfort-engineered orthopedic footwear and cushioned silhouettes designed for everyday movement.'}
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-row gap-3 pt-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:gap-3 pt-2">
               <Link
                 href={activeSlide.ctaLink || '/men'}
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:px-9 sm:py-4 bg-[#E5FF00] text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-200 border-2 border-black"
+                className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-3 sm:px-9 sm:py-4 bg-[#E5FF00] text-black font-heading font-black text-[11px] sm:text-xs uppercase tracking-wider sm:tracking-widest hover:bg-white hover:text-black transition-all duration-200 border-2 border-black text-center"
               >
                 <span>{activeSlide.ctaText || 'SHOP MEN'}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
 
               <Link
                 href={activeSlide.ctaLink2 || '/women'}
-                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:px-9 sm:py-4 bg-black text-white font-heading font-black text-xs uppercase tracking-widest border-2 border-white hover:bg-white hover:text-black transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-3 sm:px-9 sm:py-4 bg-black text-white font-heading font-black text-[11px] sm:text-xs uppercase tracking-wider sm:tracking-widest border-2 border-white hover:bg-white hover:text-black transition-all duration-200 text-center"
               >
                 <span>{activeSlide.ctaText2 || 'SHOP WOMEN'}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
 
