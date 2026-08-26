@@ -172,7 +172,7 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({ isOpen, on
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-heading font-black text-xs uppercase tracking-widest transition-all border-2 border-black dark:border-white disabled:opacity-50"
+                className="w-full py-3.5 bg-black hover:bg-[#E60000] hover:text-white text-white font-heading font-black text-xs uppercase tracking-widest transition-all border-2 border-black dark:border-white disabled:opacity-50"
               >
                 {loading ? 'PROCESSING...' : isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN'}
               </button>

@@ -130,7 +130,7 @@ export const LookbookSection: React.FC = () => {
                         setActiveHotspotId(isPopupOpen ? null : item.id);
                       }}
                       aria-label={`Inspect ${item.productName}`}
-                      className="relative -translate-x-1/2 -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 bg-black text-white hover:bg-[#E5FF00] hover:text-black border border-white sm:border-2 flex items-center justify-center shadow-2xl transition-transform hover:scale-110 focus:outline-none z-10 cursor-pointer"
+                      className="relative -translate-x-1/2 -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 bg-black text-white hover:bg-[#E60000] hover:text-white border border-white sm:border-2 flex items-center justify-center shadow-2xl transition-transform hover:scale-110 focus:outline-none z-10 cursor-pointer"
                     >
                       <span className="absolute inset-0 border border-white/60 sm:border-2 animate-ping pointer-events-none" />
                       {isPopupOpen ? (
@@ -174,7 +174,7 @@ export const LookbookSection: React.FC = () => {
 
                             <Link
                               href={item.productUrl}
-                              className="inline-flex items-center gap-1 text-[9px] font-heading font-black uppercase text-[#E5FF00] hover:underline pt-0.5"
+                              className="inline-flex items-center gap-1 text-[9px] font-heading font-black uppercase text-[#E60000] hover:underline pt-0.5"
                             >
                               <span>Shop Now</span>
                               <ArrowUpRight className="w-2.5 h-2.5" />
@@ -197,7 +197,7 @@ export const LookbookSection: React.FC = () => {
                     </div>
                     <Link
                       href={item.productUrl}
-                      className="p-1.5 sm:p-2 bg-white text-black hover:bg-[#E5FF00] hover:text-black transition-colors shrink-0 border border-black"
+                      className="p-1.5 sm:p-2 bg-white text-black hover:bg-[#E60000] hover:text-white transition-colors shrink-0 border border-black"
                       aria-label={`Shop ${item.productName}`}
                     >
                       <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />

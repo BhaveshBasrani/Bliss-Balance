@@ -164,7 +164,7 @@ export const Footer: React.FC = () => {
               {/* Newsletter Trigger */}
               <div className="p-3.5 bg-neutral-950 text-white dark:bg-neutral-900 border border-neutral-800 space-y-2 mt-3">
                 <div className="flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#E5FF00]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#E60000]" />
                   <span className="font-heading font-black text-xs uppercase tracking-wider">
                     THE BLISS CLUB
                   </span>
@@ -175,7 +175,7 @@ export const Footer: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => window.dispatchEvent(new CustomEvent('open-newsletter-modal'))}
-                  className="w-full py-2.5 px-3 bg-[#E5FF00] hover:bg-white text-black text-xs font-heading font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all border border-black"
+                  className="w-full py-2.5 px-3 bg-[#E60000] hover:bg-white hover:text-black text-white text-xs font-heading font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all border border-[#E60000]"
                 >
                   <span>JOIN CLUB & GET 10% OFF</span>
                   <ArrowRight className="w-3.5 h-3.5" />

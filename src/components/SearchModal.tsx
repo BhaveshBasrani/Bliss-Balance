@@ -91,7 +91,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, skus 
                 <Link
                   href={`/product/${sku.id}`}
                   onClick={onClose}
-                  className="px-3.5 py-2 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-heading font-black text-[10px] uppercase flex items-center gap-1 border border-black transition-colors"
+                  className="px-3.5 py-2 bg-black hover:bg-[#E60000] hover:text-white text-white font-heading font-black text-[10px] uppercase flex items-center gap-1 border border-black transition-colors"
                 >
                   <span>VIEW</span>
                   <ArrowRight className="w-3 h-3" />

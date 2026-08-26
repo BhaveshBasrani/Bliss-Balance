@@ -85,7 +85,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
                   type="button"
                   onClick={() => setCurrentIndex(idx)}
                   className={`h-1 transition-all duration-300 ${
-                    currentIndex === idx ? 'w-6 bg-[#E5FF00]' : 'w-2 bg-white/40'
+                    currentIndex === idx ? 'w-6 bg-[#E60000]' : 'w-2 bg-white/40'
                   }`}
                   aria-label={`Slide ${idx + 1}`}
                 />
@@ -117,7 +117,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:gap-3 pt-2">
               <Link
                 href={activeSlide.ctaLink || '/men'}
-                className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-3 sm:px-9 sm:py-4 bg-[#E5FF00] text-black font-heading font-black text-[11px] sm:text-xs uppercase tracking-wider sm:tracking-widest hover:bg-white hover:text-black transition-all duration-200 border-2 border-black text-center"
+                className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-3 sm:px-9 sm:py-4 bg-[#E60000] text-white font-heading font-black text-[11px] sm:text-xs uppercase tracking-wider sm:tracking-widest hover:bg-white hover:text-black transition-all duration-200 border-2 border-[#E60000] text-center shadow-lg"
               >
                 <span>{activeSlide.ctaText || 'SHOP MEN'}</span>
                 <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
@@ -164,7 +164,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ settings }) => {
                   type="button"
                   onClick={() => setCurrentIndex(idx)}
                   className={`h-1 transition-all duration-300 ${
-                    currentIndex === idx ? 'w-10 bg-[#E5FF00]' : 'w-4 bg-white/30 hover:bg-white/60'
+                    currentIndex === idx ? 'w-10 bg-[#E60000]' : 'w-4 bg-white/30 hover:bg-white/60'
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />

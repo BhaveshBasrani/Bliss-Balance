@@ -14,10 +14,34 @@ interface CategoryTile {
 }
 
 const CATEGORY_TILES: CategoryTile[] = [
-  { id: 'tile-sneakers', title: 'STREET SNEAKERS', subtitle: 'High-Traction Grip & Breathable Uppers', image: '/editorial/cat-sneakers.jpg', link: '/collections/sneakers' },
-  { id: 'tile-slides', title: 'LUXURY SLIDES', subtitle: 'High-Density Memory Foam Cushioning', image: '/editorial/cat-slides.jpg', link: '/collections/slides' },
-  { id: 'tile-sandals', title: 'ORTHO SANDALS', subtitle: 'Anatomical Arch Support & Posture Alignment', image: '/editorial/cat-sandals.jpg', link: '/collections/sandals' },
-  { id: 'tile-clogs', title: 'WATERPROOF CLOGS', subtitle: 'Ultralight Ergonomic All-Weather Foam', image: '/editorial/cat-clogs.jpg', link: '/collections/clogs' },
+  {
+    id: 'tile-sneakers',
+    title: 'MEN SNEAKERS',
+    subtitle: 'High-Traction Street Grip & Cushioned EVA Soles',
+    image: '/collections/mens-casual-sneakers.jpg',
+    link: '/collections/casual-shoes',
+  },
+  {
+    id: 'tile-slides',
+    title: 'MEN SLIDES & SANDALS',
+    subtitle: 'High-Density Memory Foam & Wave Contoured Footbed',
+    image: '/collections/mens-slides-sandals.jpg',
+    link: '/collections/slides',
+  },
+  {
+    id: 'tile-womens-sandals',
+    title: 'WOMEN ERGONOMIC SANDALS',
+    subtitle: 'Anatomical Arch Support & Cloud Pressure Relief',
+    image: '/collections/womens-sandals-flats.jpg',
+    link: '/collections/sandals',
+  },
+  {
+    id: 'tile-womens-clogs',
+    title: 'WOMEN CLOGS & SNEAKERS',
+    subtitle: 'Ultralight All-Weather Waterproof Cushion Foam',
+    image: '/collections/womens-clogs-sneakers.jpg',
+    link: '/collections/clogs',
+  },
 ];
 
 export const EditorialCategoryGrid: React.FC = () => {
@@ -29,7 +53,7 @@ export const EditorialCategoryGrid: React.FC = () => {
         <ScrollReveal direction="up">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.25em] text-neutral-500 uppercase">
+              <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.25em] text-[#E60000] uppercase">
                 Curated Silhouettes
               </span>
               <h2 className="font-heading text-2xl sm:text-5xl font-black uppercase tracking-tight text-white">
@@ -64,13 +88,13 @@ export const EditorialCategoryGrid: React.FC = () => {
                 {/* Bottom Bar */}
                 <div className="absolute inset-x-3 bottom-3 sm:inset-x-6 sm:bottom-6 z-10 flex items-end justify-between gap-2 text-white">
                   <div className="min-w-0 pr-1">
-                    <h3 className="font-heading text-xs sm:text-2xl font-black uppercase tracking-tight leading-tight group-hover:text-[#E5FF00] transition-colors duration-300 truncate">
+                    <h3 className="font-heading text-xs sm:text-2xl font-black uppercase tracking-tight leading-tight group-hover:text-[#E60000] transition-colors duration-300 truncate">
                       {tile.title}
                     </h3>
                     <p className="hidden sm:block text-xs text-neutral-400 font-medium mt-1 truncate">{tile.subtitle}</p>
                   </div>
-                  <div className="w-6 h-6 sm:w-9 sm:h-9 bg-white/10 border border-white/20 group-hover:bg-[#E5FF00] group-hover:border-transparent flex items-center justify-center transition-all duration-300 group-hover:scale-110 shrink-0">
-                    <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-white group-hover:text-black stroke-[2.5]" />
+                  <div className="w-6 h-6 sm:w-9 sm:h-9 bg-white/10 border border-white/20 group-hover:bg-[#E60000] group-hover:border-transparent flex items-center justify-center transition-all duration-300 group-hover:scale-110 shrink-0">
+                    <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-white group-hover:text-white stroke-[2.5]" />
                   </div>
                 </div>
               </Link>

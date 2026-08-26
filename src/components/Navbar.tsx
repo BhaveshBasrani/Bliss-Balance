@@ -270,7 +270,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                             setUserDropdownOpen(false);
                             setAuthModalOpen(true);
                           }}
-                          className="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E5FF00] hover:text-black transition-all border border-black"
+                          className="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E60000] hover:text-white transition-all border border-black"
                         >
                           Sign In / Register
                         </button>

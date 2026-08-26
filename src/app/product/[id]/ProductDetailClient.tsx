@@ -430,7 +430,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 </span>
 
                 {discountPercent > 0 && (
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-[#E5FF00] text-black px-3 py-1 border border-black">
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-[#E60000] text-white px-3 py-1 border border-[#E60000]">
                     SAVE {discountPercent}%
                   </span>
                 )}

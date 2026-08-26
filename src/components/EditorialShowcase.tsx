@@ -51,7 +51,7 @@ export const EditorialShowcase: React.FC = () => {
               <div className="flex items-center gap-3 flex-wrap pt-2">
                 <Link
                   href="/men"
-                  className="px-8 py-4 bg-[#E5FF00] hover:bg-[#d6f000] text-black font-heading font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-2 border-2 border-black"
+                  className="px-8 py-4 bg-[#E60000] hover:bg-black text-white font-heading font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-2 border-2 border-[#E60000]"
                 >
                   SHOP MEN <ArrowRight className="w-4 h-4" />
                 </Link>

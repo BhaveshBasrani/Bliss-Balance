@@ -39,7 +39,7 @@ export const BestsellerSection: React.FC<BestsellerSectionProps> = ({ skus }) =>
 
             <Link
               href="/collections"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-[11px] sm:text-xs uppercase tracking-widest hover:bg-[#E5FF00] hover:text-black hover:border-black transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-[11px] sm:text-xs uppercase tracking-widest hover:bg-[#E60000] hover:text-white hover:border-[#E60000] transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
             >
               <span>Explore All Bestsellers</span>
               <ArrowRight className="w-3.5 h-3.5" />

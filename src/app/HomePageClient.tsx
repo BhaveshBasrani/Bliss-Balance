@@ -15,6 +15,7 @@ import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
 import { LookbookSection } from '@/components/LookbookSection';
 import { EditorialShowcase } from '@/components/EditorialShowcase';
 import { EditorialCategoryGrid } from '@/components/EditorialCategoryGrid';
+import { ShopByGenderSections } from '@/components/ShopByGenderSections';
 import { PressReviewSection } from '@/components/PressReviewSection';
 import { SocialFeedSection } from '@/components/SocialFeedSection';
 import { ElectricTicker } from '@/components/ElectricTicker';
@@ -36,7 +37,6 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    // ONLY fallback to local storage if the server completely failed to provide data.
     if (!initialSkus || initialSkus.length === 0) {
       const local = getStoredSKUs();
       if (local && local.length > 0) setSkus(local);
@@ -46,13 +46,9 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
       setSettings(getStoredSettings());
     }
 
-
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 650);
-
-    // Removed aggressive client-side fetchCloudSKUs and fetchCloudSettings.
-    // The server handles fetching and caches via ISR (revalidate = 7200) to massively reduce Supabase egress.
 
     const loadData = () => {
       const updated = getStoredSKUs();
@@ -81,7 +77,7 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
   });
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-clip bg-[#FAFAF8] dark:bg-[#0A0A0A] text-brand-black dark:text-white transition-colors duration-300 select-none relative font-body">
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-clip bg-[#FAFAF8] dark:bg-[#0A0A0A] text-neutral-950 dark:text-white transition-colors duration-300 select-none relative font-body">
       {/* Brand Splash Screen Intro Overlay */}
       {showSplash && (
         <div className="fixed inset-0 z-[99999] pointer-events-none transition-opacity duration-300">
@@ -99,36 +95,39 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
         {/* 1. Full-Bleed Editorial Hero Banner */}
         <HeroSection settings={settings} />
 
-        {/* 2. High-Voltage Slogan Marquee (Comet / Gully Labs Style) */}
+        {/* 2. High-Voltage Red Slogan Marquee */}
         <ElectricTicker />
 
-        {/* 3. FEATURED SNEAKER & FOOTWEAR DROPS SLIDER */}
-        <section className="py-16 sm:py-28 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-8 sm:space-y-14">
+        {/* 3. DEDICATED SHOP MEN & SHOP WOMEN SHOWCASE */}
+        <ShopByGenderSections />
+
+        {/* 4. FEATURED SNEAKER & FOOTWEAR DROPS SLIDER */}
+        <section className="py-14 sm:py-24 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 transition-colors relative select-none">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-8 space-y-8 sm:space-y-12">
             
             {/* Header & Gender Filter Tabs */}
             <ScrollReveal direction="up">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                <div className="space-y-2">
-                  <span className="text-[11px] font-mono font-bold tracking-[0.25em] text-brand-stone uppercase flex items-center gap-1.5">
-                    <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> New Season Releases
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
+                <div className="space-y-1.5">
+                  <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.25em] text-[#E60000] uppercase flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5 text-[#E60000] fill-current" /> New Season Releases
                   </span>
-                  <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-brand-black dark:text-white">
+                  <h2 className="font-heading text-2xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
                     Featured Drops
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-auto flex-wrap">
+                <div className="flex items-center gap-3 sm:gap-6 self-start sm:self-auto flex-wrap">
                   {/* Gender Filter Tabs */}
                   <div className="flex items-center gap-px bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800">
                     {(['All', 'Men', 'Women'] as const).map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
-                        className={`px-5 py-2.5 text-xs font-heading font-black uppercase tracking-wider transition-all duration-200 ${
+                        className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-heading font-black uppercase tracking-wider transition-all duration-200 ${
                           selectedTab === tab
                             ? 'bg-black text-white dark:bg-white dark:text-black'
-                            : 'text-brand-stone hover:text-brand-black dark:hover:text-white hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50'
+                            : 'text-neutral-500 hover:text-black dark:hover:text-white hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50'
                         }`}
                       >
                         {tab}
@@ -138,7 +137,7 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
 
                   <Link
                     href="/collections"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-brand-black dark:text-white hover:text-red-600 dark:hover:text-red-500 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-neutral-950 dark:text-white hover:text-[#E60000] transition-colors"
                   >
                     <span>View All ({displayedSkus.length})</span>
                     <ArrowRight className="w-4 h-4" />
@@ -150,12 +149,12 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
             {/* Product Slider Track */}
             {displayedSkus.length === 0 ? (
               <div className="text-center py-16 bg-[#F4F2EE] dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
-                <p className="text-brand-stone text-xs font-medium uppercase">
+                <p className="text-neutral-400 text-xs font-medium uppercase">
                   No products in this category yet
                 </p>
                 <Link
                   href="/admin"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-brand-black text-white font-semibold text-xs uppercase"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-semibold text-xs uppercase"
                 >
                   <Plus className="w-4 h-4" /> Add First Footwear
                 </Link>
@@ -169,44 +168,44 @@ export default function HomePageClient({ initialSkus, initialSettings }: HomePag
           </div>
         </section>
 
-        {/* 4. MID-ROLL 3D SNEAKER STACK SHOWCASE */}
+        {/* 5. MID-ROLL 3D SNEAKER STACK SHOWCASE */}
         <EditorialShowcase />
 
-        {/* 5. INTERACTIVE "SHOP THE LOOK" / LOOKBOOK WITH HOTSPOTS */}
+        {/* 6. INTERACTIVE "SHOP THE LOOK" / LOOKBOOK WITH REAL CAMPAIGN PHOTOS */}
         <LookbookSection />
 
-        {/* 6. BEST SELLERS CURATED CAROUSEL */}
+        {/* 7. BEST SELLERS CURATED CAROUSEL */}
         <BestsellerSection skus={skus} />
 
-        {/* 7. 2x2 DARK EDITORIAL CATEGORY TILES (COMET STYLE) */}
+        {/* 8. 2x2 DARK EDITORIAL CATEGORY TILES */}
         <EditorialCategoryGrid />
 
-        {/* 8. "WHAT THEY'RE SAYING?" LUXURY ON-FOOT REVIEW & PRESS LOGOS */}
+        {/* 9. "WHAT THEY'RE SAYING?" LUXURY ON-FOOT REVIEW & PRESS LOGOS */}
         <PressReviewSection />
 
-        {/* 9. "SHOP THE FEED" UGC SOCIAL REELS */}
+        {/* 10. "SHOP THE FEED" COMMUNITY CAMPAIGN */}
         <SocialFeedSection />
 
-        {/* 10. THE BLISS PROMISE — compact horizontal strip instead of repeated card grid */}
-        <section className="py-12 sm:py-20 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 select-none">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-neutral-200/70 dark:divide-neutral-800">
+        {/* 11. THE BLISS PROMISE */}
+        <section className="py-10 sm:py-16 bg-white dark:bg-[#0E0E0E] border-b border-neutral-200/60 dark:border-neutral-800/60 select-none">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-neutral-200 dark:divide-neutral-800">
               {[
                 { stat: '180g', label: 'Featherlight build per pair' },
                 { stat: '7-Day', label: 'Easy no-questions returns' },
                 { stat: '4.9★', label: 'Avg rating across all styles' },
                 { stat: '100%', label: 'Non-toxic skin-safe materials' },
               ].map((item, i) => (
-                <div key={i} className="px-4 sm:px-8 py-6 text-center first:pl-0 last:pr-0">
-                  <p className="font-heading text-2xl sm:text-3xl font-black text-brand-black dark:text-white tracking-tight">{item.stat}</p>
-                  <p className="text-xs text-brand-stone font-medium mt-1 leading-snug">{item.label}</p>
+                <div key={i} className="px-3 sm:px-8 py-4 sm:py-6 text-center first:pl-0 last:pr-0">
+                  <p className="font-heading text-xl sm:text-3xl font-black text-neutral-950 dark:text-white tracking-tight">{item.stat}</p>
+                  <p className="text-[10px] sm:text-xs text-neutral-400 font-medium mt-1 leading-snug">{item.label}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* 11. PARTNERS MARQUEE STRIP */}
+        {/* 12. PARTNERS MARQUEE STRIP */}
         <PressMarquee />
 
       </main>

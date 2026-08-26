@@ -380,7 +380,7 @@ export function CollectionsClient({
             <button
               type="button"
               onClick={resetAllFilters}
-              className="px-6 py-3 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-mono font-black text-xs uppercase tracking-widest transition-all border border-black"
+              className="px-6 py-3 bg-black hover:bg-[#E60000] hover:text-white text-white font-mono font-black text-xs uppercase tracking-widest transition-all border border-black"
             >
               RESET FILTERS
             </button>
@@ -399,7 +399,7 @@ export function CollectionsClient({
                 <button
                   type="button"
                   onClick={() => setVisibleCount(prev => prev + 24)}
-                  className="px-8 py-3.5 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-heading font-black text-xs uppercase tracking-widest transition-all border-2 border-black dark:border-white shadow-md"
+                  className="px-8 py-3.5 bg-black hover:bg-[#E60000] hover:text-white text-white font-heading font-black text-xs uppercase tracking-widest transition-all border-2 border-black dark:border-white shadow-md"
                 >
                   SHOW MORE ({filtered.length - visibleCount} REMAINING)
                 </button>
@@ -596,7 +596,7 @@ export function CollectionsClient({
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen(false)}
-                  className="flex-1 py-3 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-mono font-black text-xs uppercase tracking-widest transition-all text-center border-2 border-black dark:border-white shadow-md"
+                  className="flex-1 py-3 bg-black hover:bg-[#E60000] hover:text-white text-white font-mono font-black text-xs uppercase tracking-widest transition-all text-center border-2 border-black dark:border-white shadow-md"
                 >
                   APPLY FILTERS
                 </button>
