@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, X, ArrowRight, ExternalLink } from 'lucide-react';
+import { Search, X, ArrowRight } from 'lucide-react';
 import { FootwearSKU } from '@/lib/types';
 
 interface SearchModalProps {
@@ -26,39 +26,39 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, skus 
       );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-16 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl bg-neutral-950 dark:bg-neutral-950 light:bg-white rounded-2xl border border-neutral-800 dark:border-neutral-800 light:border-slate-300 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-2xl bg-white dark:bg-black border-2 border-black dark:border-white shadow-2xl overflow-hidden max-h-[85vh] flex flex-col font-mono text-neutral-950 dark:text-white">
         
         {/* Search Input Bar */}
-        <div className="p-4 border-b border-neutral-800 dark:border-neutral-800 light:border-slate-200 flex items-center gap-3">
-          <Search className="w-5 h-5 text-red-500 shrink-0" />
+        <div className="p-4 border-b-2 border-black dark:border-neutral-800 flex items-center gap-3 bg-neutral-50 dark:bg-neutral-950">
+          <Search className="w-5 h-5 text-neutral-400 shrink-0" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search slippers, sandals, slides, clogs, shoes..."
+            placeholder="SEARCH SLIPPERS, SLIDES, SANDALS, SNEAKERS..."
             autoFocus
-            className="w-full bg-transparent text-white dark:text-white light:text-slate-900 font-mono text-sm placeholder:text-neutral-500 focus:outline-none"
+            className="w-full bg-transparent text-neutral-950 dark:text-white font-mono font-bold text-xs uppercase placeholder:text-neutral-400 focus:outline-none"
           />
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-neutral-400 hover:text-white transition-colors"
+            className="p-1 border border-neutral-300 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search Results */}
-        <div className="max-h-96 overflow-y-auto p-4 space-y-3">
+        <div className="max-h-96 overflow-y-auto p-4 space-y-2">
           {query.trim() === '' ? (
-            <div className="text-center py-8 space-y-2">
-              <p className="text-xs font-mono text-neutral-400">Type to search footwear catalog</p>
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {['Slippers', 'Slides', 'Sandals', 'Clogs', 'Casual Shoes'].map(cat => (
+            <div className="text-center py-8 space-y-3">
+              <p className="text-xs font-mono font-bold text-neutral-400 uppercase">POPULAR CATEGORIES</p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                {['Slippers', 'Slides', 'Sandals', 'Clogs', 'Sneakers'].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setQuery(cat)}
-                    className="text-[10px] font-mono uppercase bg-neutral-900 dark:bg-neutral-900 light:bg-slate-100 text-neutral-300 px-3 py-1 rounded-full border border-neutral-800 hover:border-red-500"
+                    className="text-[10px] font-mono font-black uppercase bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                   >
                     {cat}
                   </button>
@@ -66,62 +66,36 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, skus 
               </div>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-8 text-xs font-mono text-neutral-400">
-              No footwear matching "{query}" found.
+            <div className="text-center py-8 text-xs font-mono text-neutral-400 uppercase">
+              No footwear matching &quot;{query}&quot; found.
             </div>
           ) : (
             filtered.map((sku) => (
               <div
                 key={sku.id}
-                className="p-3 rounded-xl bg-neutral-900/60 dark:bg-neutral-900/60 light:bg-slate-50 border border-neutral-800 dark:border-neutral-800 light:border-slate-200 flex items-center justify-between hover:border-red-500/50 transition-all"
+                className="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between hover:border-black dark:hover:border-white transition-all"
               >
                 <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[9px] font-mono uppercase font-bold text-red-500 bg-red-950/60 px-1.5 py-0.5 rounded">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[9px] font-mono uppercase font-black bg-black text-white px-1.5 py-0.5">
                       {sku.gender}
                     </span>
-                    <span className="text-[9px] font-mono text-neutral-400">{sku.category}</span>
+                    <span className="text-[9px] font-mono text-neutral-400 uppercase">{sku.category}</span>
                   </div>
-                  <p className="font-heading text-lg font-bold text-white dark:text-white light:text-slate-950 uppercase">
+                  <p className="font-heading text-sm font-black text-neutral-950 dark:text-white uppercase">
                     {sku.title}
                   </p>
-                  <p className="font-mono text-xs font-bold text-white">₹{sku.price.toLocaleString('en-IN')}</p>
+                  <p className="font-mono text-xs font-bold text-neutral-950 dark:text-white">₹{sku.price.toLocaleString('en-IN')}</p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/product/${sku.id}`}
-                    onClick={onClose}
-                    className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-[10px] uppercase flex items-center gap-1"
-                  >
-                    <span>VIEW</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-
-                  {sku.amazonUrl && sku.amazonUrl.trim() !== '' && (
-                    <a
-                      href={sku.amazonUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-black font-mono font-bold text-[10px] uppercase flex items-center gap-1"
-                    >
-                      <span>Amazon</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-
-                  {sku.myntraUrl && sku.myntraUrl.trim() !== '' && (
-                    <a
-                      href={sku.myntraUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-mono font-bold text-[10px] uppercase flex items-center gap-1"
-                    >
-                      <span>Myntra</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
+                <Link
+                  href={`/product/${sku.id}`}
+                  onClick={onClose}
+                  className="px-3.5 py-2 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-heading font-black text-[10px] uppercase flex items-center gap-1 border border-black transition-colors"
+                >
+                  <span>VIEW</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
             ))
           )}

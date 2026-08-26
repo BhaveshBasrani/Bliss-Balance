@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
-import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, fetchCloudSettings, getStoredReviews, saveStoredReviews, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
-import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats } from '@/lib/supabaseClient';
+import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, fetchCloudSettings, getStoredReviews, saveStoredReviews, getStoredSubscribers, deleteStoredSubscriber, saveStoredSubscribers, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
+import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats, fetchSupabaseSubscribers } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
-import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide } from '@/lib/types';
+import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide, NewsletterSubscriber } from '@/lib/types';
 import {
   Shield,
   Plus,
@@ -33,6 +33,8 @@ import {
   Palette,
   Image as ImageIcon,
   Zap,
+  Download,
+  Users,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -45,7 +47,7 @@ export default function AdminPage() {
   // Data State
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
-  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs' | 'reviews'>('skus');
+  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs' | 'reviews' | 'subscribers'>('skus');
 
   // Dynamic Ticker Offer Items State (Learned from Brindavanam)
   const [tickerItems, setTickerItems] = useState<string[]>([]);
@@ -55,6 +57,70 @@ export default function AdminPage() {
 
   // Admin Customer Reviews State
   const [allReviews, setAllReviews] = useState<ProductReview[]>([]);
+
+  // Admin Newsletter Subscribers State
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [subscriberSearch, setSubscriberSearch] = useState('');
+  const [isFetchingSubscribers, setIsFetchingSubscribers] = useState(false);
+
+  useEffect(() => {
+    const loadSubscribers = () => {
+      const stored = getStoredSubscribers();
+      setSubscribers(stored);
+    };
+    loadSubscribers();
+
+    // Also attempt to fetch latest from Supabase if available
+    fetchSupabaseSubscribers().then((remote) => {
+      if (Array.isArray(remote) && remote.length > 0) {
+        // Merge with local
+        const local = getStoredSubscribers();
+        const mergedMap = new Map<string, NewsletterSubscriber>();
+        local.forEach(s => mergedMap.set(s.email.toLowerCase(), s));
+        remote.forEach(s => mergedMap.set(s.email.toLowerCase(), s));
+        const merged = Array.from(mergedMap.values());
+        saveStoredSubscribers(merged);
+        setSubscribers(merged);
+      }
+    }).catch(() => {});
+
+    window.addEventListener('subscribers-updated', loadSubscribers);
+    return () => window.removeEventListener('subscribers-updated', loadSubscribers);
+  }, []);
+
+  const handleDeleteSubscriber = (id: string) => {
+    deleteStoredSubscriber(id);
+    setSubscribers(prev => prev.filter(s => s.id !== id));
+    showStatus('info', 'Subscriber removed.');
+    addLog(`Deleted subscriber (${id})`, 'ACTION');
+  };
+
+  const handleExportSubscribersCSV = () => {
+    if (subscribers.length === 0) {
+      showStatus('error', 'No subscribers available to export.');
+      return;
+    }
+
+    const headers = ['Email', 'Phone', 'Country Code', 'Source', 'Date Subscribed'];
+    const rows = subscribers.map(s => [
+      `"${s.email}"`,
+      `"${s.phone || ''}"`,
+      `"${s.countryCode || '+91'}"`,
+      `"${s.source || 'newsletter_modal'}"`,
+      `"${new Date(s.createdAt).toLocaleString()}"`,
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `bliss_balance_subscribers_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showStatus('success', 'Subscribers exported to CSV successfully!');
+  };
+
 
   useEffect(() => {
     if (settings.announcementText) {
@@ -894,6 +960,18 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
               }`}
             >
               5. REVIEWS MANAGER ({allReviews.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('subscribers')}
+              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-1.5 ${
+                activeTab === 'subscribers'
+                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>6. SUBSCRIBERS ({subscribers.length})</span>
             </button>
           </div>
 
@@ -2021,6 +2099,109 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 6: NEWSLETTER SUBSCRIBERS */}
+          {activeTab === 'subscribers' && (
+            <div className="max-w-5xl mx-auto bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                    <Users className="w-6 h-6 text-red-600" /> NEWSLETTER SUBSCRIBERS [{subscribers.length}]
+                  </h3>
+                  <p className="text-xs text-neutral-500 font-mono font-bold pt-1">
+                    Manage VIP club signups, marketing email leads & phone numbers.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleExportSubscribersCSV}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-black uppercase rounded-xl transition-all flex items-center gap-2 shadow-sm"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>EXPORT TO CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Search Bar */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={subscriberSearch}
+                  onChange={(e) => setSubscriberSearch(e.target.value)}
+                  placeholder="Filter subscribers by email or phone..."
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:border-red-600"
+                />
+                {subscriberSearch && (
+                  <button
+                    onClick={() => setSubscriberSearch('')}
+                    className="px-3 py-2 text-xs font-mono font-bold bg-neutral-200 dark:bg-neutral-800 rounded-xl hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                  >
+                    CLEAR
+                  </button>
+                )}
+              </div>
+
+              {/* Subscribers List Table */}
+              {subscribers.length === 0 ? (
+                <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-950 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-2">
+                  <Mail className="w-8 h-8 text-neutral-400 mx-auto" />
+                  <p className="text-xs text-neutral-500 font-mono font-bold">No newsletter subscribers yet.</p>
+                  <p className="text-[11px] text-neutral-400">
+                    When visitors enter their email & phone in the website popup, they will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                  {subscribers
+                    .filter(s => {
+                      if (!subscriberSearch.trim()) return true;
+                      const q = subscriberSearch.toLowerCase();
+                      return (s.email && s.email.toLowerCase().includes(q)) || (s.phone && s.phone.includes(q));
+                    })
+                    .map((sub) => (
+                      <div
+                        key={sub.id}
+                        className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
+                      >
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-2.5 flex-wrap">
+                            <span className="font-black text-neutral-950 dark:text-white font-body text-sm">
+                              {sub.email}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold">
+                              {sub.source || 'Newsletter Popup'}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-4 text-neutral-500 text-[11px] flex-wrap">
+                            {sub.phone ? (
+                              <span className="font-bold text-neutral-700 dark:text-neutral-300">
+                                📞 {sub.phone}
+                              </span>
+                            ) : (
+                              <span className="text-neutral-400 italic">No phone provided</span>
+                            )}
+                            <span>•</span>
+                            <span>{new Date(sub.createdAt).toLocaleString()}</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSubscriber(sub.id)}
+                          className="px-3 py-1.5 bg-red-600 hover:bg-neutral-900 text-white text-xs font-mono font-black uppercase rounded-lg transition-all shrink-0 self-end sm:self-center"
+                        >
+                          DELETE ✕
+                        </button>
+                      </div>
+                    ))}
                 </div>
               )}
             </div>

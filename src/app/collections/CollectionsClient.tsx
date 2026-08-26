@@ -100,52 +100,32 @@ export function CollectionsClient({
     if (initialGender) setSelectedGenders([initialGender]);
   }, [initialGender]);
 
-  useEffect(() => {
-    if (filterParam === 'bestseller') setSortOption('bestsellers');
-    else if (filterParam === 'new') setSortOption('new');
-  }, [filterParam]);
+  // Filtering Logic
+  let filtered = safeSkus.filter((sku: FootwearSKU) => {
+    if (!sku) return false;
 
-  // Lock body scroll when filter drawer is open
-  useEffect(() => {
-    if (isFilterDrawerOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isFilterDrawerOpen]);
-
-  // Filter Logic
-  let filtered = skus.filter((sku) => {
-    // Gender Filter
     if (selectedGenders.length > 0) {
-      const match = selectedGenders.some(g => {
-        if (g === 'Kids') {
-          return sku.gender === 'Kids' || sku.gender === 'Unisex' || sku.category.toLowerCase().includes('kids');
-        }
-        return sku.gender === g || sku.gender === 'Unisex';
-      });
-      if (!match) return false;
+      const gMatch = selectedGenders.some(
+        g => g.toLowerCase() === (sku.gender || '').toLowerCase() || (sku.gender || '').toLowerCase() === 'unisex'
+      );
+      if (!gMatch) return false;
     }
 
-    // Category Filter
     if (selectedCategories.length > 0) {
-      const match = selectedCategories.some(c => sku.category.toLowerCase() === c.toLowerCase() || sku.category.toLowerCase().includes(c.toLowerCase()));
-      if (!match) return false;
+      const cMatch = selectedCategories.some(
+        c => c.toLowerCase() === (sku.category || '').toLowerCase()
+      );
+      if (!cMatch) return false;
     }
 
-    // Size Filter
     if (selectedSizes.length > 0) {
-      const match = selectedSizes.some(sz => {
-        const fullSize = sz.startsWith('UK') ? sz : `UK ${sz}`;
-        return sku.sizes && sku.sizes.includes(fullSize);
+      const sMatch = selectedSizes.some(sz => {
+        const skuSizes = sku.sizes || [];
+        return skuSizes.some((s: string) => s.toLowerCase().includes(sz.toLowerCase()));
       });
-      if (!match) return false;
+      if (!sMatch) return false;
     }
 
-    // Color Filter
     if (selectedColors.length > 0) {
       const match = selectedColors.some(clr => {
         const hasColor = (sku.colorVariants || []).some((cv: ColorVariant) => (cv.name || '').toLowerCase().includes(clr.toLowerCase()));
@@ -207,89 +187,89 @@ export function CollectionsClient({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-black text-neutral-900 dark:text-white font-mono select-none">
+    <div className="flex flex-col min-h-screen bg-[#FAFAF8] dark:bg-[#0A0A0A] text-neutral-900 dark:text-white font-mono select-none">
       <Navbar onOpenSearch={() => setSearchOpen(true)} />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 w-full">
+      <main className="flex-1 max-w-[1400px] mx-auto px-5 sm:px-8 py-8 space-y-6 w-full">
         
         {/* Page Header */}
-        <div className="space-y-2 border-b border-neutral-200 dark:border-neutral-800 pb-4">
-          <span className="text-[10px] font-mono font-black tracking-widest text-red-600 uppercase">
+        <div className="space-y-1.5 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+          <span className="text-[10px] font-mono font-black tracking-widest text-neutral-400 uppercase">
             {badgeText}
           </span>
-          <h1 className="font-heading text-3xl sm:text-5xl font-black text-neutral-950 dark:text-white uppercase tracking-tighter">
+          <h1 className="font-heading text-3xl sm:text-5xl font-black text-neutral-950 dark:text-white uppercase tracking-tight">
             {pageTitle}
           </h1>
         </div>
 
-        {/* ULTRA-SLEEK MINIMALIST TOP FILTER & SORT BAR */}
+        {/* TOP FILTER & SORT BAR */}
         <div className="flex items-center justify-between py-3 border-b border-neutral-200 dark:border-neutral-800 font-mono text-xs">
           
-          {/* Left: Active Product Count */}
-          <div className="text-neutral-500 font-bold uppercase tracking-wider">
+          {/* Active Count */}
+          <div className="text-neutral-400 font-bold uppercase tracking-wider text-[11px]">
             {filtered.length} {filtered.length === 1 ? 'PRODUCT' : 'PRODUCTS'}
           </div>
 
-          {/* Right Actions: Sort By & Filters Buttons */}
+          {/* Sort By & Filters Buttons */}
           <div className="flex items-center gap-6 relative">
             
-            {/* SORT BY DROPDOWN TRIGGER */}
+            {/* SORT BY DROPDOWN */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="flex items-center gap-2 font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors py-1"
+                className="flex items-center gap-2 font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors py-1"
               >
                 <ArrowUpDown className="w-3.5 h-3.5" />
                 <span>Sort By</span>
               </button>
 
-              {/* SORT DROPDOWN POPUP MENU */}
+              {/* SORT DROPDOWN POPUP */}
               {isSortDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setIsSortDropdownOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-2xl z-40 py-2 font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-neutral-900 border-2 border-black dark:border-white shadow-2xl z-40 py-2 font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
                     <button
                       type="button"
                       onClick={() => { setSortOption('bestsellers'); setIsSortDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-3 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'bestsellers' ? 'text-red-600 font-black' : 'text-neutral-700 dark:text-neutral-300'}`}
+                      className={`w-full text-left px-4 py-2.5 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'bestsellers' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-neutral-700 dark:text-neutral-300'}`}
                     >
                       <span className="flex items-center gap-1.5">
-                        <Flame className="w-3.5 h-3.5 text-red-600 fill-red-600" /> Bestsellers
+                        <Flame className="w-3.5 h-3.5" /> Bestsellers
                       </span>
-                      {sortOption === 'bestsellers' && <Check className="w-3.5 h-3.5 text-red-600" />}
+                      {sortOption === 'bestsellers' && <Check className="w-3.5 h-3.5" />}
                     </button>
                     <button
                       type="button"
                       onClick={() => { setSortOption('trending'); setIsSortDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-3 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'trending' ? 'text-red-600 font-black' : 'text-neutral-700 dark:text-neutral-300'}`}
+                      className={`w-full text-left px-4 py-2.5 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'trending' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-neutral-700 dark:text-neutral-300'}`}
                     >
                       <span>Trending</span>
-                      {sortOption === 'trending' && <Check className="w-3.5 h-3.5 text-red-600" />}
+                      {sortOption === 'trending' && <Check className="w-3.5 h-3.5" />}
                     </button>
                     <button
                       type="button"
                       onClick={() => { setSortOption('new'); setIsSortDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-3 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'new' ? 'text-red-600 font-black' : 'text-neutral-700 dark:text-neutral-300'}`}
+                      className={`w-full text-left px-4 py-2.5 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'new' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-neutral-700 dark:text-neutral-300'}`}
                     >
-                      <span>New</span>
-                      {sortOption === 'new' && <Check className="w-3.5 h-3.5 text-red-600" />}
+                      <span>New Launches</span>
+                      {sortOption === 'new' && <Check className="w-3.5 h-3.5" />}
                     </button>
                     <button
                       type="button"
                       onClick={() => { setSortOption('price-high-low'); setIsSortDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-3 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'price-high-low' ? 'text-red-600 font-black' : 'text-neutral-700 dark:text-neutral-300'}`}
+                      className={`w-full text-left px-4 py-2.5 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'price-high-low' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-neutral-700 dark:text-neutral-300'}`}
                     >
                       <span>Price High → Low</span>
-                      {sortOption === 'price-high-low' && <Check className="w-3.5 h-3.5 text-red-600" />}
+                      {sortOption === 'price-high-low' && <Check className="w-3.5 h-3.5" />}
                     </button>
                     <button
                       type="button"
                       onClick={() => { setSortOption('price-low-high'); setIsSortDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-3 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'price-low-high' ? 'text-red-600 font-black' : 'text-neutral-700 dark:text-neutral-300'}`}
+                      className={`w-full text-left px-4 py-2.5 font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between ${sortOption === 'price-low-high' ? 'bg-black text-white dark:bg-white dark:text-black' : 'text-neutral-700 dark:text-neutral-300'}`}
                     >
                       <span>Price Low → High</span>
-                      {sortOption === 'price-low-high' && <Check className="w-3.5 h-3.5 text-red-600" />}
+                      {sortOption === 'price-low-high' && <Check className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </>
@@ -300,12 +280,12 @@ export function CollectionsClient({
             <button
               type="button"
               onClick={() => setIsFilterDrawerOpen(true)}
-              className="flex items-center gap-2 font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 hover:text-red-600 transition-colors py-1"
+              className="flex items-center gap-2 font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors py-1"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>Filters</span>
               {activeFilterCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-red-600 text-white text-[9px] font-black flex items-center justify-center">
+                <span className="bg-black text-white dark:bg-white dark:text-black text-[9px] font-black px-1.5 py-0.5 leading-none">
                   {activeFilterCount}
                 </span>
               )}
@@ -314,22 +294,22 @@ export function CollectionsClient({
           </div>
         </div>
 
-        {/* ACTIVE FILTER PILLS */}
+        {/* ACTIVE FILTER TAGS */}
         {activeFilterCount > 0 && (
-          <div className="flex flex-wrap items-center gap-2 pt-2">
+          <div className="flex flex-wrap items-center gap-2 pt-1">
             <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
-              Active Filters:
+              Active:
             </span>
             {selectedCategories.map(cat => (
               <span
                 key={cat}
-                className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white text-[11px] font-bold"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black text-white dark:bg-white dark:text-black text-[10px] font-bold uppercase"
               >
                 {cat}
                 <button
                   type="button"
                   onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== cat))}
-                  className="hover:text-red-600"
+                  className="hover:opacity-60"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -338,13 +318,13 @@ export function CollectionsClient({
             {selectedGenders.map(g => (
               <span
                 key={g}
-                className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white text-[11px] font-bold"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black text-white dark:bg-white dark:text-black text-[10px] font-bold uppercase"
               >
                 {g}
                 <button
                   type="button"
                   onClick={() => setSelectedGenders(selectedGenders.filter(item => item !== g))}
-                  className="hover:text-red-600"
+                  className="hover:opacity-60"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -353,13 +333,13 @@ export function CollectionsClient({
             {selectedSizes.map(sz => (
               <span
                 key={sz}
-                className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white text-[11px] font-bold"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black text-white dark:bg-white dark:text-black text-[10px] font-bold uppercase"
               >
                 UK {sz}
                 <button
                   type="button"
                   onClick={() => setSelectedSizes(selectedSizes.filter(s => s !== sz))}
-                  className="hover:text-red-600"
+                  className="hover:opacity-60"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -368,13 +348,13 @@ export function CollectionsClient({
             {selectedColors.map(clr => (
               <span
                 key={clr}
-                className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white text-[11px] font-bold"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black text-white dark:bg-white dark:text-black text-[10px] font-bold uppercase"
               >
                 {clr}
                 <button
                   type="button"
                   onClick={() => setSelectedColors(selectedColors.filter(c => c !== clr))}
-                  className="hover:text-red-600"
+                  className="hover:opacity-60"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -384,25 +364,25 @@ export function CollectionsClient({
             <button
               type="button"
               onClick={resetAllFilters}
-              className="text-[11px] font-bold text-red-600 hover:underline uppercase tracking-wider ml-2 flex items-center gap-1"
+              className="text-[10px] font-mono font-bold text-neutral-500 hover:text-black dark:hover:text-white uppercase tracking-wider ml-2 flex items-center gap-1"
             >
-              <RotateCcw className="w-3 h-3" /> Clear All
+              <RotateCcw className="w-3 h-3" /> Reset
             </button>
           </div>
         )}
 
-        {/* MAIN PRODUCT CATALOG GRID */}
+        {/* MAIN CATALOG GRID */}
         {filtered.length === 0 ? (
-          <div className="text-center py-24 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
-            <p className="text-sm font-bold text-neutral-500 uppercase tracking-widest">
+          <div className="text-center py-24 bg-white dark:bg-[#101010] border border-neutral-200 dark:border-neutral-800 space-y-4">
+            <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
               NO FOOTWEAR MATCHES SELECTED FILTERS
             </p>
             <button
               type="button"
               onClick={resetAllFilters}
-              className="px-6 py-3 bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest transition-all rounded-xl shadow-sm"
+              className="px-6 py-3 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-mono font-black text-xs uppercase tracking-widest transition-all border border-black"
             >
-              RESET ALL FILTERS
+              RESET FILTERS
             </button>
           </div>
         ) : (
@@ -413,13 +393,13 @@ export function CollectionsClient({
               ))}
             </div>
 
-            {/* Load More Pagination Button */}
+            {/* Pagination */}
             {visibleCount < filtered.length && (
               <div className="text-center pt-8 border-t border-neutral-200 dark:border-neutral-800">
                 <button
                   type="button"
                   onClick={() => setVisibleCount(prev => prev + 24)}
-                  className="px-8 py-3 bg-neutral-950 dark:bg-white text-white dark:text-black font-black text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all rounded-xl shadow-md border border-neutral-900 dark:border-white"
+                  className="px-8 py-3.5 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-heading font-black text-xs uppercase tracking-widest transition-all border-2 border-black dark:border-white shadow-md"
                 >
                   SHOW MORE ({filtered.length - visibleCount} REMAINING)
                 </button>
@@ -433,39 +413,37 @@ export function CollectionsClient({
       {/* FILTER DRAWER MODAL */}
       {isFilterDrawerOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden">
-          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+            className="absolute inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-300"
             onClick={() => setIsFilterDrawerOpen(false)}
           />
 
-          {/* Slide-over Panel from Right */}
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white dark:bg-neutral-950 border-l border-neutral-200 dark:border-neutral-800 shadow-2xl flex flex-col font-mono">
+            <div className="w-screen max-w-md bg-white dark:bg-neutral-950 border-l-2 border-black dark:border-neutral-700 shadow-2xl flex flex-col font-mono">
               
               {/* Drawer Header */}
               <div className="p-6 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   <h2 className="font-heading text-xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
                     FILTERS
                   </h2>
                   <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">
-                    {filtered.length} matching products
+                    {filtered.length} products available
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen(false)}
-                  className="p-2 text-neutral-500 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-full transition-colors"
+                  className="p-2 border border-neutral-300 dark:border-neutral-700 hover:bg-black hover:text-white transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Drawer Scrollable Body */}
+              {/* Drawer Body */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 
-                {/* SIZE GRID (UK SIZES) */}
+                {/* SIZE GRID */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-neutral-900 dark:text-neutral-100">
                     <span>Size (UK)</span>
@@ -487,8 +465,8 @@ export function CollectionsClient({
                           }}
                           className={`py-2.5 text-xs font-black tracking-wider transition-all border ${
                             isSelected
-                              ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                              : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                              ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-sm'
+                              : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-black'
                           }`}
                         >
                           UK {sz}
@@ -504,14 +482,14 @@ export function CollectionsClient({
                     <span>Category</span>
                     <ChevronUp className="w-4 h-4 text-neutral-400" />
                   </div>
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {allCategories.map((cat) => {
                       const count = skus.filter(s => s.category.toLowerCase() === cat.toLowerCase()).length;
                       const isChecked = selectedCategories.includes(cat);
                       return (
                         <label
                           key={cat}
-                          className="flex items-center justify-between text-xs font-bold text-neutral-700 dark:text-neutral-300 cursor-pointer hover:text-red-600 transition-colors py-0.5"
+                          className="flex items-center justify-between text-xs font-bold text-neutral-700 dark:text-neutral-300 cursor-pointer hover:text-black dark:hover:text-white transition-colors py-0.5"
                         >
                           <div className="flex items-center gap-3">
                             <input
@@ -524,11 +502,11 @@ export function CollectionsClient({
                                   setSelectedCategories([...selectedCategories, cat]);
                                 }
                               }}
-                              className="w-4 h-4 rounded-md accent-red-600 border-neutral-300"
+                              className="w-4 h-4 accent-black dark:accent-white border-neutral-300"
                             />
                             <span>{cat}</span>
                           </div>
-                          <span className="text-neutral-400 text-[11px]">({count})</span>
+                          <span className="text-neutral-400 text-[10px]">({count})</span>
                         </label>
                       );
                     })}
@@ -541,13 +519,13 @@ export function CollectionsClient({
                     <span>Gender</span>
                     <ChevronUp className="w-4 h-4 text-neutral-400" />
                   </div>
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {['Men', 'Women', 'Kids', 'Unisex'].map((g) => {
                       const isChecked = selectedGenders.includes(g);
                       return (
                         <label
                           key={g}
-                          className="flex items-center justify-between text-xs font-bold text-neutral-700 dark:text-neutral-300 cursor-pointer hover:text-red-600 transition-colors py-0.5"
+                          className="flex items-center justify-between text-xs font-bold text-neutral-700 dark:text-neutral-300 cursor-pointer hover:text-black dark:hover:text-white transition-colors py-0.5"
                         >
                           <div className="flex items-center gap-3">
                             <input
@@ -560,7 +538,7 @@ export function CollectionsClient({
                                   setSelectedGenders([...selectedGenders, g]);
                                 }
                               }}
-                              className="w-4 h-4 rounded-md accent-red-600 border-neutral-300"
+                              className="w-4 h-4 accent-black dark:accent-white border-neutral-300"
                             />
                             <span>{g}</span>
                           </div>
@@ -582,7 +560,7 @@ export function CollectionsClient({
                       return (
                         <label
                           key={clr}
-                          className="flex items-center gap-2.5 text-xs font-bold text-neutral-700 dark:text-neutral-300 cursor-pointer hover:text-red-600 transition-colors py-0.5"
+                          className="flex items-center gap-2.5 text-xs font-bold text-neutral-700 dark:text-neutral-300 cursor-pointer hover:text-black dark:hover:text-white transition-colors py-0.5"
                         >
                           <input
                             type="checkbox"
@@ -594,7 +572,7 @@ export function CollectionsClient({
                                 setSelectedColors([...selectedColors, clr]);
                               }
                             }}
-                            className="w-4 h-4 rounded-md accent-red-600 border-neutral-300"
+                            className="w-4 h-4 accent-black dark:accent-white border-neutral-300"
                           />
                           <span>{clr}</span>
                         </label>
@@ -610,17 +588,17 @@ export function CollectionsClient({
                 <button
                   type="button"
                   onClick={resetAllFilters}
-                  className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 underline hover:text-red-600 transition-colors"
+                  className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500 hover:text-black dark:hover:text-white underline transition-colors"
                 >
-                  REMOVE ALL
+                  RESET ALL
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen(false)}
-                  className="flex-1 py-3 bg-red-600 hover:bg-neutral-950 text-white font-mono font-black text-xs uppercase tracking-widest transition-all text-center rounded-xl shadow-md"
+                  className="flex-1 py-3 bg-black hover:bg-[#E5FF00] hover:text-black text-white font-mono font-black text-xs uppercase tracking-widest transition-all text-center border-2 border-black dark:border-white shadow-md"
                 >
-                  APPLY
+                  APPLY FILTERS
                 </button>
               </div>
 

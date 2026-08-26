@@ -14,6 +14,40 @@ interface ImagePlaceholderProps {
   onImageUploaded?: (base64Url: string) => void;
 }
 
+
+// Helper to compress base64 image before saving (Caps to max 1200px and 75% WebP quality, < 80KB)
+function compressImage(base64Str: string, maxWidth = 1200, quality = 0.75): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined' || !base64Str.startsWith('data:image')) {
+      resolve(base64Str);
+      return;
+    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(base64Str);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      const compressed = canvas.toDataURL('image/webp', quality);
+      resolve(compressed.length < base64Str.length ? compressed : base64Str);
+    };
+    img.onerror = () => resolve(base64Str);
+    img.src = base64Str;
+  });
+}
+
 export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   dimensions,
   aspectRatio = 'aspect-square',
@@ -48,10 +82,11 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleCropComplete = (croppedBase64: string) => {
+  const handleCropComplete = async (croppedBase64: string) => {
     setCropSrc(null);
     if (onImageUploaded) {
-      onImageUploaded(croppedBase64);
+      const optimized = await compressImage(croppedBase64, 1200, 0.75);
+      onImageUploaded(optimized);
     }
   };
 

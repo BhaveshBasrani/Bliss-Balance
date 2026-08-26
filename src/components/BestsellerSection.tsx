@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Flame, Trophy, Sparkles } from 'lucide-react';
+import { ArrowRight, Flame } from 'lucide-react';
 import { FootwearSKU } from '@/lib/types';
 import { SkuCard } from './SkuCard';
 import { ScrollReveal } from './ScrollReveal';
@@ -17,29 +17,29 @@ export const BestsellerSection: React.FC<BestsellerSectionProps> = ({ skus }) =>
   const displayed = bestsellers.length > 0 ? bestsellers : safeSkus.slice(0, 4);
 
   return (
-    <section className="py-20 sm:py-28 bg-white dark:bg-black border-y border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
+    <section className="py-16 sm:py-28 bg-white dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
       
-      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-12 sm:space-y-16">
+      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-10 sm:space-y-14">
         
         {/* Section Header */}
         <ScrollReveal direction="up">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 text-brand-red text-[11px] font-bold uppercase tracking-wider">
-                <Flame className="w-3.5 h-3.5 fill-brand-red" />
-                <span>Ranked by Customer Choice</span>
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-[10px] font-mono font-bold uppercase tracking-widest border border-black">
+                <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span>CUSTOMER CHOICE RANKINGS</span>
               </div>
-              <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-brand-black dark:text-white">
+              <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
                 Our Best Sellers
               </h2>
-              <p className="text-sm text-brand-stone max-w-lg font-medium">
+              <p className="text-xs sm:text-sm text-neutral-500 max-w-lg font-medium">
                 The most sought-after orthopedic slippers, cushioned slides, and daily silhouettes trusted by thousands across India.
               </p>
             </div>
 
             <Link
               href="/collections"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-black dark:bg-white text-white dark:text-black font-body font-bold text-xs uppercase tracking-wider hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white transition-all duration-300 shadow-sm self-start sm:self-auto"
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E5FF00] hover:text-black hover:border-black transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
             >
               <span>Explore All Bestsellers</span>
               <ArrowRight className="w-4 h-4" />

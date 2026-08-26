@@ -1,4 +1,4 @@
-import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide, ProductReview } from './types';
+import { FootwearSKU, SiteSettings, CollectionItem, HeroSlide, ProductReview, NewsletterSubscriber } from './types';
 import { fetchSupabaseSKUs, fetchSupabaseSingleSKU, fetchSupabaseSettings, upsertSupabaseSettings } from './supabaseClient';
 import { INITIAL_SKUS } from './initialSkus';
 
@@ -296,6 +296,56 @@ export function saveStoredReviews(reviews: ProductReview[]) {
     window.dispatchEvent(new Event('reviews-updated'));
   } catch (e) {}
 }
+
+export const SUBSCRIBERS_STORAGE_KEY = 'bliss_balance_subscribers_v1';
+
+export function getStoredSubscribers(): NewsletterSubscriber[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(SUBSCRIBERS_STORAGE_KEY);
+    if (data) {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) return parsed;
+    }
+    return [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveStoredSubscribers(subscribers: NewsletterSubscriber[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(SUBSCRIBERS_STORAGE_KEY, JSON.stringify(subscribers));
+    window.dispatchEvent(new Event('subscribers-updated'));
+  } catch (e) {}
+}
+
+export function addStoredSubscriber(subscriber: Omit<NewsletterSubscriber, 'id' | 'createdAt'>): NewsletterSubscriber {
+  const all = getStoredSubscribers();
+  const existing = all.find(s => s.email.toLowerCase() === subscriber.email.toLowerCase());
+  if (existing) {
+    // Update phone if provided
+    const updated = all.map(s => s.email.toLowerCase() === subscriber.email.toLowerCase() ? { ...s, ...subscriber } : s);
+    saveStoredSubscribers(updated);
+    return { ...existing, ...subscriber };
+  }
+  const newSub: NewsletterSubscriber = {
+    ...subscriber,
+    id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+    createdAt: new Date().toISOString(),
+  };
+  all.unshift(newSub);
+  saveStoredSubscribers(all);
+  return newSub;
+}
+
+export function deleteStoredSubscriber(id: string) {
+  const all = getStoredSubscribers();
+  const filtered = all.filter(s => s.id !== id);
+  saveStoredSubscribers(filtered);
+}
+
 
 /**
  * ⚡ FETCH PRODUCTS (WITH 30-MINUTE SERVER/LOCAL CACHE - 99% SUPABASE EGRESS SAVINGS)

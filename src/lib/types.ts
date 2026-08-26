@@ -110,3 +110,13 @@ export interface ProductReview {
   verified: boolean;
   date: string;
 }
+
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  phone?: string;
+  countryCode?: string;
+  source?: string;
+  createdAt: string;
+}
+
