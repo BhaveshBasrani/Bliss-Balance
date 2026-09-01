@@ -234,36 +234,50 @@ export const SocialFeedSection: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-28 bg-white dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
-      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-10 sm:space-y-14">
+    <section ref={sectionRef} className="py-10 sm:py-24 bg-white dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 space-y-6 sm:space-y-12">
         
         {/* Header */}
         <ScrollReveal direction="up">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
             <div className="space-y-1">
-              <span className="text-[11px] font-mono font-bold tracking-[0.25em] text-[#E60000] uppercase flex items-center gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.25em] text-[#E60000] uppercase flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" /> Featured Style Reels
               </span>
-              <h2 className="font-heading text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
+              <h2 className="font-heading text-2xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
                 Shop The Feed
               </h2>
             </div>
-            <Link
-              href="/collections"
-              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
-            >
-              <span>Explore All Styles</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center justify-between sm:justify-end gap-3">
+              <span className="sm:hidden text-[10px] font-mono text-neutral-400 uppercase font-bold flex items-center gap-1">
+                Swipe drops 👉
+              </span>
+              <Link
+                href="/collections"
+                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
+              >
+                <span>Explore All Styles</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
         </ScrollReveal>
 
-        {/* 4-Column Autoplay Reel Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {/* DESKTOP: EXACT 100% ORIGINAL 4-COLUMN REELS GRID */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {feedItems.map((item, index) => (
             <ScrollReveal key={item.id} direction="up" delay={index * 0.07}>
               <ReelCard item={item} isInView={isInView} mounted={mounted} />
             </ScrollReveal>
+          ))}
+        </div>
+
+        {/* MOBILE: SWIPEABLE TOUCH REELS CAROUSEL */}
+        <div className="sm:hidden flex gap-3.5 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 no-scrollbar">
+          {feedItems.map((item, index) => (
+            <div key={item.id} className="w-[72vw] max-w-[280px] shrink-0 snap-center rounded-xl overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-800">
+              <ReelCard item={item} isInView={isInView} mounted={mounted} />
+            </div>
           ))}
         </div>
 

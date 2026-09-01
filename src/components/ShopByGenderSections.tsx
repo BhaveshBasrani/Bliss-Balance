@@ -42,23 +42,28 @@ export const ShopByGenderSections: React.FC = () => {
                 </p>
               </div>
 
-              <Link
-                href="/men"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E60000] hover:text-white transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
-              >
-                <span>View All Men&apos;s</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="flex items-center justify-between sm:justify-end gap-3">
+                <span className="md:hidden text-[10px] font-mono text-neutral-400 uppercase font-bold">
+                  Swipe styles 👉
+                </span>
+                <Link
+                  href="/men"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E60000] hover:text-white transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
+                >
+                  <span>View All Men&apos;s</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </ScrollReveal>
 
-          {/* 3-Column Men Collection Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
+          {/* DESKTOP: EXACT 100% ORIGINAL JOINED MODULAR GRID */}
+          <div className="hidden md:grid md:grid-cols-3 gap-px bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
             
             {/* Tile 1: Casual Sneakers */}
             <ScrollReveal direction="up" delay={0.05}>
               <Link
-                href="/collections/casual-shoes"
+                href="/collections/mens-casual-sneakers"
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
@@ -72,7 +77,7 @@ export const ShopByGenderSections: React.FC = () => {
                   <div>
                     <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Footwear Drop</span>
                     <h3 className="font-heading text-lg sm:text-xl font-black uppercase tracking-tight group-hover:text-[#E60000] transition-colors">
-                      Street Sneakers
+                      Casual & Sneakers
                     </h3>
                   </div>
                   <div className="w-8 h-8 bg-white text-black group-hover:bg-[#E60000] group-hover:text-white flex items-center justify-center transition-all shrink-0">
@@ -85,7 +90,7 @@ export const ShopByGenderSections: React.FC = () => {
             {/* Tile 2: Slides & Sandals */}
             <ScrollReveal direction="up" delay={0.1}>
               <Link
-                href="/collections/slides"
+                href="/collections/mens-slides-sandals"
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
@@ -112,7 +117,7 @@ export const ShopByGenderSections: React.FC = () => {
             {/* Tile 3: Ortho Slippers */}
             <ScrollReveal direction="up" delay={0.15}>
               <Link
-                href="/collections/slippers"
+                href="/collections/mens-slippers"
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
@@ -138,6 +143,89 @@ export const ShopByGenderSections: React.FC = () => {
 
           </div>
 
+          {/* MOBILE: SWIPEABLE TOUCH CAROUSEL */}
+          <div className="md:hidden flex gap-3.5 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 no-scrollbar">
+            
+            <div className="w-[75vw] max-w-[290px] shrink-0 snap-center rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-md">
+              <Link
+                href="/collections/mens-casual-sneakers"
+                className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
+              >
+                <img
+                  src={media.mensSneakersImage || '/collections/mens-casual-sneakers.jpg'}
+                  alt="Men Casual Sneakers"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center brightness-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-2 text-white">
+                  <div>
+                    <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Footwear Drop</span>
+                    <h3 className="font-heading text-base font-black uppercase tracking-tight">
+                      Casual & Sneakers
+                    </h3>
+                  </div>
+                  <div className="w-7 h-7 bg-white text-black flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            <div className="w-[75vw] max-w-[290px] shrink-0 snap-center rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-md">
+              <Link
+                href="/collections/mens-slides-sandals"
+                className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
+              >
+                <img
+                  src={media.mensSlidesImage || '/collections/mens-slides-sandals.jpg'}
+                  alt="Men Slides and Sandals"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center brightness-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-2 text-white">
+                  <div>
+                    <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Memory Foam</span>
+                    <h3 className="font-heading text-base font-black uppercase tracking-tight">
+                      Slides & Sandals
+                    </h3>
+                  </div>
+                  <div className="w-7 h-7 bg-white text-black flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            <div className="w-[75vw] max-w-[290px] shrink-0 snap-center rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-md">
+              <Link
+                href="/collections/mens-slippers"
+                className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
+              >
+                <img
+                  src={media.mensSlippersImage || '/collections/mens-slippers.jpg'}
+                  alt="Men Ortho Slippers"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center brightness-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-2 text-white">
+                  <div>
+                    <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Doctor Approved</span>
+                    <h3 className="font-heading text-base font-black uppercase tracking-tight">
+                      Ortho Slippers
+                    </h3>
+                  </div>
+                  <div className="w-7 h-7 bg-white text-black flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+          </div>
+
         </div>
       </section>
 
@@ -159,23 +247,28 @@ export const ShopByGenderSections: React.FC = () => {
                 </p>
               </div>
 
-              <Link
-                href="/women"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E60000] hover:text-white transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
-              >
-                <span>View All Women&apos;s</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="flex items-center justify-between sm:justify-end gap-3">
+                <span className="md:hidden text-[10px] font-mono text-neutral-400 uppercase font-bold">
+                  Swipe styles 👉
+                </span>
+                <Link
+                  href="/women"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-black text-white dark:bg-white dark:text-black font-heading font-black text-xs uppercase tracking-widest hover:bg-[#E60000] hover:text-white transition-all duration-200 border-2 border-black dark:border-white self-start sm:self-auto"
+                >
+                  <span>View All Women&apos;s</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </ScrollReveal>
 
-          {/* 3-Column Women Collection Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
+          {/* DESKTOP: EXACT 100% ORIGINAL JOINED MODULAR GRID */}
+          <div className="hidden md:grid md:grid-cols-3 gap-px bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
             
             {/* Tile 1: Sandals & Flats */}
             <ScrollReveal direction="up" delay={0.05}>
               <Link
-                href="/collections/sandals"
+                href="/collections/womens-sandals-flats"
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
@@ -202,7 +295,7 @@ export const ShopByGenderSections: React.FC = () => {
             {/* Tile 2: Clogs & Sneakers */}
             <ScrollReveal direction="up" delay={0.1}>
               <Link
-                href="/collections/clogs"
+                href="/collections/womens-clogs-sneakers"
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
@@ -229,7 +322,7 @@ export const ShopByGenderSections: React.FC = () => {
             {/* Tile 3: Slippers & Slides */}
             <ScrollReveal direction="up" delay={0.15}>
               <Link
-                href="/collections/slides"
+                href="/collections/womens-slippers-slides"
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
@@ -252,6 +345,89 @@ export const ShopByGenderSections: React.FC = () => {
                 </div>
               </Link>
             </ScrollReveal>
+
+          </div>
+
+          {/* MOBILE: SWIPEABLE TOUCH CAROUSEL */}
+          <div className="md:hidden flex gap-3.5 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 no-scrollbar">
+            
+            <div className="w-[75vw] max-w-[290px] shrink-0 snap-center rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-md">
+              <Link
+                href="/collections/womens-sandals-flats"
+                className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
+              >
+                <img
+                  src={media.womensSandalsImage || '/collections/womens-sandals-flats.jpg'}
+                  alt="Women Sandals and Flats"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center brightness-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-2 text-white">
+                  <div>
+                    <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Ergonomic Arch</span>
+                    <h3 className="font-heading text-base font-black uppercase tracking-tight">
+                      Sandals & Flats
+                    </h3>
+                  </div>
+                  <div className="w-7 h-7 bg-white text-black flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            <div className="w-[75vw] max-w-[290px] shrink-0 snap-center rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-md">
+              <Link
+                href="/collections/womens-clogs-sneakers"
+                className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
+              >
+                <img
+                  src={media.womensClogsImage || '/collections/womens-clogs-sneakers.jpg'}
+                  alt="Women Clogs and Sneakers"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center brightness-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-2 text-white">
+                  <div>
+                    <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Waterproof Foam</span>
+                    <h3 className="font-heading text-base font-black uppercase tracking-tight">
+                      Clogs & Sneakers
+                    </h3>
+                  </div>
+                  <div className="w-7 h-7 bg-white text-black flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            <div className="w-[75vw] max-w-[290px] shrink-0 snap-center rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-md">
+              <Link
+                href="/collections/womens-slippers-slides"
+                className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
+              >
+                <img
+                  src={media.womensSlippersImage || '/collections/womens-slippers-slides.jpg'}
+                  alt="Women Slippers and Slides"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center brightness-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute inset-x-4 bottom-4 z-10 flex items-end justify-between gap-2 text-white">
+                  <div>
+                    <span className="text-[9px] font-mono uppercase text-[#E60000] tracking-widest block font-bold">Cloud Comfort</span>
+                    <h3 className="font-heading text-base font-black uppercase tracking-tight">
+                      Slippers & Slides
+                    </h3>
+                  </div>
+                  <div className="w-7 h-7 bg-white text-black flex items-center justify-center shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </Link>
+            </div>
 
           </div>
 
