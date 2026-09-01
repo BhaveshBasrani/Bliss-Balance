@@ -211,9 +211,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                   onMouseEnter={() => setUserDropdownOpen(true)}
                   aria-label="Open Account Menu"
                   aria-expanded={userDropdownOpen}
-                  className="hover:opacity-50 transition-opacity py-2 flex items-center gap-1"
+                  className="hover:opacity-80 transition-opacity py-1.5 flex items-center gap-1.5"
                 >
-                  <UserIcon className="w-5 h-5" />
+                  {currentUser?.photoURL ? (
+                    <div className="w-6 h-6 rounded-full overflow-hidden border border-black dark:border-white shrink-0">
+                      <img
+                        src={currentUser.photoURL}
+                        alt={currentUser.displayName || 'Account'}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : currentUser ? (
+                    <div className="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-black border border-black shrink-0">
+                      {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : currentUser.email ? currentUser.email[0].toUpperCase() : 'U'}
+                    </div>
+                  ) : (
+                    <UserIcon className="w-5 h-5" />
+                  )}
                 </button>
 
                 {/* Account Dropdown */}
@@ -230,11 +245,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
 
                     {currentUser ? (
                       <>
-                        <div className="space-y-1">
-                          <p className="text-[10px] font-mono text-neutral-400 uppercase">Signed in as</p>
-                          <p className="text-sm font-heading font-black text-neutral-950 dark:text-white truncate">
-                            {currentUser.displayName || currentUser.email || 'Customer'}
-                          </p>
+                        <div className="flex items-center gap-3">
+                          {currentUser.photoURL ? (
+                            <div className="w-10 h-10 rounded-full overflow-hidden border border-black dark:border-white shrink-0">
+                              <img
+                                src={currentUser.photoURL}
+                                alt={currentUser.displayName || 'Profile'}
+                                referrerPolicy="no-referrer"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm border border-black shrink-0">
+                              {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : currentUser.email ? currentUser.email[0].toUpperCase() : 'U'}
+                            </div>
+                          )}
+                          <div className="space-y-0.5 min-w-0 flex-1">
+                            <p className="text-[10px] font-mono text-neutral-400 uppercase">Signed in as</p>
+                            <p className="text-sm font-heading font-black text-neutral-950 dark:text-white truncate">
+                              {currentUser.displayName || currentUser.email || 'Customer'}
+                            </p>
+                          </div>
                         </div>
 
                         <Link

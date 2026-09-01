@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: 'Bliss Balance | Comfortable Footwear for Everyday Life',
     description:
-      'Step into perfect balance. Premium comfort slippers, doctor sandals, cushioned slides, waterproof clogs & lifestyle sneakers. 100% Original, Free Delivery across India.',
+      'Step into perfect balance. Premium comfort slippers, doctor sandals, cushioned slides, waterproof clogs & lifestyle sneakers. 100% Original, Fast Delivery via Amazon across India.',
     siteName: 'Bliss Balance',
     images: [
       {

@@ -20,27 +20,25 @@ const EDITORIAL_REVIEWS: EditorialReview[] = [
     quote: 'Walked over 18,000 steps through ancient stone streets and airport terminals without an ounce of heel fatigue. The arch contouring is pure genius.',
     author: 'Aarav Mehta',
     location: 'Mumbai',
-    product: 'Bliss Apex Street Runner',
+    product: 'Bliss Balance BB1080 Sneaker',
   },
   {
     id: 'rev-2',
     headline: '"Doctor approved cushioning"',
-    quote: 'As an orthopedic surgeon who stands for 8+ hours a day, the memory foam sole and wave traction provide unparalleled shock absorption. I recommend these to all my patients.',
+    quote: 'As someone who stands for 8+ hours a day, the memory foam sole and wave traction provide unparalleled shock absorption and heel relief.',
     author: 'Dr. Radhika Sharma',
     location: 'Hyderabad',
-    product: 'Bliss Ortho Doctor Slipper',
+    product: 'Bliss Balance BB1019 Ortho Slipper',
   },
   {
     id: 'rev-3',
-    headline: '"Streetwear silhouette, sneaker comfort"',
-    quote: 'People stop me at cafes to ask where I got these. The colorways rival international brands at triple the price. 10/10.',
+    headline: '"Streetwear silhouette, everyday comfort"',
+    quote: 'People constantly ask me where I got these. The finish and all-day comfort rival international brands at triple the price. 10/10.',
     author: 'Karan Singhania',
     location: 'Bengaluru',
-    product: 'Bliss X-Lows "Shadow Grey"',
+    product: 'Bliss Balance BB1037 Doctor Sandal',
   },
 ];
-
-const PRESS_OUTLETS = ['VOGUE', 'GQ', 'COSMOPOLITAN', 'ELLE', 'ROLLING STONE', 'GRAZIA'];
 
 export const PressReviewSection: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -135,22 +133,6 @@ export const PressReviewSection: React.FC = () => {
               </div>
             </div>
 
-          </div>
-        </ScrollReveal>
-
-        {/* Press Strip */}
-        <ScrollReveal direction="up" delay={0.15}>
-          <div className="pt-2 space-y-4">
-            <p className="text-center text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-neutral-400">
-              As seen in
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10 gap-y-3">
-              {PRESS_OUTLETS.map((press) => (
-                <span key={press} className="font-heading font-black text-base sm:text-2xl tracking-tighter text-neutral-300 dark:text-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors cursor-default">
-                  {press}
-                </span>
-              ))}
-            </div>
           </div>
         </ScrollReveal>
 

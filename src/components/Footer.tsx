@@ -166,7 +166,7 @@ export const Footer: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-[#E60000]" />
                   <span className="font-heading font-black text-xs uppercase tracking-wider">
-                    THE BLISS CLUB
+                    THE BLISS BALANCE CLUB
                   </span>
                 </div>
                 <p className="text-[11px] text-neutral-400 leading-relaxed font-body">
