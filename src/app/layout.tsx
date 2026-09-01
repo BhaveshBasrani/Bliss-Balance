@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Syne, Plus_Jakarta_Sans, Outfit, Cormorant_Garamond } from 'next/font/google';
+import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import './globals.css';
 
 const syne = Syne({
@@ -281,6 +282,7 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning className="bg-white dark:bg-black text-neutral-900 dark:text-white font-mono antialiased selection:bg-red-600 selection:text-white overflow-x-hidden w-full">
+        <AnalyticsTracker />
         {children}
 
         {/* GOOGLE TAG / ANALYTICS (gtag.js) */}

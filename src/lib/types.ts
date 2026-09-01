@@ -82,6 +82,10 @@ export interface MediaSettings {
   lookbook2Image?: string;
   lookbook3Image?: string;
   lookbook4Image?: string;
+  lookbook1ReelUrl?: string;
+  lookbook2ReelUrl?: string;
+  lookbook3ReelUrl?: string;
+  lookbook4ReelUrl?: string;
   editorialStackImage?: string;
   newsletterBannerImage?: string;
 }
@@ -124,7 +128,8 @@ export interface ProductReview {
   headline: string;
   comment: string;
   verified: boolean;
-  date: string;
+  date?: string;
+  createdAt?: string;
 }
 
 export interface NewsletterSubscriber {
@@ -135,4 +140,22 @@ export interface NewsletterSubscriber {
   source?: string;
   createdAt: string;
 }
+
+export interface AnalyticsVisit {
+  id: string;
+  sessionId: string;
+  visitorId: string;
+  pagePath: string;
+  pageTitle?: string;
+  referrer?: string;
+  deviceType: string;
+  browser: string;
+  os: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  userEmail?: string;
+  createdAt: string;
+}
+
 

@@ -1,48 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Star, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, ChevronLeft, ChevronRight, CheckCircle, MessageSquare } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
-
-interface EditorialReview {
-  id: string;
-  headline: string;
-  quote: string;
-  author: string;
-  location: string;
-  product: string;
-}
-
-const EDITORIAL_REVIEWS: EditorialReview[] = [
-  {
-    id: 'rev-1',
-    headline: '"Built for the long haul"',
-    quote: 'Walked over 18,000 steps through ancient stone streets and airport terminals without an ounce of heel fatigue. The arch contouring is pure genius.',
-    author: 'Aarav Mehta',
-    location: 'Mumbai',
-    product: 'Bliss Balance BB1080 Sneaker',
-  },
-  {
-    id: 'rev-2',
-    headline: '"Doctor approved cushioning"',
-    quote: 'As someone who stands for 8+ hours a day, the memory foam sole and wave traction provide unparalleled shock absorption and heel relief.',
-    author: 'Dr. Radhika Sharma',
-    location: 'Hyderabad',
-    product: 'Bliss Balance BB1019 Ortho Slipper',
-  },
-  {
-    id: 'rev-3',
-    headline: '"Streetwear silhouette, everyday comfort"',
-    quote: 'People constantly ask me where I got these. The finish and all-day comfort rival international brands at triple the price. 10/10.',
-    author: 'Karan Singhania',
-    location: 'Bengaluru',
-    product: 'Bliss Balance BB1037 Doctor Sandal',
-  },
-];
+import { fetchSupabaseReviews } from '@/lib/supabaseClient';
+import { ProductReview } from '@/lib/types';
 
 export const PressReviewSection: React.FC = () => {
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const activeReview = EDITORIAL_REVIEWS[currentIndex];
+
+  useEffect(() => {
+    fetchSupabaseReviews().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setReviews(data);
+      }
+    });
+  }, []);
+
+  if (reviews.length === 0) {
+    return null; // Zero fake reviews: remains cleanly hidden until real customers submit reviews
+  }
+
+  const activeReview = reviews[currentIndex];
 
   return (
     <section className="py-14 sm:py-24 bg-[#F7F6F2] dark:bg-[#0D0D0D] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
@@ -51,8 +31,8 @@ export const PressReviewSection: React.FC = () => {
         {/* Header */}
         <ScrollReveal direction="up">
           <div className="space-y-1">
-            <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.25em] text-neutral-500 uppercase">
-              What They&apos;re Saying
+            <span className="text-[10px] sm:text-[11px] font-mono font-bold tracking-[0.25em] text-[#E60000] uppercase">
+              Verified Customer Feedback
             </span>
             <h2 className="font-heading text-2xl sm:text-5xl font-black uppercase tracking-tight text-neutral-950 dark:text-white">
               Loved Across India
@@ -67,8 +47,8 @@ export const PressReviewSection: React.FC = () => {
             {/* Left: Photo */}
             <div className="lg:col-span-5 relative min-h-[240px] sm:min-h-[420px] bg-neutral-900 overflow-hidden">
               <img
-                src="/editorial/review-onfoot.jpg"
-                alt="Bliss Balance On-Foot"
+                src="/editorial-streets.png"
+                alt="Bliss Balance Footwear"
                 loading="lazy"
                 className="w-full h-full object-cover object-center"
               />
@@ -77,11 +57,13 @@ export const PressReviewSection: React.FC = () => {
               {/* Active Product Tag */}
               <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-10 flex items-center justify-between px-3 py-2 bg-black/80 backdrop-blur-md border border-white/10 text-white">
                 <div>
-                  <span className="text-[9px] font-mono text-neutral-400 block uppercase">Worn In</span>
-                  <p className="text-[11px] sm:text-xs font-heading font-bold uppercase">{activeReview.product}</p>
+                  <span className="text-[9px] font-mono text-neutral-400 block uppercase">Product</span>
+                  <p className="text-[11px] sm:text-xs font-heading font-bold uppercase">{activeReview.productId || 'Bliss Balance'}</p>
                 </div>
                 <div className="flex text-amber-400 gap-0.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />)}
+                  {[...Array(activeReview.rating || 5)].map((_, i) => (
+                    <Star key={i} className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
               </div>
             </div>
@@ -90,13 +72,17 @@ export const PressReviewSection: React.FC = () => {
             <div className="lg:col-span-7 p-4 sm:p-10 lg:p-14 flex flex-col justify-between gap-6 sm:gap-8">
               <div className="space-y-3 sm:space-y-5">
                 <div className="flex items-center gap-1 text-amber-400">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />)}
+                  {[...Array(activeReview.rating || 5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
-                <h3 className="font-heading text-lg sm:text-3xl font-black uppercase tracking-tight text-neutral-950 dark:text-white leading-tight">
-                  {activeReview.headline}
-                </h3>
+                {activeReview.headline && (
+                  <h3 className="font-heading text-lg sm:text-3xl font-black uppercase tracking-tight text-neutral-950 dark:text-white leading-tight">
+                    &ldquo;{activeReview.headline}&rdquo;
+                  </h3>
+                )}
                 <p className="text-xs sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed font-normal">
-                  &ldquo;{activeReview.quote}&rdquo;
+                  &ldquo;{activeReview.comment}&rdquo;
                 </p>
               </div>
 
@@ -105,31 +91,37 @@ export const PressReviewSection: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-heading font-black text-xs sm:text-sm uppercase text-neutral-950 dark:text-white">
-                      {activeReview.author}
+                      {activeReview.authorName}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.5 border border-emerald-200 dark:border-emerald-800">
-                      <CheckCircle className="w-2.5 h-2.5" /> Verified
-                    </span>
+                    {activeReview.verified && (
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.5 border border-emerald-200 dark:border-emerald-800">
+                        <CheckCircle className="w-2.5 h-2.5" /> Verified Purchase
+                      </span>
+                    )}
                   </div>
-                  <p className="text-[10px] text-neutral-500 font-mono">{activeReview.location}</p>
+                  <p className="text-[10px] text-neutral-500 font-mono">
+                    {activeReview.createdAt ? new Date(activeReview.createdAt).toLocaleDateString() : 'Verified Customer'}
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <button
-                    onClick={() => setCurrentIndex((p) => (p - 1 + EDITORIAL_REVIEWS.length) % EDITORIAL_REVIEWS.length)}
-                    aria-label="Previous"
-                    className="p-2 sm:p-2.5 border border-neutral-200 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  </button>
-                  <button
-                    onClick={() => setCurrentIndex((p) => (p + 1) % EDITORIAL_REVIEWS.length)}
-                    aria-label="Next"
-                    className="p-2 sm:p-2.5 border border-neutral-200 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
-                  >
-                    <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  </button>
-                </div>
+                {reviews.length > 1 && (
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <button
+                      onClick={() => setCurrentIndex((p) => (p - 1 + reviews.length) % reviews.length)}
+                      aria-label="Previous"
+                      className="p-2 sm:p-2.5 border border-neutral-200 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </button>
+                    <button
+                      onClick={() => setCurrentIndex((p) => (p + 1) % reviews.length)}
+                      aria-label="Next"
+                      className="p-2 sm:p-2.5 border border-neutral-200 dark:border-neutral-700 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all active:scale-95"
+                    >
+                      <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -140,3 +132,4 @@ export const PressReviewSection: React.FC = () => {
     </section>
   );
 };
+

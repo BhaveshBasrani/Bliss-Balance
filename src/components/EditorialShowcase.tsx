@@ -8,7 +8,7 @@ import { getStoredSettings } from '@/lib/dataStore';
 
 export const EditorialShowcase: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string>(() => {
-    return getStoredSettings()?.media?.editorialStackImage || '/editorial/sneaker-stack.jpg';
+    return getStoredSettings()?.media?.editorialStackImage || '/editorial-streets.png';
   });
 
   useEffect(() => {
@@ -79,14 +79,14 @@ export const EditorialShowcase: React.FC = () => {
             </ScrollReveal>
           </div>
 
-          {/* Right: Sneaker Stack Image */}
-          <div className="lg:col-span-6 relative min-h-[340px] sm:min-h-[480px] bg-gradient-to-b from-[#F2EFE9] to-[#E5E0D5] dark:from-[#1A1A1A] dark:to-[#0F0F0F] flex items-center justify-center p-8 overflow-hidden">
+          {/* Right: Lifestyle Photo */}
+          <div className="lg:col-span-6 relative min-h-[360px] sm:min-h-[480px] bg-neutral-900 overflow-hidden flex items-center justify-center">
             <ScrollReveal direction="up" delay={0.15}>
               <img
                 src={imageSrc}
-                alt="Bliss Balance Sneaker Stack"
+                alt="Bliss Balance Footwear Lifestyle"
                 loading="lazy"
-                className="w-full h-full object-contain drop-shadow-[0_30px_40px_rgba(0,0,0,0.3)] hover:scale-105 transition-transform duration-700 ease-out max-h-[420px]"
+                className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700 ease-out min-h-[360px] sm:min-h-[480px]"
               />
             </ScrollReveal>
           </div>

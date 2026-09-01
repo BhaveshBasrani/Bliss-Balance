@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { ImagePlaceholder } from '@/components/ImagePlaceholder';
 import { Footer } from '@/components/Footer';
 import { getStoredSKUs, saveStoredSKUs, clearAllSKUs, getStoredSettings, saveStoredSettings, fetchCloudSKUs, fetchCloudSettings, getStoredReviews, saveStoredReviews, getStoredSubscribers, deleteStoredSubscriber, saveStoredSubscribers, DEFAULT_HERO_SLIDES } from '@/lib/dataStore';
-import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats, fetchSupabaseSubscribers } from '@/lib/supabaseClient';
+import { upsertSupabaseSKU, deleteSupabaseSKU, deleteAllSupabaseSKUs, upsertSupabaseSettings, getStorageQuotaStats, StorageQuotaStats, fetchSupabaseSubscribers, fetchSupabaseVisits } from '@/lib/supabaseClient';
 import { syncWithAppsScript, getRecaptchaV3Token } from '@/lib/appScriptSync';
-import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide, NewsletterSubscriber } from '@/lib/types';
+import { FootwearSKU, SiteSettings, FootwearCategory, Gender, ColorVariant, ProductReview, HeroSlide, NewsletterSubscriber, AnalyticsVisit } from '@/lib/types';
 import {
   Shield,
   Plus,
@@ -35,6 +35,14 @@ import {
   Zap,
   Download,
   Users,
+  BarChart3,
+  Globe,
+  Smartphone,
+  Monitor,
+  Compass,
+  Eye,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -47,7 +55,7 @@ export default function AdminPage() {
   // Data State
   const [skus, setSkus] = useState<FootwearSKU[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getStoredSettings());
-  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs' | 'reviews' | 'subscribers'>('skus');
+  const [activeTab, setActiveTab] = useState<'skus' | 'landing' | 'appscript' | 'logs' | 'reviews' | 'subscribers' | 'analytics'>('skus');
 
   // Dynamic Ticker Offer Items State (Learned from Brindavanam)
   const [tickerItems, setTickerItems] = useState<string[]>([]);
@@ -62,6 +70,11 @@ export default function AdminPage() {
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [subscriberSearch, setSubscriberSearch] = useState('');
   const [isFetchingSubscribers, setIsFetchingSubscribers] = useState(false);
+
+  // Admin Live Visitor Analytics State
+  const [analyticsVisits, setAnalyticsVisits] = useState<AnalyticsVisit[]>([]);
+  const [isFetchingAnalytics, setIsFetchingAnalytics] = useState(false);
+  const [analyticsFilter, setAnalyticsFilter] = useState('');
 
   useEffect(() => {
     const loadSubscribers = () => {
@@ -121,6 +134,52 @@ export default function AdminPage() {
     showStatus('success', 'Subscribers exported to CSV successfully!');
   };
 
+  const loadAnalytics = async () => {
+    setIsFetchingAnalytics(true);
+    try {
+      const data = await fetchSupabaseVisits(250);
+      setAnalyticsVisits(data);
+    } catch (e) {
+      console.warn('Could not load analytics:', e);
+    } finally {
+      setIsFetchingAnalytics(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAnalytics();
+  }, []);
+
+  const handleExportAnalyticsCSV = () => {
+    if (analyticsVisits.length === 0) {
+      showStatus('error', 'No analytics visits available to export.');
+      return;
+    }
+    const headers = ['Timestamp', 'Visitor ID', 'Session ID', 'User Email', 'Page Path', 'Page Title', 'Traffic Source', 'Device Type', 'OS', 'Browser', 'UTM Source', 'UTM Campaign'];
+    const rows = analyticsVisits.map(v => [
+      `"${new Date(v.createdAt).toLocaleString()}"`,
+      `"${v.visitorId}"`,
+      `"${v.sessionId}"`,
+      `"${v.userEmail || 'Anonymous'}"`,
+      `"${v.pagePath}"`,
+      `"${v.pageTitle?.replace(/"/g, '""') || ''}"`,
+      `"${v.referrer || 'Direct'}"`,
+      `"${v.deviceType}"`,
+      `"${v.os}"`,
+      `"${v.browser}"`,
+      `"${v.utmSource || ''}"`,
+      `"${v.utmCampaign || ''}"`,
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `bliss_balance_traffic_analytics_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showStatus('success', `Exported ${analyticsVisits.length} visitor records to CSV!`);
+  };
 
   useEffect(() => {
     if (settings.announcementText) {
@@ -313,7 +372,7 @@ export default function AdminPage() {
       addLog('Session decrypted & authenticated successfully', 'SECURITY');
       showStatus('success', 'Session decrypted & authenticated!');
     } else {
-      setLoginError('ACCESS DENIED: Invalid Decrypt Security Password. (Use PIN: 8088)');
+      setLoginError('ACCESS DENIED: Invalid Security PIN.');
       addLog('Failed login attempt detected', 'ALERT');
     }
   };
@@ -905,74 +964,125 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
           )}
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 overflow-x-auto no-scrollbar">
-            <button
-              onClick={() => setActiveTab('skus')}
-              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
-                activeTab === 'skus'
-                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
-              }`}
-            >
-              1. SINGLE SKU FORM ({skus.length})
-            </button>
+          {/* HOLISTIC RESPONSIVE NAVIGATION SYSTEM */}
+          <div className="space-y-3">
+            
+            {/* Mobile Dropdown Tab Selector (Ultra-Fast on Phones) */}
+            <div className="sm:hidden block">
+              <label className="block text-[10px] font-mono font-black uppercase text-neutral-500 mb-1.5 flex items-center justify-between">
+                <span>NAVIGATION SECTION</span>
+                <span className="text-red-600">ACTIVE: {activeTab.toUpperCase()}</span>
+              </label>
+              <select
+                value={activeTab}
+                onChange={(e) => {
+                  const val = e.target.value as any;
+                  setActiveTab(val);
+                  if (val === 'analytics') loadAnalytics();
+                }}
+                className="w-full bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3.5 text-xs font-mono font-black uppercase text-neutral-950 dark:text-white focus:outline-none focus:border-red-600 shadow-sm"
+              >
+                <option value="skus">👟 1. Single SKU Form & Catalog ({skus.length} Products)</option>
+                <option value="landing">🖼️ 2. Landing Banner, Media & Reels</option>
+                <option value="subscribers">✉️ 3. Newsletter Leads ({subscribers.length} Subscribers)</option>
+                <option value="analytics">📊 4. Real-time Visitor Analytics ({analyticsVisits.length} Events)</option>
+                <option value="reviews">⭐ 5. Product Reviews Manager ({allReviews.length} Reviews)</option>
+                <option value="appscript">⚡ 6. Google AppsScript & Email Engine</option>
+                <option value="logs">📋 7. System Audit Logs ({logs.length} Events)</option>
+              </select>
+            </div>
 
-            <button
-              onClick={() => setActiveTab('landing')}
-              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
-                activeTab === 'landing'
-                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
-              }`}
-            >
-              2. LANDING BANNER & MEDIA
-            </button>
+            {/* Desktop & Tablet Segmented Navigation Pill Bar */}
+            <div className="hidden sm:flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3 overflow-x-auto no-scrollbar">
+              <button
+                onClick={() => setActiveTab('skus')}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'skus'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>1. PRODUCTS ({skus.length})</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('appscript')}
-              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
-                activeTab === 'appscript'
-                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
-              }`}
-            >
-              3. APPSCRIPT & EMAIL ENGINE
-            </button>
+              <button
+                onClick={() => setActiveTab('landing')}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'landing'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <ImageIcon className="w-3.5 h-3.5" />
+                <span>2. LANDING & MEDIA</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('logs')}
-              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
-                activeTab === 'logs'
-                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
-              }`}
-            >
-              4. AUDIT LOGS ({logs.length})
-            </button>
+              <button
+                onClick={() => {
+                  setActiveTab('subscribers');
+                }}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'subscribers'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>3. LEADS ({subscribers.length})</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('reviews')}
-              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border ${
-                activeTab === 'reviews'
-                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
-              }`}
-            >
-              5. REVIEWS MANAGER ({allReviews.length})
-            </button>
+              <button
+                onClick={() => {
+                  setActiveTab('analytics');
+                  loadAnalytics();
+                }}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'analytics'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>4. ANALYTICS ({analyticsVisits.length})</span>
+              </button>
 
-            <button
-              onClick={() => setActiveTab('subscribers')}
-              className={`whitespace-nowrap px-5 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-1.5 ${
-                activeTab === 'subscribers'
-                  ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                  : 'bg-white dark:bg-black text-neutral-900 dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-red-600'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>6. SUBSCRIBERS ({subscribers.length})</span>
-            </button>
+              <button
+                onClick={() => setActiveTab('reviews')}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'reviews'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>5. REVIEWS ({allReviews.length})</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('appscript')}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'appscript'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>6. APPSCRIPT</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('logs')}
+                className={`whitespace-nowrap px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all border flex items-center gap-2 ${
+                  activeTab === 'logs'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md scale-[1.02]'
+                    : 'bg-white dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 border-neutral-200 dark:border-neutral-800 hover:border-red-600'
+                }`}
+              >
+                <Terminal className="w-3.5 h-3.5" />
+                <span>7. LOGS ({logs.length})</span>
+              </button>
+            </div>
           </div>
 
           {/* TAB 1: PRODUCTS WORKSPACE */}
@@ -2021,15 +2131,17 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                     </div>
                   </div>
 
-                  {/* 3. LOOKBOOK & SOCIAL FEED PHOTOS */}
+                  {/* 3. LOOKBOOK & SOCIAL FEED PHOTOS & INSTAGRAM REELS */}
                   <div className="p-4 sm:p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
-                    <h5 className="text-xs font-mono font-black uppercase text-red-600 flex items-center gap-1.5">
-                      <span>• SHOP THE LOOK & COMMUNITY FEED PHOTOS (4 DROPS)</span>
+                    <h5 className="text-xs font-mono font-black uppercase text-red-600 flex items-center justify-between">
+                      <span>• SHOP THE LOOK & COMMUNITY REELS (4 DROPS)</span>
+                      <span className="text-[10px] text-neutral-400 font-normal">Supports Instagram Reel URLs & Video embeds</span>
                     </h5>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      <div className="space-y-1.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {/* Drop 1 */}
+                      <div className="space-y-2">
                         <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
-                          Drop Photo 1
+                          Drop 1 (Thumbnail & Reel)
                         </label>
                         <ImagePlaceholder
                           dimensions="800 x 1000 px"
@@ -2041,11 +2153,27 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                             media: { ...(settings.media || {}), lookbook1Image: base64 }
                           })}
                         />
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold uppercase text-neutral-400 mb-0.5">
+                            Instagram Reel URL 1
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.media?.lookbook1ReelUrl || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              media: { ...(settings.media || {}), lookbook1ReelUrl: e.target.value }
+                            })}
+                            placeholder="https://www.instagram.com/reel/..."
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-2.5 py-1.5 text-[10px] font-mono font-bold text-neutral-900 dark:text-white"
+                          />
+                        </div>
                       </div>
 
-                      <div className="space-y-1.5">
+                      {/* Drop 2 */}
+                      <div className="space-y-2">
                         <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
-                          Drop Photo 2
+                          Drop 2 (Thumbnail & Reel)
                         </label>
                         <ImagePlaceholder
                           dimensions="800 x 1000 px"
@@ -2057,11 +2185,27 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                             media: { ...(settings.media || {}), lookbook2Image: base64 }
                           })}
                         />
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold uppercase text-neutral-400 mb-0.5">
+                            Instagram Reel URL 2
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.media?.lookbook2ReelUrl || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              media: { ...(settings.media || {}), lookbook2ReelUrl: e.target.value }
+                            })}
+                            placeholder="https://www.instagram.com/reel/..."
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-2.5 py-1.5 text-[10px] font-mono font-bold text-neutral-900 dark:text-white"
+                          />
+                        </div>
                       </div>
 
-                      <div className="space-y-1.5">
+                      {/* Drop 3 */}
+                      <div className="space-y-2">
                         <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
-                          Drop Photo 3
+                          Drop 3 (Thumbnail & Reel)
                         </label>
                         <ImagePlaceholder
                           dimensions="800 x 1000 px"
@@ -2073,11 +2217,27 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                             media: { ...(settings.media || {}), lookbook3Image: base64 }
                           })}
                         />
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold uppercase text-neutral-400 mb-0.5">
+                            Instagram Reel URL 3
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.media?.lookbook3ReelUrl || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              media: { ...(settings.media || {}), lookbook3ReelUrl: e.target.value }
+                            })}
+                            placeholder="https://www.instagram.com/reel/..."
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-2.5 py-1.5 text-[10px] font-mono font-bold text-neutral-900 dark:text-white"
+                          />
+                        </div>
                       </div>
 
-                      <div className="space-y-1.5">
+                      {/* Drop 4 */}
+                      <div className="space-y-2">
                         <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
-                          Drop Photo 4
+                          Drop 4 (Thumbnail & Reel)
                         </label>
                         <ImagePlaceholder
                           dimensions="800 x 1000 px"
@@ -2089,6 +2249,21 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                             media: { ...(settings.media || {}), lookbook4Image: base64 }
                           })}
                         />
+                        <div>
+                          <label className="block text-[9px] font-mono font-bold uppercase text-neutral-400 mb-0.5">
+                            Instagram Reel URL 4
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.media?.lookbook4ReelUrl || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              media: { ...(settings.media || {}), lookbook4ReelUrl: e.target.value }
+                            })}
+                            placeholder="https://www.instagram.com/reel/..."
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-2.5 py-1.5 text-[10px] font-mono font-bold text-neutral-900 dark:text-white"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2431,10 +2606,381 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
             </div>
           )}
 
+          {/* TAB 7: LIVE VISITOR & TRAFFIC ANALYTICS */}
+          {activeTab === 'analytics' && (
+            <div className="bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 space-y-8 shadow-sm">
+              
+              {/* Header & Controls */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
+                <div>
+                  <h3 className="font-heading text-2xl font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                    <BarChart3 className="w-6 h-6 text-red-600" /> REAL-TIME VISITOR ANALYTICS
+                  </h3>
+                  <p className="text-xs text-neutral-500 font-mono font-bold pt-1">
+                    Live customer telemetry: traffic sources, drop views, device types & visitor sessions.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={loadAnalytics}
+                    disabled={isFetchingAnalytics}
+                    className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-950 dark:text-white text-xs font-mono font-black uppercase rounded-xl transition-all flex items-center gap-2 border border-neutral-200 dark:border-neutral-700"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isFetchingAnalytics ? 'animate-spin text-red-600' : ''}`} />
+                    <span>{isFetchingAnalytics ? 'REFRESHING...' : 'REFRESH LIVE'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExportAnalyticsCSV}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-black uppercase rounded-xl transition-all flex items-center gap-2 shadow-sm"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>EXPORT CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* KPI Metrics Dashboard Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-neutral-400">
+                    <span className="text-[10px] font-mono font-black uppercase">PAGE VIEWS</span>
+                    <Eye className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div className="font-heading text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
+                    {analyticsVisits.length}
+                  </div>
+                  <p className="text-[10px] text-neutral-500 font-mono">Total tracked events</p>
+                </div>
+
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-neutral-400">
+                    <span className="text-[10px] font-mono font-black uppercase">UNIQUE VISITORS</span>
+                    <Users className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="font-heading text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
+                    {new Set(analyticsVisits.map(v => v.visitorId)).size}
+                  </div>
+                  <p className="text-[10px] text-neutral-500 font-mono">Distinct devices</p>
+                </div>
+
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-neutral-400">
+                    <span className="text-[10px] font-mono font-black uppercase">ACTIVE SESSIONS</span>
+                    <Compass className="w-4 h-4 text-amber-500" />
+                  </div>
+                  <div className="font-heading text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
+                    {new Set(analyticsVisits.map(v => v.sessionId)).size}
+                  </div>
+                  <p className="text-[10px] text-neutral-500 font-mono">Browsing sessions</p>
+                </div>
+
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-1">
+                  <div className="flex items-center justify-between text-neutral-400">
+                    <span className="text-[10px] font-mono font-black uppercase">MOBILE SHARE</span>
+                    <Smartphone className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <div className="font-heading text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
+                    {analyticsVisits.length > 0 
+                      ? `${Math.round((analyticsVisits.filter(v => v.deviceType === 'Mobile').length / analyticsVisits.length) * 100)}%`
+                      : '0%'}
+                  </div>
+                  <p className="text-[10px] text-neutral-500 font-mono">Mobile smartphone visits</p>
+                </div>
+
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-1 col-span-2 lg:col-span-1">
+                  <div className="flex items-center justify-between text-neutral-400">
+                    <span className="text-[10px] font-mono font-black uppercase">TOP CHANNEL</span>
+                    <Globe className="w-4 h-4 text-purple-500" />
+                  </div>
+                  <div className="font-heading text-xl sm:text-2xl font-black text-neutral-950 dark:text-white truncate">
+                    {(() => {
+                      const counts: Record<string, number> = {};
+                      analyticsVisits.forEach(v => {
+                        const r = v.referrer || 'Direct';
+                        counts[r] = (counts[r] || 0) + 1;
+                      });
+                      const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+                      return top ? top[0] : 'Direct';
+                    })()}
+                  </div>
+                  <p className="text-[10px] text-neutral-500 font-mono">Primary acquisition source</p>
+                </div>
+              </div>
+
+              {/* Breakdown Grid: Top Channels & Top Viewed Pages */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                {/* 1. Acquisition Channels */}
+                <div className="p-5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-4">
+                  <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-red-600" /> TRAFFIC SOURCES & REFERRERS
+                  </h4>
+                  <div className="space-y-2.5">
+                    {(() => {
+                      const counts: Record<string, number> = {};
+                      analyticsVisits.forEach(v => {
+                        const r = v.referrer || 'Direct';
+                        counts[r] = (counts[r] || 0) + 1;
+                      });
+                      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+                      if (sorted.length === 0) return <p className="text-xs text-neutral-400 font-mono">No traffic sources recorded yet.</p>;
+                      
+                      return sorted.map(([source, count]) => {
+                        const pct = Math.round((count / analyticsVisits.length) * 100);
+                        return (
+                          <div key={source} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs font-mono font-bold">
+                              <span className="text-neutral-800 dark:text-neutral-200 flex items-center gap-1.5 truncate">
+                                <span className="w-2 h-2 rounded-full bg-red-600" /> {source}
+                              </span>
+                              <span className="text-neutral-500">{count} ({pct}%)</span>
+                            </div>
+                            <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                              <div className="bg-red-600 h-full rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+
+                {/* 2. Top Visited Pages */}
+                <div className="p-5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl space-y-4">
+                  <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-blue-600" /> MOST POPULAR PAGES & DROPS
+                  </h4>
+                  <div className="space-y-2.5">
+                    {(() => {
+                      const counts: Record<string, number> = {};
+                      analyticsVisits.forEach(v => {
+                        const p = v.pagePath || '/';
+                        counts[p] = (counts[p] || 0) + 1;
+                      });
+                      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+                      if (sorted.length === 0) return <p className="text-xs text-neutral-400 font-mono">No page visits recorded yet.</p>;
+                      
+                      return sorted.map(([path, count]) => {
+                        const pct = Math.round((count / analyticsVisits.length) * 100);
+                        return (
+                          <div key={path} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs font-mono font-bold">
+                              <span className="text-neutral-800 dark:text-neutral-200 truncate max-w-[240px]">
+                                {path}
+                              </span>
+                              <span className="text-neutral-500">{count} views ({pct}%)</span>
+                            </div>
+                            <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                              <div className="bg-blue-600 h-full rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Search & Filter Bar */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={analyticsFilter}
+                  onChange={(e) => setAnalyticsFilter(e.target.value)}
+                  placeholder="Filter activity feed by path, device, referrer, OS, or user email..."
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 text-xs font-mono text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:border-red-600"
+                />
+                {analyticsFilter && (
+                  <button
+                    onClick={() => setAnalyticsFilter('')}
+                    className="px-3 py-2 text-xs font-mono font-bold bg-neutral-200 dark:bg-neutral-800 rounded-xl hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                  >
+                    CLEAR
+                  </button>
+                )}
+              </div>
+
+              {/* Real-time Visitor Stream Table */}
+              <div className="space-y-3">
+                <h4 className="font-heading text-sm font-black uppercase text-neutral-950 dark:text-white flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-emerald-500" /> LIVE VISITOR TELEMETRY STREAM
+                  </span>
+                  <span className="text-[11px] font-mono text-neutral-500 font-normal">
+                    Showing latest {analyticsVisits.length} visits
+                  </span>
+                </h4>
+
+                {analyticsVisits.length === 0 ? (
+                  <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-950 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-2">
+                    <Eye className="w-8 h-8 text-neutral-400 mx-auto" />
+                    <p className="text-xs text-neutral-500 font-mono font-bold">No visitor events recorded yet.</p>
+                    <p className="text-[11px] text-neutral-400">
+                      As customers browse blissbalance.co, their live interactions and drops visited will appear here in real time.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+                    {analyticsVisits
+                      .filter(v => {
+                        if (!analyticsFilter.trim()) return true;
+                        const q = analyticsFilter.toLowerCase();
+                        return (
+                          v.pagePath.toLowerCase().includes(q) ||
+                          (v.referrer && v.referrer.toLowerCase().includes(q)) ||
+                          (v.userEmail && v.userEmail.toLowerCase().includes(q)) ||
+                          v.deviceType.toLowerCase().includes(q) ||
+                          v.os.toLowerCase().includes(q) ||
+                          v.browser.toLowerCase().includes(q)
+                        );
+                      })
+                      .map((visit) => (
+                        <div
+                          key={visit.id}
+                          className="p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono text-xs hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
+                        >
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-bold text-red-600 bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded text-[11px]">
+                                {visit.pagePath}
+                              </span>
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-bold">
+                                {visit.referrer || 'Direct'}
+                              </span>
+                              {visit.userEmail && (
+                                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold">
+                                  👤 {visit.userEmail}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-3 text-neutral-500 text-[11px] flex-wrap">
+                              <span>{visit.deviceType} • {visit.os} • {visit.browser}</span>
+                              <span>•</span>
+                              <span className="text-neutral-400">{new Date(visit.createdAt).toLocaleString()}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-[10px] text-neutral-400 font-mono shrink-0">
+                            ID: {visit.visitorId.slice(0, 10)}...
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+          )}
+
         </main>
+      </div>
+
+      {/* FLOATING MOBILE SKU SAVE BAR (WHEN EDITING ON PHONE) */}
+      {editingSkuId && (
+        <div className="fixed bottom-16 inset-x-4 sm:hidden z-40 bg-black/90 dark:bg-neutral-900/90 backdrop-blur-xl border-2 border-red-600 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-2xl animate-in slide-in-from-bottom-4">
+          <div className="min-w-0">
+            <span className="text-[10px] font-mono text-red-400 font-bold uppercase block">EDITING PRODUCT</span>
+            <p className="text-xs font-heading font-black text-white truncate">{newSku.title || 'Product'}</p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="px-3 py-2 rounded-xl bg-neutral-800 text-white font-mono font-bold text-xs uppercase"
+            >
+              CANCEL
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveSku}
+              className="px-4 py-2 rounded-xl bg-red-600 text-white font-mono font-black text-xs uppercase shadow-md flex items-center gap-1.5"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>SAVE</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STICKY MOBILE BOTTOM NAVIGATION BAR (PHONE ERGONOMICS) */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl border-t border-neutral-200 dark:border-neutral-800 px-2 py-2.5 flex items-center justify-around shadow-2xl safe-area-pb select-none">
+        <button
+          onClick={() => setActiveTab('skus')}
+          className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
+            activeTab === 'skus'
+              ? 'text-red-600 font-black'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span className="text-[9px] font-mono uppercase">Products</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('landing')}
+          className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
+            activeTab === 'landing'
+              ? 'text-red-600 font-black'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+          }`}
+        >
+          <ImageIcon className="w-4 h-4" />
+          <span className="text-[9px] font-mono uppercase">Media</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('subscribers');
+          }}
+          className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all relative ${
+            activeTab === 'subscribers'
+              ? 'text-red-600 font-black'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          <span className="text-[9px] font-mono uppercase">Leads</span>
+          {subscribers.length > 0 && (
+            <span className="absolute top-0 right-2 w-1.5 h-1.5 rounded-full bg-red-600" />
+          )}
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('analytics');
+            loadAnalytics();
+          }}
+          className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
+            activeTab === 'analytics'
+              ? 'text-red-600 font-black'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4" />
+          <span className="text-[9px] font-mono uppercase">Stats</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('appscript')}
+          className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
+            activeTab === 'appscript' || activeTab === 'logs' || activeTab === 'reviews'
+              ? 'text-red-600 font-black'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+          }`}
+        >
+          <FileSpreadsheet className="w-4 h-4" />
+          <span className="text-[9px] font-mono uppercase">System</span>
+        </button>
       </div>
 
       <Footer />
     </div>
   );
 }
+

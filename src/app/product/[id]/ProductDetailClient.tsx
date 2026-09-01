@@ -8,6 +8,7 @@ import { SearchModal } from '@/components/SearchModal';
 import { SizeGuideModal } from '@/components/SizeGuideModal';
 import { BrandLoadingScreen } from '@/components/BrandLoadingScreen';
 import { getStoredSKUs, fetchSingleProduct, getStoredReviews, saveStoredReviews } from '@/lib/dataStore';
+import { fetchSupabaseReviews, insertSupabaseReview, deleteSupabaseReview } from '@/lib/supabaseClient';
 import { syncWithAppsScript } from '@/lib/appScriptSync';
 import { FootwearSKU, ProductReview, ColorVariant } from '@/lib/types';
 import {
@@ -78,6 +79,33 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     const urlColor = searchParams?.get('color');
 
+    const resolveColorVariant = (variants?: ColorVariant[], queryColor?: string | null): ColorVariant | null => {
+      if (!variants || variants.length === 0 || !queryColor) return null;
+      const cleanTarget = queryColor.toLowerCase().replace(/[^a-z0-9]/g, '');
+      
+      // 1. Exact or cleaned string match
+      const exactMatch = variants.find(cv => {
+        const cleanName = cv.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        return cleanName === cleanTarget;
+      });
+      if (exactMatch) return exactMatch;
+
+      // 2. Keyword & Alias match (e.g. NAVY_BLUE matches NAVY WHITE / NAVY)
+      const aliasMatch = variants.find(cv => {
+        const cleanName = cv.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (cleanTarget.includes('navy') && cleanName.includes('navy')) return true;
+        if (cleanTarget.includes('blue') && (cleanName.includes('blue') || cleanName.includes('navy'))) return true;
+        if (cleanTarget.includes('grey') || cleanTarget.includes('gray')) return cleanName.includes('grey') || cleanName.includes('gray');
+        if (cleanTarget.includes('brown') && cleanName.includes('brown')) return true;
+        if (cleanTarget.includes('beige') && cleanName.includes('beige')) return true;
+        if (cleanTarget.includes('black') && cleanName.includes('black')) return true;
+        if (cleanTarget.includes('tan') && cleanName.includes('tan')) return true;
+        if (cleanTarget.includes('white') && cleanName.includes('white')) return true;
+        return cleanName.includes(cleanTarget) || cleanTarget.includes(cleanName);
+      });
+      return aliasMatch || null;
+    };
+
     const found = loadedSkus.find(s => 
       s.id.toLowerCase() === targetId || 
       encodeURIComponent(s.id).toLowerCase() === targetId
@@ -85,9 +113,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
     if (found) {
       setSku(found);
-      const matchedCv = found.colorVariants?.find(
-        cv => urlColor && cv.name.toLowerCase() === urlColor.toLowerCase()
-      );
+      const matchedCv = resolveColorVariant(found.colorVariants, urlColor);
       const activeCv = matchedCv || (found.colorVariants && found.colorVariants.length > 0 ? found.colorVariants[0] : null);
       const activeColorImg = (activeCv && activeCv.imageUrl && activeCv.imageUrl.trim() !== '')
         ? activeCv.imageUrl
@@ -105,9 +131,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       fetchSingleProduct(productId).then(cloudFound => {
         if (cloudFound) {
           setSku(cloudFound);
-          const matchedCv = cloudFound.colorVariants?.find(
-            cv => urlColor && cv.name.toLowerCase() === urlColor.toLowerCase()
-          );
+          const matchedCv = resolveColorVariant(cloudFound.colorVariants, urlColor);
           const activeCv = matchedCv || (cloudFound.colorVariants && cloudFound.colorVariants.length > 0 ? cloudFound.colorVariants[0] : null);
           const cloudImg = (activeCv && activeCv.imageUrl && activeCv.imageUrl.trim() !== '')
             ? activeCv.imageUrl
@@ -135,34 +159,19 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       }
     } catch (e) {}
 
-    // Live Dynamic Fetch of Customer Reviews
+    // Live Dynamic Fetch of Customer Reviews from Database
     fetchLiveReviewsFromCloud(productId);
   }, [productId]);
 
   const fetchLiveReviewsFromCloud = async (prodId: string) => {
     try {
-      const stored = localStorage.getItem(REVIEWS_STORAGE_KEY);
-      if (stored) {
-        const allReviews: ProductReview[] = JSON.parse(stored);
-        setReviews(allReviews.filter(r => r.productId === prodId));
-      }
-    } catch (e) {}
-
-    try {
-      const appScriptUrl = process.env.NEXT_PUBLIC_APPSCRIPT_URL || 'https://script.google.com/macros/s/AKfycbykDG_64LHgNhlS6gu-TowyNkTAC2Qfl3ohBoKmzQaub5oD0jj8Ah2Ow227lLG4D45ZzA/exec';
-      const res = await fetch(`${appScriptUrl}?action=getReviews`, { method: 'GET' });
-      const data = await res.json();
-      if (data && data.reviews && Array.isArray(data.reviews)) {
-        const prodReviews = data.reviews.filter((r: ProductReview) => r.productId === prodId);
-        setReviews(prodReviews);
-
-        const stored = localStorage.getItem(REVIEWS_STORAGE_KEY);
-        const localReviews: ProductReview[] = stored ? JSON.parse(stored) : [];
-        const otherProdReviews = localReviews.filter(r => r.productId !== prodId);
-        localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify([...prodReviews, ...otherProdReviews]));
-      }
+      const cloudReviews = await fetchSupabaseReviews(prodId);
+      setReviews(cloudReviews);
+      try {
+        localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(cloudReviews));
+      } catch (e) {}
     } catch (e) {
-      console.warn('Could not fetch live reviews:', e);
+      console.warn('Could not fetch live reviews from database:', e);
     }
   };
 
@@ -191,20 +200,24 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newReview.authorName || !newReview.comment) return;
+    if (!newReview.authorName.trim() || !newReview.comment.trim()) return;
 
     setSubmittingReview(true);
 
     const createdReview: ProductReview = {
       id: `rev-${Date.now()}`,
       productId,
-      authorName: newReview.authorName,
+      authorName: newReview.authorName.trim(),
       rating: newReview.rating,
-      headline: newReview.headline || 'Excellent Footwear!',
-      comment: newReview.comment,
+      headline: newReview.headline?.trim() || 'Verified Review',
+      comment: newReview.comment.trim(),
       verified: true,
+      createdAt: new Date().toISOString(),
       date: new Date().toISOString().split('T')[0],
     };
+
+    // Save directly to Supabase Database
+    await insertSupabaseReview(createdReview);
 
     const updated = [createdReview, ...reviews];
     setReviews(updated);
@@ -224,12 +237,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
     setSubmittingReview(false);
     setShowReviewForm(false);
-    setReviewMsg('Thank you! Your review has been saved live to Google Sheets.');
+    setReviewMsg('Thank you! Your verified review has been saved.');
     setTimeout(() => setReviewMsg(''), 5000);
     setNewReview({ authorName: '', rating: 5, headline: '', comment: '' });
   };
 
-  const handleDeleteMyReview = (revId: string) => {
+  const handleDeleteMyReview = async (revId: string) => {
+    await deleteSupabaseReview(revId);
     const updated = reviews.filter(r => r.id !== revId);
     setReviews(updated);
     try {

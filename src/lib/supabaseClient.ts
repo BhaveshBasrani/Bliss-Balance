@@ -4,7 +4,7 @@
  * Connected to: https://ummvwrzzxehetmtaugop.supabase.co
  */
 
-import { FootwearSKU, NewsletterSubscriber } from './types';
+import { FootwearSKU, NewsletterSubscriber, ProductReview, AnalyticsVisit } from './types';
 import { INITIAL_SKUS } from './initialSkus';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ummvwrzzxehetmtaugop.supabase.co';
@@ -383,4 +383,159 @@ export async function fetchSupabaseSubscribers(): Promise<NewsletterSubscriber[]
     return [];
   }
 }
+
+/**
+ * ⚡ FETCH REVIEWS FROM SUPABASE
+ */
+export async function fetchSupabaseReviews(productId?: string): Promise<ProductReview[]> {
+  try {
+    let url = `${SUPABASE_URL}/rest/v1/reviews?select=*&order=created_at.desc`;
+    if (productId) {
+      url = `${SUPABASE_URL}/rest/v1/reviews?product_id=eq.${encodeURIComponent(productId)}&select=*&order=created_at.desc`;
+    }
+
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: HEADERS,
+    });
+
+    if (!res.ok) return [];
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return [];
+
+    return rows.map((r: any): ProductReview => ({
+      id: r.id,
+      productId: r.product_id,
+      authorName: r.author_name,
+      rating: Number(r.rating || 5),
+      headline: r.headline || '',
+      comment: r.comment || '',
+      createdAt: r.created_at || new Date().toISOString(),
+      verified: Boolean(r.verified ?? true),
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * ⚡ INSERT REVIEW TO SUPABASE
+ */
+export async function insertSupabaseReview(review: ProductReview): Promise<boolean> {
+  try {
+    const payload = {
+      id: review.id || `rev-${Date.now()}`,
+      product_id: review.productId,
+      author_name: review.authorName.trim(),
+      rating: review.rating,
+      headline: review.headline?.trim() || null,
+      comment: review.comment.trim(),
+      created_at: review.createdAt || new Date().toISOString(),
+      verified: review.verified ?? true,
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews`, {
+      method: 'POST',
+      headers: {
+        ...HEADERS,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return res.ok;
+  } catch (e) {
+    console.warn('Could not insert review to Supabase:', e);
+    return false;
+  }
+}
+
+/**
+ * ⚡ DELETE REVIEW FROM SUPABASE
+ */
+export async function deleteSupabaseReview(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: HEADERS,
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * ⚡ RECORD REAL-TIME SITE VISITOR EVENT TO SUPABASE
+ */
+export async function recordSupabaseVisit(visit: Partial<AnalyticsVisit>): Promise<boolean> {
+  try {
+    const payload = {
+      id: visit.id || `vis_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      session_id: visit.sessionId || 'anonymous_session',
+      visitor_id: visit.visitorId || 'anonymous_visitor',
+      page_path: visit.pagePath || '/',
+      page_title: visit.pageTitle || 'Bliss Balance',
+      referrer: visit.referrer || 'direct',
+      device_type: visit.deviceType || 'Desktop',
+      browser: visit.browser || 'Unknown',
+      os: visit.os || 'Unknown',
+      utm_source: visit.utmSource || null,
+      utm_medium: visit.utmMedium || null,
+      utm_campaign: visit.utmCampaign || null,
+      user_email: visit.userEmail || null,
+      created_at: visit.createdAt || new Date().toISOString(),
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/analytics_visits`, {
+      method: 'POST',
+      headers: {
+        ...HEADERS,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * ⚡ FETCH RECENT VISITOR ANALYTICS FROM SUPABASE
+ */
+export async function fetchSupabaseVisits(limit: number = 200): Promise<AnalyticsVisit[]> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/analytics_visits?select=*&order=created_at.desc&limit=${limit}`, {
+      method: 'GET',
+      headers: HEADERS,
+    });
+
+    if (!res.ok) return [];
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return [];
+
+    return rows.map((r: any): AnalyticsVisit => ({
+      id: r.id,
+      sessionId: r.session_id,
+      visitorId: r.visitor_id,
+      pagePath: r.page_path,
+      pageTitle: r.page_title,
+      referrer: r.referrer,
+      deviceType: r.device_type,
+      browser: r.browser,
+      os: r.os,
+      utmSource: r.utm_source,
+      utmMedium: r.utm_medium,
+      utmCampaign: r.utm_campaign,
+      userEmail: r.user_email,
+      createdAt: r.created_at || new Date().toISOString(),
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+
 
