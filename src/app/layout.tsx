@@ -299,6 +299,31 @@ export default function RootLayout({
           `}
         </Script>
 
+        {/* META PIXEL CODE */}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '2266413734123172');
+            fbq('track', 'PageView');
+          `}
+        </Script>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            src="https://www.facebook.com/tr?id=2266413734123172&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
+
         {/* OFFICIAL GOOGLE RECAPTCHA V3 FLOATING BADGE ENGINE */}
         <Script
           src="https://www.google.com/recaptcha/api.js?render=6LfVFIktAAAAAPRSJXz5I8lCUjX4vmXpnl0jCjoa"

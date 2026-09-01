@@ -14,7 +14,9 @@ interface FeedItem {
   productUrl: string;
 }
 
-const FEED_ITEMS: FeedItem[] = [
+import { getStoredSettings } from '@/lib/dataStore';
+
+const DEFAULT_FEED_ITEMS: FeedItem[] = [
   {
     id: 'feed-1',
     image: '/feed/feed-bb158-1.png',
@@ -50,6 +52,25 @@ const FEED_ITEMS: FeedItem[] = [
 ];
 
 export const SocialFeedSection: React.FC = () => {
+  const [feedItems, setFeedItems] = React.useState<FeedItem[]>(() => {
+    const s = getStoredSettings()?.media;
+    return DEFAULT_FEED_ITEMS.map((item, idx) => {
+      const key = `lookbook${idx + 1}Image` as keyof typeof s;
+      return s && s[key] ? { ...item, image: s[key] as string } : item;
+    });
+  });
+
+  React.useEffect(() => {
+    const handleUpdate = () => {
+      const s = getStoredSettings()?.media;
+      setFeedItems(DEFAULT_FEED_ITEMS.map((item, idx) => {
+        const key = `lookbook${idx + 1}Image` as keyof typeof s;
+        return s && s[key] ? { ...item, image: s[key] as string } : item;
+      }));
+    };
+    window.addEventListener('settings-updated', handleUpdate);
+    return () => window.removeEventListener('settings-updated', handleUpdate);
+  }, []);
   return (
     <section className="py-16 sm:py-28 bg-white dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
       <div className="max-w-[1400px] mx-auto px-5 sm:px-8 space-y-10 sm:space-y-14">
@@ -80,7 +101,7 @@ export const SocialFeedSection: React.FC = () => {
 
         {/* 4-Column Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 dark:bg-neutral-800">
-          {FEED_ITEMS.map((item, index) => (
+          {feedItems.map((item, index) => (
             <ScrollReveal key={item.id} direction="up" delay={index * 0.07}>
               <div className="group relative bg-neutral-900 aspect-[3/4] overflow-hidden">
                 

@@ -1,11 +1,25 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Flame, ShieldCheck, Zap } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
+import { getStoredSettings } from '@/lib/dataStore';
 
 export const EditorialShowcase: React.FC = () => {
+  const [imageSrc, setImageSrc] = useState<string>(() => {
+    return getStoredSettings()?.media?.editorialStackImage || '/editorial/sneaker-stack.jpg';
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const s = getStoredSettings()?.media?.editorialStackImage;
+      if (s) setImageSrc(s);
+    };
+    window.addEventListener('settings-updated', handleUpdate);
+    return () => window.removeEventListener('settings-updated', handleUpdate);
+  }, []);
+
   return (
     <section className="py-16 sm:py-28 bg-[#F5F3EE] dark:bg-[#0D0D0D] border-b border-neutral-200/60 dark:border-neutral-800/60 relative overflow-hidden select-none">
       
@@ -69,7 +83,7 @@ export const EditorialShowcase: React.FC = () => {
           <div className="lg:col-span-6 relative min-h-[340px] sm:min-h-[480px] bg-gradient-to-b from-[#F2EFE9] to-[#E5E0D5] dark:from-[#1A1A1A] dark:to-[#0F0F0F] flex items-center justify-center p-8 overflow-hidden">
             <ScrollReveal direction="up" delay={0.15}>
               <img
-                src="/editorial/sneaker-stack.jpg"
+                src={imageSrc}
                 alt="Bliss Balance Sneaker Stack"
                 loading="lazy"
                 className="w-full h-full object-contain drop-shadow-[0_30px_40px_rgba(0,0,0,0.3)] hover:scale-105 transition-transform duration-700 ease-out max-h-[420px]"

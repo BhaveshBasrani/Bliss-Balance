@@ -1,11 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
+import { getStoredSettings, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
+import { MediaSettings } from '@/lib/types';
 
 export const ShopByGenderSections: React.FC = () => {
+  const [media, setMedia] = useState<MediaSettings>(() => {
+    return getStoredSettings()?.media || DEFAULT_SITE_SETTINGS.media || {};
+  });
+
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      const s = getStoredSettings();
+      if (s?.media) setMedia(s.media);
+    };
+    window.addEventListener('settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('settings-updated', handleSettingsUpdate);
+  }, []);
+
   return (
     <div className="space-y-0">
       
@@ -47,7 +62,7 @@ export const ShopByGenderSections: React.FC = () => {
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
-                  src="/collections/mens-casual-sneakers.jpg"
+                  src={media.mensSneakersImage || '/collections/mens-casual-sneakers.jpg'}
                   alt="Men Casual Sneakers"
                   loading="lazy"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-80 group-hover:brightness-95"
@@ -74,7 +89,7 @@ export const ShopByGenderSections: React.FC = () => {
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
-                  src="/collections/mens-slides-sandals.jpg"
+                  src={media.mensSlidesImage || '/collections/mens-slides-sandals.jpg'}
                   alt="Men Slides and Sandals"
                   loading="lazy"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-80 group-hover:brightness-95"
@@ -101,7 +116,7 @@ export const ShopByGenderSections: React.FC = () => {
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
-                  src="/collections/mens-slippers.jpg"
+                  src={media.mensSlippersImage || '/collections/mens-slippers.jpg'}
                   alt="Men Ortho Slippers"
                   loading="lazy"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-80 group-hover:brightness-95"
@@ -164,7 +179,7 @@ export const ShopByGenderSections: React.FC = () => {
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
-                  src="/collections/womens-sandals-flats.jpg"
+                  src={media.womensSandalsImage || '/collections/womens-sandals-flats.jpg'}
                   alt="Women Sandals and Flats"
                   loading="lazy"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-80 group-hover:brightness-95"
@@ -191,7 +206,7 @@ export const ShopByGenderSections: React.FC = () => {
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
-                  src="/collections/womens-clogs-sneakers.jpg"
+                  src={media.womensClogsImage || '/collections/womens-clogs-sneakers.jpg'}
                   alt="Women Clogs and Sneakers"
                   loading="lazy"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-80 group-hover:brightness-95"
@@ -218,7 +233,7 @@ export const ShopByGenderSections: React.FC = () => {
                 className="group relative block aspect-[4/5] bg-neutral-950 overflow-hidden"
               >
                 <img
-                  src="/collections/womens-slippers-slides.jpg"
+                  src={media.womensSlippersImage || '/collections/womens-slippers-slides.jpg'}
                   alt="Women Slippers and Slides"
                   loading="lazy"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out brightness-80 group-hover:brightness-95"

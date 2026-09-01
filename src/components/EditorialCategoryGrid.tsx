@@ -1,50 +1,57 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
-
-interface CategoryTile {
-  id: string;
-  title: string;
-  subtitle: string;
-  image: string;
-  link: string;
-}
-
-const CATEGORY_TILES: CategoryTile[] = [
-  {
-    id: 'tile-sneakers',
-    title: 'MEN SNEAKERS',
-    subtitle: 'High-Traction Street Grip & Cushioned EVA Soles',
-    image: '/collections/mens-casual-sneakers.jpg',
-    link: '/collections/casual-shoes',
-  },
-  {
-    id: 'tile-slides',
-    title: 'MEN SLIDES & SANDALS',
-    subtitle: 'High-Density Memory Foam & Wave Contoured Footbed',
-    image: '/collections/mens-slides-sandals.jpg',
-    link: '/collections/slides',
-  },
-  {
-    id: 'tile-womens-sandals',
-    title: 'WOMEN ERGONOMIC SANDALS',
-    subtitle: 'Anatomical Arch Support & Cloud Pressure Relief',
-    image: '/collections/womens-sandals-flats.jpg',
-    link: '/collections/sandals',
-  },
-  {
-    id: 'tile-womens-clogs',
-    title: 'WOMEN CLOGS & SNEAKERS',
-    subtitle: 'Ultralight All-Weather Waterproof Cushion Foam',
-    image: '/collections/womens-clogs-sneakers.jpg',
-    link: '/collections/clogs',
-  },
-];
+import { getStoredSettings, DEFAULT_SITE_SETTINGS } from '@/lib/dataStore';
+import { MediaSettings } from '@/lib/types';
 
 export const EditorialCategoryGrid: React.FC = () => {
+  const [media, setMedia] = useState<MediaSettings>(() => {
+    return getStoredSettings()?.media || DEFAULT_SITE_SETTINGS.media || {};
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const s = getStoredSettings();
+      if (s?.media) setMedia(s.media);
+    };
+    window.addEventListener('settings-updated', handleUpdate);
+    return () => window.removeEventListener('settings-updated', handleUpdate);
+  }, []);
+
+  const categoryTiles = [
+    {
+      id: 'tile-sneakers',
+      title: 'MEN SNEAKERS',
+      subtitle: 'High-Traction Street Grip & Cushioned EVA Soles',
+      image: media.mensSneakersImage || '/collections/mens-casual-sneakers.jpg',
+      link: '/collections/casual-shoes',
+    },
+    {
+      id: 'tile-slides',
+      title: 'MEN SLIDES & SANDALS',
+      subtitle: 'High-Density Memory Foam & Wave Contoured Footbed',
+      image: media.mensSlidesImage || '/collections/mens-slides-sandals.jpg',
+      link: '/collections/slides',
+    },
+    {
+      id: 'tile-womens-sandals',
+      title: 'WOMEN ERGONOMIC SANDALS',
+      subtitle: 'Anatomical Arch Support & Cloud Pressure Relief',
+      image: media.womensSandalsImage || '/collections/womens-sandals-flats.jpg',
+      link: '/collections/sandals',
+    },
+    {
+      id: 'tile-womens-clogs',
+      title: 'WOMEN CLOGS & SNEAKERS',
+      subtitle: 'Ultralight All-Weather Waterproof Cushion Foam',
+      image: media.womensClogsImage || '/collections/womens-clogs-sneakers.jpg',
+      link: '/collections/clogs',
+    },
+  ];
+
   return (
     <section className="py-14 sm:py-24 bg-[#0A0A0A] border-b border-neutral-800 relative select-none">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 space-y-8 sm:space-y-12">
@@ -68,7 +75,7 @@ export const EditorialCategoryGrid: React.FC = () => {
 
         {/* 2×2 Modular Joined Grid */}
         <div className="grid grid-cols-2 gap-px bg-neutral-800 border border-neutral-800 shadow-sm overflow-hidden">
-          {CATEGORY_TILES.map((tile, index) => (
+          {categoryTiles.map((tile, index) => (
             <ScrollReveal key={tile.id} direction="up" delay={index * 0.07}>
               <Link
                 href={tile.link}

@@ -1898,16 +1898,240 @@ function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ stat
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-mono font-black uppercase text-neutral-800 dark:text-neutral-200 mb-1">
-                    Hero Subheadline
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={settings.heroSubheadline}
-                    onChange={(e) => setSettings({ ...settings, heroSubheadline: e.target.value })}
-                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-xs font-mono text-neutral-950 dark:text-white focus:border-red-600 focus:outline-none font-bold"
-                  />
+                {/* ── SITE-WIDE MEDIA & PHOTOS MANAGER ───────────────────────── */}
+                <div className="space-y-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+                  <div>
+                    <h4 className="font-heading text-lg font-black uppercase text-neutral-950 dark:text-white flex items-center gap-2">
+                      <ImageIcon className="w-5 h-5 text-red-600" /> SITE-WIDE PHOTOS & CAMPAIGN MEDIA MANAGER
+                    </h4>
+                    <p className="text-[11px] font-mono text-neutral-400">
+                      Upload or replace photos for homepage collections, lookbook drops, editorial banners, and newsletter modal.
+                    </p>
+                  </div>
+
+                  {/* 1. MEN'S COLLECTION PHOTOS */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
+                    <h5 className="text-xs font-mono font-black uppercase text-red-600 flex items-center gap-1.5">
+                      <span>• SHOP MEN COLLECTION CARDS</span>
+                    </h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          1. Men&apos;s Street Sneakers
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px (4:5)"
+                          aspectRatio="aspect-[4/5]"
+                          label="MEN SNEAKERS"
+                          imageUrl={settings.media?.mensSneakersImage || '/collections/mens-casual-sneakers.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), mensSneakersImage: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          2. Men&apos;s Slides & Sandals
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px (4:5)"
+                          aspectRatio="aspect-[4/5]"
+                          label="MEN SLIDES"
+                          imageUrl={settings.media?.mensSlidesImage || '/collections/mens-slides-sandals.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), mensSlidesImage: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          3. Men&apos;s Ortho Slippers
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px (4:5)"
+                          aspectRatio="aspect-[4/5]"
+                          label="MEN SLIPPERS"
+                          imageUrl={settings.media?.mensSlippersImage || '/collections/mens-slippers.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), mensSlippersImage: base64 }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. WOMEN'S COLLECTION PHOTOS */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
+                    <h5 className="text-xs font-mono font-black uppercase text-red-600 flex items-center gap-1.5">
+                      <span>• SHOP WOMEN COLLECTION CARDS</span>
+                    </h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          1. Women&apos;s Sandals & Flats
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px (4:5)"
+                          aspectRatio="aspect-[4/5]"
+                          label="WOMEN SANDALS"
+                          imageUrl={settings.media?.womensSandalsImage || '/collections/womens-sandals-flats.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), womensSandalsImage: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          2. Women&apos;s Clogs & Sneakers
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px (4:5)"
+                          aspectRatio="aspect-[4/5]"
+                          label="WOMEN CLOGS"
+                          imageUrl={settings.media?.womensClogsImage || '/collections/womens-clogs-sneakers.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), womensClogsImage: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          3. Women&apos;s Slippers & Slides
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px (4:5)"
+                          aspectRatio="aspect-[4/5]"
+                          label="WOMEN SLIPPERS"
+                          imageUrl={settings.media?.womensSlippersImage || '/collections/womens-slippers-slides.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), womensSlippersImage: base64 }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. LOOKBOOK & SOCIAL FEED PHOTOS */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
+                    <h5 className="text-xs font-mono font-black uppercase text-red-600 flex items-center gap-1.5">
+                      <span>• SHOP THE LOOK & COMMUNITY FEED PHOTOS (4 DROPS)</span>
+                    </h5>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          Drop Photo 1
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px"
+                          aspectRatio="aspect-[4/5]"
+                          label="LOOKBOOK 1"
+                          imageUrl={settings.media?.lookbook1Image || '/feed/feed-bb158-1.png'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), lookbook1Image: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          Drop Photo 2
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px"
+                          aspectRatio="aspect-[4/5]"
+                          label="LOOKBOOK 2"
+                          imageUrl={settings.media?.lookbook2Image || '/feed/feed-bb158-2.png'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), lookbook2Image: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          Drop Photo 3
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px"
+                          aspectRatio="aspect-[4/5]"
+                          label="LOOKBOOK 3"
+                          imageUrl={settings.media?.lookbook3Image || '/feed/feed-bb158-3.png'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), lookbook3Image: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          Drop Photo 4
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 1000 px"
+                          aspectRatio="aspect-[4/5]"
+                          label="LOOKBOOK 4"
+                          imageUrl={settings.media?.lookbook4Image || '/feed/feed-bb158-4.png'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), lookbook4Image: base64 }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. EDITORIAL 3D SNEAKER & NEWSLETTER BANNER */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 space-y-4">
+                    <h5 className="text-xs font-mono font-black uppercase text-red-600 flex items-center gap-1.5">
+                      <span>• EDITORIAL 3D SHOWCASE & NEWSLETTER BANNER</span>
+                    </h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          Editorial 3D Sneaker Stack Photo
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="800 x 800 px"
+                          aspectRatio="aspect-video"
+                          label="SNEAKER STACK"
+                          imageUrl={settings.media?.editorialStackImage || '/editorial/sneaker-stack.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), editorialStackImage: base64 }
+                          })}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-mono font-black uppercase text-neutral-500">
+                          Newsletter Pop-up Banner Image
+                        </label>
+                        <ImagePlaceholder
+                          dimensions="600 x 800 px"
+                          aspectRatio="aspect-video"
+                          label="NEWSLETTER BANNER"
+                          imageUrl={settings.media?.newsletterBannerImage || '/newsletter-banner.jpg'}
+                          onImageUploaded={(base64) => setSettings({
+                            ...settings,
+                            media: { ...(settings.media || {}), newsletterBannerImage: base64 }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <button

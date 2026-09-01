@@ -18,7 +18,7 @@ interface LookbookItem {
   hotspotY: number; // percentage from top
 }
 
-const LOOKBOOK_ITEMS: LookbookItem[] = [
+const DEFAULT_LOOKBOOK_ITEMS: LookbookItem[] = [
   {
     id: 'look-1',
     image: '/feed/feed-bb158-1.png',
@@ -69,8 +69,29 @@ const LOOKBOOK_ITEMS: LookbookItem[] = [
   },
 ];
 
+import { getStoredSettings } from '@/lib/dataStore';
+
 export const LookbookSection: React.FC = () => {
   const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
+  const [items, setItems] = useState<LookbookItem[]>(() => {
+    const s = getStoredSettings()?.media;
+    return DEFAULT_LOOKBOOK_ITEMS.map((item, idx) => {
+      const key = `lookbook${idx + 1}Image` as keyof typeof s;
+      return s && s[key] ? { ...item, image: s[key] as string } : item;
+    });
+  });
+
+  React.useEffect(() => {
+    const handleUpdate = () => {
+      const s = getStoredSettings()?.media;
+      setItems(DEFAULT_LOOKBOOK_ITEMS.map((item, idx) => {
+        const key = `lookbook${idx + 1}Image` as keyof typeof s;
+        return s && s[key] ? { ...item, image: s[key] as string } : item;
+      }));
+    };
+    window.addEventListener('settings-updated', handleUpdate);
+    return () => window.removeEventListener('settings-updated', handleUpdate);
+  }, []);
 
   return (
     <section className="py-14 sm:py-24 bg-white dark:bg-[#0A0A0A] border-b border-neutral-200/60 dark:border-neutral-800/60 relative select-none">
@@ -96,7 +117,7 @@ export const LookbookSection: React.FC = () => {
 
         {/* 2x2 on Mobile, 4-Col on Desktop Joined Modular Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-          {LOOKBOOK_ITEMS.map((item, index) => {
+          {items.map((item, index) => {
             const isPopupOpen = activeHotspotId === item.id;
             const isNearRightEdge = item.hotspotX > 45;
 

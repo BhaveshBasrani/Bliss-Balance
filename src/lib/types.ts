@@ -71,6 +71,21 @@ export interface CollectionItem {
   slug: string;
 }
 
+export interface MediaSettings {
+  mensSneakersImage?: string;
+  mensSlidesImage?: string;
+  mensSlippersImage?: string;
+  womensSandalsImage?: string;
+  womensClogsImage?: string;
+  womensSlippersImage?: string;
+  lookbook1Image?: string;
+  lookbook2Image?: string;
+  lookbook3Image?: string;
+  lookbook4Image?: string;
+  editorialStackImage?: string;
+  newsletterBannerImage?: string;
+}
+
 export interface HeroSlide {
   id: string;
   desktopImageUrl: string;
@@ -92,6 +107,7 @@ export interface SiteSettings {
   heroImageUrl: string;
   heroMobileImageUrl?: string;
   heroSlides?: HeroSlide[];
+  media?: MediaSettings;
   appScriptUrl: string;
   googleDriveFolderId: string;
   recaptchaSiteKey: string;
