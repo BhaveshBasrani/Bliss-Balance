@@ -82,11 +82,16 @@ function TrackerContent() {
 
     const currentUrl = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
     
-    if (lastTrackedPath.current === currentUrl) {
+    // Cooldown per path (10 minutes) to drastically reduce egress on repeated visits
+    const lastTrackTimeStr = sessionStorage.getItem(`_track_${currentUrl}`);
+    const lastTrackTime = lastTrackTimeStr ? Number(lastTrackTimeStr) : 0;
+    if (Date.now() - lastTrackTime < 600000) {
       return;
     }
+    sessionStorage.setItem(`_track_${currentUrl}`, String(Date.now()));
     lastTrackedPath.current = currentUrl;
 
+    // 2-second reading dwell time verification before recording visit event
     const timer = setTimeout(() => {
       const visitorId = getOrSetVisitorId();
       const sessionId = getOrSetSessionId();
@@ -133,7 +138,7 @@ function TrackerContent() {
         utmCampaign,
         userEmail,
       });
-    }, 400);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [pathname, searchParams]);

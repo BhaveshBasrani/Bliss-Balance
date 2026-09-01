@@ -36,10 +36,32 @@ const LISTING_FIELDS = [
   'created_at',
 ].join(',');
 
+// ⚡ HIGH-PERFORMANCE IN-MEMORY CACHE ENGINES (Zero Egress on Repeat Reads)
+let _cachedSKUs: { data: FootwearSKU[]; timestamp: number } | null = null;
+let _cachedSettings: { data: any; timestamp: number } | null = null;
+const _singleSkuCache = new Map<string, { data: FootwearSKU; timestamp: number }>();
+const _reviewsCache = new Map<string, { data: ProductReview[]; timestamp: number }>();
+
+const SKUS_TTL_MS = 60 * 60 * 1000; // 1 Hour Cache Window (Zero Egress on Browse)
+const SETTINGS_TTL_MS = 120 * 60 * 1000; // 2 Hours Cache Window (Zero Egress on Browse)
+const REVIEWS_TTL_MS = 30 * 60 * 1000; // 30 Minutes Cache Window (Zero Egress on Browse)
+
+export function invalidateSupabaseCache() {
+  _cachedSKUs = null;
+  _cachedSettings = null;
+  _singleSkuCache.clear();
+  _reviewsCache.clear();
+}
+
 /**
- * 1. Fetch Lightweight Product Catalog (Saves ~80% Egress per request)
+ * 1. Fetch Lightweight Product Catalog (Zero Egress if Cached)
  */
-export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
+export async function fetchSupabaseSKUs(forceFresh: boolean = false): Promise<FootwearSKU[]> {
+  const now = Date.now();
+  if (!forceFresh && _cachedSKUs && (now - _cachedSKUs.timestamp < SKUS_TTL_MS)) {
+    return _cachedSKUs.data;
+  }
+
   const attemptFetch = async (timeoutMs: number): Promise<FootwearSKU[]> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -55,13 +77,15 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        return INITIAL_SKUS;
+        return _cachedSKUs ? _cachedSKUs.data : INITIAL_SKUS;
       }
 
       const rows = await res.json();
-      if (!Array.isArray(rows) || rows.length === 0) return INITIAL_SKUS;
+      if (!Array.isArray(rows) || rows.length === 0) {
+        return _cachedSKUs ? _cachedSKUs.data : INITIAL_SKUS;
+      }
 
-      return rows.map((row: any): FootwearSKU => ({
+      const mapped = rows.map((row: any): FootwearSKU => ({
         id: row.id,
         title: row.title,
         subtitle: row.subtitle || '',
@@ -86,23 +110,36 @@ export async function fetchSupabaseSKUs(): Promise<FootwearSKU[]> {
         isBestseller: Boolean(row.is_bestseller),
         createdAt: row.created_at || new Date().toISOString(),
       }));
+
+      _cachedSKUs = { data: mapped, timestamp: Date.now() };
+      return mapped;
     } catch (e) {
       clearTimeout(timeoutId);
-      return INITIAL_SKUS;
+      return _cachedSKUs ? _cachedSKUs.data : INITIAL_SKUS;
     }
   };
 
   try {
     return await attemptFetch(4000);
   } catch (err) {
-    return INITIAL_SKUS;
+    return _cachedSKUs ? _cachedSKUs.data : INITIAL_SKUS;
   }
 }
 
 /**
- * 2. Fetch Full Details for a Single Product ONLY when viewing /product/[id]
+ * 2. Fetch Full Details for a Single Product (Zero Egress if Cached)
  */
-export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | null> {
+export async function fetchSupabaseSingleSKU(id: string, forceFresh: boolean = false): Promise<FootwearSKU | null> {
+  const cleanId = id.trim().toLowerCase();
+  const now = Date.now();
+  
+  if (!forceFresh && _singleSkuCache.has(cleanId)) {
+    const cached = _singleSkuCache.get(cleanId)!;
+    if (now - cached.timestamp < SKUS_TTL_MS) {
+      return cached.data;
+    }
+  }
+
   const fallback = INITIAL_SKUS.find(
     (sku) => sku.id.toLowerCase() === id.toLowerCase() || sku.id.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() === id.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
   ) || null;
@@ -123,7 +160,7 @@ export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | 
     if (!Array.isArray(rows) || rows.length === 0) return fallback;
 
     const row = rows[0];
-    return {
+    const mapped: FootwearSKU = {
       id: row.id,
       title: row.title,
       subtitle: row.subtitle || '',
@@ -148,6 +185,9 @@ export async function fetchSupabaseSingleSKU(id: string): Promise<FootwearSKU | 
       isBestseller: Boolean(row.is_bestseller),
       createdAt: row.created_at || new Date().toISOString(),
     };
+
+    _singleSkuCache.set(cleanId, { data: mapped, timestamp: Date.now() });
+    return mapped;
   } catch (e) {
     return fallback;
   }
@@ -275,7 +315,12 @@ export async function getStorageQuotaStats(skus: FootwearSKU[]): Promise<Storage
 /**
  * ⚡ FETCH SITE SETTINGS (TICKERS, BANNERS, HERO SLIDES) FROM SUPABASE DATABASE
  */
-export async function fetchSupabaseSettings(): Promise<any | null> {
+export async function fetchSupabaseSettings(forceFresh: boolean = false): Promise<any | null> {
+  const now = Date.now();
+  if (!forceFresh && _cachedSettings && (now - _cachedSettings.timestamp < SETTINGS_TTL_MS)) {
+    return _cachedSettings.data;
+  }
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -289,14 +334,15 @@ export async function fetchSupabaseSettings(): Promise<any | null> {
     });
     clearTimeout(timeoutId);
 
-    if (!res.ok) return null;
+    if (!res.ok) return _cachedSettings ? _cachedSettings.data : null;
     const rows = await res.json();
     if (Array.isArray(rows) && rows.length > 0 && rows[0].data) {
+      _cachedSettings = { data: rows[0].data, timestamp: Date.now() };
       return rows[0].data;
     }
-    return null;
+    return _cachedSettings ? _cachedSettings.data : null;
   } catch (e) {
-    return null;
+    return _cachedSettings ? _cachedSettings.data : null;
   }
 }
 
@@ -305,6 +351,8 @@ export async function fetchSupabaseSettings(): Promise<any | null> {
  */
 export async function upsertSupabaseSettings(settings: any): Promise<boolean> {
   try {
+    _cachedSettings = { data: settings, timestamp: Date.now() };
+
     const payload = {
       id: 'site_settings',
       data: settings,
@@ -385,9 +433,19 @@ export async function fetchSupabaseSubscribers(): Promise<NewsletterSubscriber[]
 }
 
 /**
- * ⚡ FETCH REVIEWS FROM SUPABASE
+ * ⚡ FETCH REVIEWS FROM SUPABASE (Zero Egress if Cached)
  */
-export async function fetchSupabaseReviews(productId?: string): Promise<ProductReview[]> {
+export async function fetchSupabaseReviews(productId?: string, forceFresh: boolean = false): Promise<ProductReview[]> {
+  const cacheKey = productId || 'all_reviews';
+  const now = Date.now();
+
+  if (!forceFresh && _reviewsCache.has(cacheKey)) {
+    const cached = _reviewsCache.get(cacheKey)!;
+    if (now - cached.timestamp < REVIEWS_TTL_MS) {
+      return cached.data;
+    }
+  }
+
   try {
     let url = `${SUPABASE_URL}/rest/v1/reviews?select=*&order=created_at.desc`;
     if (productId) {
@@ -399,11 +457,11 @@ export async function fetchSupabaseReviews(productId?: string): Promise<ProductR
       headers: HEADERS,
     });
 
-    if (!res.ok) return [];
+    if (!res.ok) return _reviewsCache.get(cacheKey)?.data || [];
     const rows = await res.json();
-    if (!Array.isArray(rows)) return [];
+    if (!Array.isArray(rows)) return _reviewsCache.get(cacheKey)?.data || [];
 
-    return rows.map((r: any): ProductReview => ({
+    const mapped = rows.map((r: any): ProductReview => ({
       id: r.id,
       productId: r.product_id,
       authorName: r.author_name,
@@ -413,8 +471,11 @@ export async function fetchSupabaseReviews(productId?: string): Promise<ProductR
       createdAt: r.created_at || new Date().toISOString(),
       verified: Boolean(r.verified ?? true),
     }));
+
+    _reviewsCache.set(cacheKey, { data: mapped, timestamp: Date.now() });
+    return mapped;
   } catch (e) {
-    return [];
+    return _reviewsCache.get(cacheKey)?.data || [];
   }
 }
 
@@ -423,6 +484,8 @@ export async function fetchSupabaseReviews(productId?: string): Promise<ProductR
  */
 export async function insertSupabaseReview(review: ProductReview): Promise<boolean> {
   try {
+    _reviewsCache.clear();
+
     const payload = {
       id: review.id || `rev-${Date.now()}`,
       product_id: review.productId,
@@ -455,6 +518,7 @@ export async function insertSupabaseReview(review: ProductReview): Promise<boole
  */
 export async function deleteSupabaseReview(id: string): Promise<boolean> {
   try {
+    _reviewsCache.clear();
     const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: HEADERS,
