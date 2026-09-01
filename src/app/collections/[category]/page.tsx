@@ -98,6 +98,14 @@ const CATEGORY_MAP: Record<string, CategoryRouteConfig> = {
     category: 'Slippers',
     gender: 'Men',
   },
+  'mens-slides-sandals': {
+    title: 'MEN\'S SLIDES & SANDALS',
+    badge: 'BLISS BALANCE • MEN',
+    metaTitle: 'Men\'s Slides & Sandals | Bliss Balance®',
+    metaDescription: 'High-density EVA memory foam slides and anti-skid sandals for men.',
+    category: 'Slides',
+    gender: 'Men',
+  },
   'mens-casual-sneakers': {
     title: 'MEN\'S CASUAL & SNEAKERS',
     badge: 'BLISS BALANCE • MEN',
