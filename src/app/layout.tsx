@@ -108,6 +108,7 @@ export const metadata: Metadata = {
     other: {
       'msvalidate.01': 'c89a01f782e541b0b2e8d91c2b5d4e10',
       'indexnow': 'c89a01f782e541b0b2e8d91c2b5d4e10',
+      'facebook-domain-verification': 'z7wrenk4vwq9j8o4mfepbbxsuw7cfj',
     },
   },
   icons: {
@@ -273,6 +274,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon-48x48.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#000000" />
+        <meta name="facebook-domain-verification" content="z7wrenk4vwq9j8o4mfepbbxsuw7cfj" />
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <link rel="manifest" href="/manifest.json" />
 
